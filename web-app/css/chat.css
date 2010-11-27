@@ -1,0 +1,262 @@
+#widget-id-chat.box {
+    position:relative;
+    top:0;
+    width:100%;
+}
+
+#chat-roster-list {
+    display:none;
+    margin-left:2px;
+    padding-bottom:5px;
+    padding-top:5px;
+    width:98%;
+}
+
+#chat-roster-list li
+{
+    list-style-type:none;
+}
+
+#chat-roster-list ul {
+    padding:0;
+    margin:0;
+}
+
+#widget-id-chat.box {
+    margin-top:-2px;
+}
+
+#widget-title-bar-chat {
+    display:none;
+}
+
+#widget-content-chat {
+    padding: 2px;
+}
+
+.ui-chat {
+    position: fixed;
+    bottom:0;
+    padding: 2px;
+    padding: 2px;
+}
+
+.ui-chat-titlebar {
+    padding: 4px;
+    border-bottom-width:0;
+    height:18px;
+    line-height:18px;
+}
+
+.ui-chat-titlebar .ui-chat-status {
+    float:left;
+    width:16px;
+    height:16px;
+    padding-left:0px;
+}
+
+.ui-chat-title {
+    line-height:17px;
+    margin-left:2px;
+    float:left;
+}
+
+.ui-chat-content {
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
+
+.ui-chat-log {
+    padding: 4px;
+    height: 150px;
+    overflow-y: auto;
+    background: #FFFFFF;
+    border-top-width:0;
+    border-bottom-width:0;
+}
+
+.ui-chat-input {
+    overflow: hidden;
+}
+
+.ui-chat-input-box {
+    margin: 5px;
+    padding:5px;
+}
+
+.ui-chat-icon {
+    float: right;
+}
+
+.ui-chat-input-focus {
+    border-color: #6699FF;
+}
+
+.ui-chat-msg {
+    float: left;
+    clear: both;
+}
+
+.ui-chat-msg span {
+    font-weight:bold;
+}
+
+.ui-chat-composing {
+    background-image:url("../images/comment_edit.png");
+    background-repeat:no-repeat;
+    width:16px;
+    height:16px;
+    float:right;
+}
+
+.ui-chat-paused {
+    background-image:url("../images/hourglass.png");
+    background-repeat:no-repeat;
+    width:16px;
+    height:16px;
+    float:right;
+}
+
+.ui-chat-status-away {
+    background-image:url('../images/user_away.gif');
+}
+
+.ui-chat-status-xa {
+    background-image:url('../images/user_away.gif');
+}
+
+.ui-chat-status-dnd {
+    background-image:url('../images/user_dnd.gif');
+}
+
+.ui-chat-status-offline {
+    background-image:url('../images/user_offline.gif');
+}
+
+.ui-chat-status-online {
+    background-image:url('../images/user_chat.gif');
+}
+
+.ui-chat-select {
+    background-position:left;
+    background-repeat:no-repeat;
+}
+
+#chatstatus-button .ui-selectmenu-status,#chatstatus-menu li a {
+    padding: 4px 0 0 17px;
+}
+
+.ui-chat-status {
+    padding-left:17px;
+    background-repeat:no-repeat;
+}
+
+.chat-tooltip {
+    box-shadow: 0 2px 2px rgba(0,0,0,0.1);
+    -webkit-box-shadow: 0 2px 2px rgba(0,0,0,0.1);
+    -moz-box-shadow: 0 2px 2px rgba(0,0,0,0.1);
+    width:150px;
+}
+
+#chatstatus-button {
+    height:22px;
+    right:0px;
+    position:absolute;
+    margin-right:5px;
+    margin-top:1px;
+}
+
+#chatstatus-menu li {
+    height:22px;
+}
+
+#chatstatus-menu a {
+    padding:0.2em 1em;
+}
+
+#chat-list-show, #chat-list-hide {
+    padding-bottom:6px;
+    padding-left:3px;
+    padding-top:5px;
+}
+
+#chat-list-hide {
+    display:none;
+}
+
+#chat-list-show {
+    display:block;
+}
+
+.ui-chat-status-loader {
+    background-image:url('../images/loader.gif');
+}
+
+.chat-tooltip-left {
+    float:left;
+    width:50px;
+}
+
+.chat-tooltip-right {
+    float:left;
+    width:180px;
+}
+
+.chat-tooltip-bottom {
+    clear:both;
+    float:left;
+    width:100%;
+    padding-top:5px;
+}
+
+.chat-tooltip-bottom .chat-user-link {
+    float:right;
+}
+
+.chat-tooltip-right span {
+    display:block;
+    width:100%;
+}
+
+.chat-tooltip-right .ui-chat-status {
+    background-repeat:no-repeat;
+    line-height:17px;
+    padding-left:17px;
+}
+
+.chat-user-task {
+    font-size:10px;
+    line-height:13px;
+    text-align:right;
+}
+
+.chat-user-task-title {
+    text-align:right;
+}
+
+.ui-chat-user-status-text {
+    font-size:11px;
+    font-style:italic;
+    padding-left:17px;
+    line-height:13px;
+    color:#444444;
+}
+
+.chat-group {
+    border-style:solid;
+    border-color:#C4C4C4;
+    border-width:1px;
+}
+
+.chat-group li {
+    padding:5px 5px;
+}
+
+.chat-group-title {
+    background:none repeat scroll 0 0 #FFFFFF;
+    display:inline-block;
+    margin-left:5px;
+    position:relative;
+    margin-top:-9px;
+}
