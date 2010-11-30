@@ -38,3 +38,22 @@
     <ul class="chat-group">
     </ul>
  </div>
+
+<jq:jquery>
+  $('#chatstatus-button .ui-selectmenu-status')
+    .bind('mousedown', function(event){
+        event.stopPropagation();
+    })
+    .editable($.icescrum.chat.customPresence,{
+      type : 'statut-editable',
+      onsubmit:function(settings,original){
+        if($(this).find('input').val() == ''){
+          original.reset();
+          return false;
+        }
+      },
+      width:'75px',
+      height:'10px',
+      onblur:'submit'
+    });
+</jq:jquery>

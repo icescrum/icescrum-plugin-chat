@@ -38,7 +38,7 @@
                 $.icescrum.chat._nbMaxChat();
             }).trigger('resize');
             this.o.sendPresence = true;
-            this.initConnect();
+            //this.initConnect();
         },
 
         initConnect:function(){
@@ -469,6 +469,22 @@
                 $.icescrum.chat.createOrOpenChat('chat-'+$(this).attr('username'),$(this).attr('username'),true);
                 event.preventDefault();
             });
+        },
+
+        customPresence:function(val,settings){
+            alert(val);
+            return val;
         }
     }
 })(jQuery);
+
+jQuery.editable.addInputType('statut-editable', {
+    element : function(settings, original) {
+            var input = $('<input />');
+            input.width(settings.width);
+            input.height(settings.height);
+            input.bind('mousedown',function(event){event.stopPropagation()}).bind('click',function(event){event.stopPropagation()}).keydown(function(event){event.stopPropagation()});
+            $(this).append(input);
+            return(input);
+        }
+});
