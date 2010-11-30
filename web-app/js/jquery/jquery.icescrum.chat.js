@@ -473,6 +473,9 @@
 
         customPresence:function(val,settings){
             alert(val);
+            //Appliquer le statut perso + show + pres
+            //Envoyer le statut perso a Jihane ...
+            //Ajouter le status a la liste
             return val;
         }
     }
