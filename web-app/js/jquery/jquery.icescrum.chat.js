@@ -38,7 +38,7 @@
                 $.icescrum.chat._nbMaxChat();
             }).trigger('resize');
             this.o.sendPresence = true;
-            //this.initConnect();
+            this.initConnect();
         },
 
         initConnect:function(){
