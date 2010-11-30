@@ -52,7 +52,7 @@ class ChatController {
       def jsonTeam = []
       t.members.each{u->
         if(u.id != user.id)
-          jsonTeam.add([id:u.id, username:u.username, name:(u.firstName + '.' + u.lastName)])
+          jsonTeam.add([id:u.id, username:u.username, name:(u.firstName + ' ' + u.lastName)])
       }
       jsonTeamList.add(teamname:t.name, users:jsonTeam)
     }

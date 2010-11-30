@@ -236,10 +236,6 @@
             $.icescrum.chat.o.connection.addHandler($.icescrum.chat._onReceiveServiceDiscoveryGet, null, 'iq', 'get', null, null);
             $.icescrum.chat.o.connection.addTimedHandler(4000,$.icescrum.chat._onPeriodicPauseStateCheck);
             $.icescrum.chat.o.connected = true;
-            $('.chat-user-link').die('click.chat').live('click.chat',function(event){
-                $.icescrum.chat.createOrOpenChat('chat-'+$(this).attr('username'),$(this).attr('username'),true);
-                event.preventDefault();
-            });
             if($.icescrum.chat.o.sendPresence){
                 $.icescrum.chat.o.connection.send($pres().tree());
             }
@@ -431,7 +427,6 @@
         },
 
 
-        //Expérimental
         _retrieveRoster:function() {
             var iq = $iq({type: 'get'}).c('query', {'xmlns':Strophe.NS.ROSTER});
 	        console.log("[icescrum-chat] Requesting roster");
@@ -439,11 +434,40 @@
         },
 
         _onRosterReceived:function(iq) {
+            console.log("[icescrum-chat] Receiving roster");
+            var jabberList = [];
             $(iq).find("item").each(function() {
                 if ($(this).attr('ask')) {
                         return true;
                 }
-                //console.log($(this).attr('name'));
+                jabberList.push($.icescrum.chat._retrieveUsername($(this).attr('jid')));
+            });
+            $.icescrum.chat.mergeContactLists(jabberList);
+        },
+
+        mergeContactLists:function(jabberList) {
+            var teamListObject = $.parseJSON($.icescrum.chat.o.teamList);
+            console.log("[icescrum-chat] Merging team members and jabber roster");
+            $(teamListObject).each(function () {
+                $('.chat-group').append('<span class="chat-group-title">' + this.teamname+'</span>');
+                $(this.users).each(function(){
+                    if($.inArray(this.username, jabberList) > -1) {
+                        $('.chat-group').append('<li><div id="chat-user-status-' + this.username + '" class="ui-chat-user-status-'+this.username+' ui-chat-status ui-chat-status-offline" status="offline" title="">' +
+								'<a id="chat-user-'+this.id+'" disabled="true" href="javascript:;" class="chat-user-link" username="'+this.username+'" name="'+this.name+'">' + $.icescrum.chat.truncate(this.name, 20) + '</a>' +
+							'</div></li>');
+                    }
+                    else {
+                        console.log("[icescrum-chat] Team member not found in jabber roster : " + this.username + " (" + this.name + ")");
+                    }
+                });
+            });
+            $.icescrum.chat.putContactLinks();
+        },
+
+        putContactLinks:function() {
+            $('.chat-user-link').die('click.chat').live('click.chat',function(event){
+                $.icescrum.chat.createOrOpenChat('chat-'+$(this).attr('username'),$(this).attr('username'),true);
+                event.preventDefault();
             });
         }
     }

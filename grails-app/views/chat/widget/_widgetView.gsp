@@ -34,24 +34,7 @@
   <is:link id="chat-list-hide" onClick="jQuery.icescrum.chat.displayRoster();" disabled="true">
     <g:message code="is.chat.ui.hide"/> <g:message code="is.chat.ui.connected" args="${[nbTeamMembers,hasTeamMembers]}" />
   </is:link>
-  <div id="chat-roster-list">
-    <g:if test="${nbTeamMembers > 0}">
-      <g:each in="${teamList}" var="t">
-        <ul class="chat-group">
-          <span class="chat-group-title">${t.name}</span>
-          <g:each in="${t.members}" var="m">
-            <g:if test="${m.id != user.id}">
-              <li>
-                <div id="chat-user-status-${m.username}" class="ui-chat-user-status-${m.username} ui-chat-status ui-chat-status-offline" status="offline" title="">
-                  <is:link id="chat-user-${m.id}" disabled="true" class="chat-user-link" username="${m.username}" name="${m.firstName} ${m.lastName}">
-                    <is:truncated size="20">${m.firstName} ${m.lastName}</is:truncated>
-                  </is:link>
-                </div>
-                <is:tooltipChat id="${m.id}"/>
-              </li>
-            </g:if>
-          </g:each>
-        </ul>
-      </g:each>
-    </g:if>
-  </div>
+ <div id="chat-roster-list">
+    <ul class="chat-group">
+    </ul>
+ </div>
