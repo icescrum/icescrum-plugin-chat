@@ -455,6 +455,14 @@
                         $('.chat-group').append('<li><div id="chat-user-status-' + this.username + '" class="ui-chat-user-status-'+this.username+' ui-chat-status ui-chat-status-offline" status="offline" title="">' +
 								'<a id="chat-user-'+this.id+'" disabled="true" href="javascript:;" class="chat-user-link" username="'+this.username+'" name="'+this.name+'">' + this.username +" ("+$.icescrum.chat.truncate(this.name, 20)+")" + '</a>' +
 							'</div></li>');
+                        $.ajax({
+                            type: "POST",
+                            url: $.icescrum.o.grailsServer + '/chat/showToolTipChat',
+                            data: 'id=' + this.id,
+                            success:function(data) {
+                                $('.chat-group').append(data);
+                            }
+                        });
                     }
                     else {
                         console.log("[icescrum-chat] Team member not found in jabber roster : " + this.username + " (" + this.name + ")");

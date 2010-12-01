@@ -96,4 +96,11 @@ class ChatController {
       render(status:400)
     }
   }
+
+  def showToolTipChat = {
+    if(params.id)
+      render(status:200, text:is.tooltipChat(params,null))
+    else
+      render(status:400)
+  }
 }
