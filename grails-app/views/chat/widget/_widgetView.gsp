@@ -35,8 +35,6 @@
     <g:message code="is.chat.ui.hide"/> <g:message code="is.chat.ui.connected"/> <span class=nb-contacts></span>
   </is:link>
  <div id="chat-roster-list">
-    <ul class="chat-group">
-    </ul>
  </div>
 
 <jq:jquery>

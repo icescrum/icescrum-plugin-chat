@@ -20,6 +20,7 @@
 #chat-roster-list ul {
     padding:0;
     margin:0;
+    margin-top:10px;
 }
 
 #widget-id-chat.box {

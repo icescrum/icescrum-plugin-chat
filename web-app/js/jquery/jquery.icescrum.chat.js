@@ -467,7 +467,7 @@
             console.log("[icescrum-chat] Merging team members and jabber roster");
             var nbContacts = 0;
             $(teamListObject).each(function () {
-                $('.chat-group').append('<span class="chat-group-title">' + this.teamname+'</span>');
+                $('#chat-roster-list').append('<ul class="chat-group"><span class="chat-group-title">' + this.teamname+'</span>');
                 $(this.users).each(function(){
                     if($.inArray(this.username, jabberList) > -1) {
                         nbContacts ++;
@@ -487,6 +487,7 @@
                         console.log("[icescrum-chat] Team member not found in jabber roster : " + this.username + " (" + this.name + ")");
                     }
                 });
+                $('#chat-roster-list').append('</ul>');
             });
             $('.nb-contacts').html('('+nbContacts+')');
             $.icescrum.chat.putContactLinks();
