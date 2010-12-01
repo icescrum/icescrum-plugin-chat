@@ -22,17 +22,38 @@
  */
 
 import org.icescrum.components.UtilsWebComponents
+import org.icescrum.core.domain.User
 import grails.plugins.springsecurity.Secured
+import org.icescrum.plugins.chat.ChatUtils
+import org.icescrum.plugins.chat.ChatConnection
+import grails.converters.JSON
 
 @Secured('ROLE_ADMIN')
 class ChatAdminController {
 
     static final id = 'chatAdmin'
     static ui = true
-    static menuBar = [show:[visible:UtilsWebComponents.rendered(renderedOnRoles:"ROLE_ADMIN"),pos:1],title:'is.ui.admin']
+    static menuBar = [show:[visible:UtilsWebComponents.rendered(renderedOnRoles:"ROLE_ADMIN"),pos:0],title:'is.ui.admin']
     static window =  [title:'is.ui.admin',help:'is.ui.admin.help',toolbar:false]
 
+    def springSecurityService
+
     def index = {
-      render 'test'
+      def server = ChatUtils.chatConfig.icescrum.chat.server
+      def port = ChatUtils.chatConfig.icescrum.chat.port
+      def resource = ChatUtils.chatConfig.icescrum.chat.resource
+      render template:'chatAdmin',plugin:'icescrum-chat',
+              model:[server: server,
+                      port: port,
+                      resource: resource
+              ]
+    }
+
+    def modify = {
+      ChatUtils.chatConfig.icescrum.chat.server = params.server
+      ChatUtils.chatConfig.icescrum.chat.port = params.port
+      ChatUtils.chatConfig.icescrum.chat.resource = params.resource
+      render(status:200, contentType: 'application/json', text: [notice: [text: message(code: 'is.chat.ui.ismodify')]] as JSON)
+
     }
 }

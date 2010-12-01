@@ -82,6 +82,7 @@ class ChatController {
     render(template:'tooltipUser',plugin:'icescrum-chat',model:[m:user,tasks:tasks,nbtasks:tasks.size() > 1 ? 's' : 0])
   }
 
+
   def attachConnection = {
     def user = User.get(springSecurityService.principal.id)
     def chatConnection = new ChatConnection()
