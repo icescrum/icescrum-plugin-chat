@@ -49,7 +49,7 @@ class ChatController {
         if(u.id != user.id)
           jsonTeam.add([id:u.id, username:u.username, name:(u.firstName + ' ' + u.lastName)])
       }
-      teamList.add(teamname:t.name, users:jsonTeam)
+      teamList.add(teamname:t.name, teamid:t.id, users:jsonTeam)
     }
     teamList = teamList as JSON
 

@@ -467,15 +467,16 @@
             console.log("[icescrum-chat] Merging team members and jabber roster");
             var nbContacts = 0;
             $(teamListObject).each(function () {
-                $('#chat-roster-list').append('<ul class="chat-group"><span class="chat-group-title">' + this.teamname+'</span>');
+                var teamid = this.teamid;
+                $('#chat-roster-list').append('<ul class="chat-group" id="team-'+teamid+'"><span class="chat-group-title">'+this.teamname+'</span>');
                 $(this.users).each(function(){
                     if($.inArray(this.username, jabberList) > -1) {
                         nbContacts ++;
-                        $('.chat-group').append('<li><div id="chat-user-status-' + this.username + '" class="ui-chat-user-status-'+this.username+' ui-chat-status ui-chat-status-offline" status="offline" title="">' +
+                        $('#team-'+teamid).append('<li><div id="chat-user-status-' + this.username + '" class="ui-chat-user-status-'+this.username+' ui-chat-status ui-chat-status-offline" status="offline" title="">' +
 								                    '<a id="chat-user-'+this.id+'" disabled="true" href="javascript:;" class="chat-user-link" username="'+this.username+'" name="'+this.name+'">' +
                                                         this.username + " ("+$.icescrum.chat.truncate(this.name, 20)+")" +
                                                     '</a>' +
-							                    '</div></li>');
+							                        '</div></li>');
                         $.ajax({
                             type: "POST",
                             url: $.icescrum.o.grailsServer + '/chat/showToolTipChat',
