@@ -4,6 +4,8 @@ import org.icescrum.core.domain.Task
 import grails.converters.JSON
 import org.icescrum.core.domain.Team
 import org.icescrum.plugins.chat.ChatConnection
+import org.icescrum.plugins.chat.ChatUtils
+import org.icescrum.core.support.ApplicationSupport
 
 class ChatController {
   static ui = true
@@ -11,7 +13,7 @@ class ChatController {
 
   static menuBar = [show:false]
   static widget =  [
-          show:{UtilsWebComponents.rendered(renderedOnAccess:"isAuthenticated()")},
+          show:{UtilsWebComponents.rendered(renderedOnAccess:"isAuthenticated()") && ApplicationSupport.booleanValue(ChatUtils.chatConfig.icescrum.chat.enabled)},
           title:'is.chat.ui.title',
           init:'index',
           toolbar:false,
