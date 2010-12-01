@@ -12,7 +12,7 @@
 
 
 
-<is:loadChatJSContext teamList="${jsonTeamList}"/>
+<is:loadChatJSContext teamList="${teamList}"/>
 <jq:jquery>
   jQuery.icescrum.emoticons.initialize("${resource(plugin: 'icescrum-chat', dir: '/images/emoticons')}");
 </jq:jquery>
@@ -29,10 +29,10 @@
     onchange="jQuery.icescrum.chat.presenceChanged(jQuery('.ui-selectmenu-status span').text(),jQuery(this).find('option:selected').val());"/>
 
   <is:link id="chat-list-show" onClick="jQuery.icescrum.chat.displayRoster();" disabled="true">
-    <g:message code="is.chat.ui.show"/> <g:message code="is.chat.ui.connected" args="${[nbTeamMembers,hasTeamMembers]}" />
+    <g:message code="is.chat.ui.show"/> <g:message code="is.chat.ui.connected"/> <span class=nb-contacts></span>
   </is:link>
   <is:link id="chat-list-hide" onClick="jQuery.icescrum.chat.displayRoster();" disabled="true">
-    <g:message code="is.chat.ui.hide"/> <g:message code="is.chat.ui.connected" args="${[nbTeamMembers,hasTeamMembers]}" />
+    <g:message code="is.chat.ui.hide"/> <g:message code="is.chat.ui.connected"/> <span class=nb-contacts></span>
   </is:link>
  <div id="chat-roster-list">
     <ul class="chat-group">

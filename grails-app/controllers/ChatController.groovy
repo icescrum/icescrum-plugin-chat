@@ -23,13 +23,8 @@ class ChatController {
   def springSecurityService
 
   def index = {
-    def nbTeamMembers = 0
-    def user = User.get(springSecurityService.principal.id)
 
-    def teamList = user.teams
-    teamList.each{
-      nbTeamMembers += Team.members(it,[]).size() - 1
-    }
+    def user = User.get(springSecurityService.principal.id)
 
     def statusKeys = ['online','dnd','away','disc']
 
@@ -47,24 +42,19 @@ class ChatController {
             'ui-chat-select ui-chat-status-offline'
     ]
 
-    def jsonTeamList = []
-    teamList.each{t->
+    def teamList = []
+    user.teams.each{t->
       def jsonTeam = []
       t.members.each{u->
         if(u.id != user.id)
           jsonTeam.add([id:u.id, username:u.username, name:(u.firstName + ' ' + u.lastName)])
       }
-      jsonTeamList.add(teamname:t.name, users:jsonTeam)
+      teamList.add(teamname:t.name, users:jsonTeam)
     }
+    teamList = teamList as JSON
 
-    jsonTeamList = jsonTeamList as JSON
-
-    def hasTeamMembers = (nbTeamMembers > 1) ? 's' : ''
     render(template:'widget/widgetView',plugin:'icescrum-chat', model:[
             teamList:teamList,
-            jsonTeamList:jsonTeamList,
-            nbTeamMembers:nbTeamMembers,
-            hasTeamMembers:hasTeamMembers,
             user:user,
             statusKeys:statusKeys,
             statusLabels:statusLabels,

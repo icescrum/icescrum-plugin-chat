@@ -465,10 +465,12 @@
         mergeContactLists:function(jabberList) {
             var teamListObject = $.parseJSON($.icescrum.chat.o.teamList);
             console.log("[icescrum-chat] Merging team members and jabber roster");
+            var nbContacts = 0;
             $(teamListObject).each(function () {
                 $('.chat-group').append('<span class="chat-group-title">' + this.teamname+'</span>');
                 $(this.users).each(function(){
                     if($.inArray(this.username, jabberList) > -1) {
+                        nbContacts ++;
                         $('.chat-group').append('<li><div id="chat-user-status-' + this.username + '" class="ui-chat-user-status-'+this.username+' ui-chat-status ui-chat-status-offline" status="offline" title="">' +
 								'<a id="chat-user-'+this.id+'" disabled="true" href="javascript:;" class="chat-user-link" username="'+this.username+'" name="'+this.name+'">' + this.username +" ("+$.icescrum.chat.truncate(this.name, 20)+")" + '</a>' +
 							'</div></li>');
@@ -486,6 +488,7 @@
                     }
                 });
             });
+            $('.nb-contacts').html('('+nbContacts+')');
             $.icescrum.chat.putContactLinks();
         },
 
