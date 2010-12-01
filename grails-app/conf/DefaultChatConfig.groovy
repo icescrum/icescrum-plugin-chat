@@ -5,6 +5,6 @@ icescrum{
     port = "7070"
     boshPath="/http-bind/"
     resource="webicescrum"
-    enabled=false
+    enabled=true
   }
 }
