@@ -42,10 +42,14 @@ class ChatAdminController {
       def server = ChatUtils.chatConfig.icescrum.chat.server
       def port = ChatUtils.chatConfig.icescrum.chat.port
       def resource = ChatUtils.chatConfig.icescrum.chat.resource
+      def enabled = 1
+      if(ChatUtils.chatConfig.icescrum.chat.enabled)
+        enabled = 0
       render template:'chatAdmin',plugin:'icescrum-chat',
               model:[server: server,
                       port: port,
-                      resource: resource
+                      resource: resource,
+                      enabled: enabled
               ]
     }
 
@@ -53,6 +57,11 @@ class ChatAdminController {
       ChatUtils.chatConfig.icescrum.chat.server = params.server
       ChatUtils.chatConfig.icescrum.chat.port = params.port
       ChatUtils.chatConfig.icescrum.chat.resource = params.resource
+      System.out.println(params.enabled.equals("0"))
+      if(params.enabled.equals("0"))
+        ChatUtils.chatConfig.icescrum.chat.enabled = true
+      else
+        ChatUtils.chatConfig.icescrum.chat.enabled = false
       render(status:200, contentType: 'application/json', text: [notice: [text: message(code: 'is.chat.ui.ismodify')]] as JSON)
 
     }

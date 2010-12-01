@@ -12,8 +12,8 @@
   <is:fieldInformation nobordertop="true">
     <g:message code="is.chat.ui.chatadmin"/>
   </is:fieldInformation>
-  <is:fieldRadio for="enabled.chat" label="is.chat.ui.enabled">
-      <is:radio id="enabled.chat" name="enabled.chat" value=""/>
+  <is:fieldRadio for="enabled" label="is.chat.ui.enabled">
+      <is:radio from="[(message(code: 'is.chat.ui.yes')): '0', (message(code: 'is.chat.ui.no')): '1']" id="enabled" name="enabled" value="${enabled}"/>
     </is:fieldRadio>
   <is:fieldInput for="server" label="is.chat.ui.server">
     <is:input id="server" name="server" value="${server.encodeAsHTML()}" />
