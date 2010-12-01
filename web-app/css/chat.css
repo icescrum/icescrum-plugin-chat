@@ -81,7 +81,9 @@
 }
 
 .ui-chat-input-box {
-    margin: 5px;
+    margin-left: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
     padding:5px;
 }
 
@@ -259,4 +261,15 @@
     margin-left:5px;
     position:relative;
     margin-top:-9px;
+}
+
+.ui-chat-emoticons {
+    background-image:url("../images/emoticons/face-smile.png");
+    background-repeat:no-repeat;
+    width:16px;
+    height:16px;
+    float:right;
+    background-position:center;
+    padding-right:3px;
+    padding-top:7px;
 }

@@ -21,6 +21,33 @@
                     this.elem = elem;
                     this.elem.uiChatComposing.hide();
                     this.elem.uiChatPaused.hide();
+                    this.elem.uiChatSmiley.show();
+                    var cpt = 0;
+                    var emoticontable = "<table>";
+                    for(var emote in jQuery.icescrum.emoticons.emotes){
+                        if(cpt == 0){
+                            emoticontable += "<tr>";
+                        }
+                        emoticontable += "<td><img onclick='jQuery.icescrum.chat.insertEmoticon(\""+this.elem.options.username+"\", \""+jQuery.icescrum.emoticons.emotes[emote][0]+"\")' src='"+jQuery.icescrum.emoticons.icon_folder+"/face-"+emote+".png'/></td>";
+                        cpt++;
+                        if(cpt == 5){
+                            emoticontable += "</tr>";
+                            cpt = 0;
+                        }
+                    }
+                    if(cpt != 0){
+                        emoticontable += "</tr>";
+                    }
+                    emoticontable += "</table>";
+                    $('.ui-chat-emoticons').qtip(
+                    {
+                        content: emoticontable,
+                        hide: { when: { event:'click' }, fixed: true },
+                        position: {
+                           target: 'mouse',
+                           adjust: { mouse: false }
+                        }
+                    });
                 },
 
                 addMsg: function(name, msg) {
@@ -185,6 +212,7 @@
             self.uiChatInput = $('<textarea></textarea>');
             var uiChatInput = self.uiChatInput
                     .addClass('ui-widget-content ui-chat-input-box ui-corner-all')
+                    .attr('id', 'ui-chat-input-box-'+options.username)
                     .appendTo(uiChatInputWrapper)
                     .keyup(function(event) {
                         if(event.keyCode) {
@@ -218,6 +246,11 @@
                     .focusout(function() {
                         uiChatInput.removeClass('ui-chat-input-focus');
                     });
+            
+            self.uiChatSmiley = $('<div></div>');
+            var uiChatSmiley = self.uiChatSmiley
+                    .addClass('ui-chat-emoticons')
+                    .appendTo(uiChatInputWrapper);
 
             uiChatTitleBar.find('*').add(uiChatTitleBar).disableSelection();
 
@@ -260,7 +293,7 @@
         _setWidth: function(width) {
             this.uiChatTitleBar.width(width + "px");
             this.uiChatLog.width(width + "px");
-            this.uiChatInput.css("width", (width - 14) + "px");
+            this.uiChatInput.css("width", (width - 28) + "px");
         },
 
         _position: function(offset) {

@@ -7,7 +7,7 @@
 
 <script type="text/javascript" src="${resource(plugin: 'icescrum-chat', dir: '/js/jquery', file: 'jquery.icescrum.ui.chat.js')}"></script>
 <script type="text/javascript" src="${resource(plugin: 'icescrum-chat', dir: '/js/jquery', file: 'jquery.icescrum.chat.js')}"></script>
-
+<script type="text/javascript" src="${resource(plugin: 'icescrum-chat', dir: '/js/jquery', file: 'jquery.caret.js')}"></script>
 <script type="text/javascript" src="${resource(plugin: 'icescrum-chat', dir: '/js/jquery', file: 'jquery.emoticons.js')}"></script>
 
 

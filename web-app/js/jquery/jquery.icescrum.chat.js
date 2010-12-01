@@ -66,6 +66,23 @@
             });
         },
 
+        insertEmoticon:function(username, pemot){
+            var content = $("#ui-chat-input-box-"+username).val();
+            var posCur = $("#ui-chat-input-box-"+username).caret().start;
+            if(posCur != 0 && content.charAt(posCur-1) != " "){
+                $("#ui-chat-input-box-"+username).val(content.substr(0, posCur) + " ");
+            }else{
+                $("#ui-chat-input-box-"+username).val(content.substr(0, posCur));
+            }
+            $("#ui-chat-input-box-"+username).val($("#ui-chat-input-box-"+username).val() + pemot);
+            if(content.charAt(posCur) != " "){
+                $("#ui-chat-input-box-"+username).val($("#ui-chat-input-box-"+username).val() + " ");
+            }
+            $("#ui-chat-input-box-"+username).val($("#ui-chat-input-box-"+username).val() + content.substr(posCur, content.length));
+            $("#ui-chat-input-box-"+username).focus();
+
+        },
+        
         // Création ou ouverture du chat
         createOrOpenChat:function(id,user,toggle) {
             var idx1 = this.o.showList.indexOf(id);
