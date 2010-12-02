@@ -42,7 +42,7 @@
                     $('.ui-chat-emoticons').qtip(
                     {
                         content: emoticontable,
-                        hide: { when: { event:'click' }, fixed: true },
+                        hide: { when: { event:'click mouseout' }, fixed: true, delay: 100 },
                         position: {
                            target: 'mouse',
                            adjust: { mouse: false }
