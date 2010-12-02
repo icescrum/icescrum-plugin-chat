@@ -23,6 +23,7 @@ class ChatController {
 
   def teamService
   def springSecurityService
+  def statusListService
 
   def index = {
 
@@ -57,6 +58,18 @@ class ChatController {
       teamList.add(teamname:t.name, teamid:t.id, users:jsonTeam)
     }
     teamList = teamList as JSON
+
+
+    ////////////////////////////////////////
+    // A SUPPRIMER
+    ////////////////////////////////////////
+    /*
+    println "------------ Status"
+    statusListService.addStatus(user, "toto")
+    statusListService.getStatus(user).each{
+      println it
+    }
+    */
 
     render(template:'widget/widgetView',plugin:'icescrum-chat', model:[
             teamList:teamList,
