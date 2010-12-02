@@ -46,6 +46,11 @@
                         position: {
                            target: 'mouse',
                            adjust: { mouse: false }
+                        },
+                        style: {
+                            width: {
+                                min: 100
+                            }
                         }
                     });
                 },

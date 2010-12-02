@@ -27,9 +27,11 @@
          * and an image called 'face-cow.png' under the emoticons folder
          */
         emotes : {"smile": Array(":-)",":)","=]","=)"),
-              "sad": Array(":-(","=(",":[",":&lt;"),
+              "sad": Array(":-(",":(","=(",":[",":&lt;"),
               "wink": Array(";-)",";)",";]","*)"),
               "grin": Array(":D","=D","XD","BD","8D","xD"),
+              "tongue": Array(":p",":P",":-p",":-P"),
+              "space": Array(":s",":S",":-s",":-S"),
               "surprise": Array(":O","=O",":-O","=-O"),
               "devilish": Array("(6)"),
               "angel": Array("(A)"),
