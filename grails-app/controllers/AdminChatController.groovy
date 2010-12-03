@@ -29,7 +29,7 @@ import org.icescrum.plugins.chat.ChatConnection
 import grails.converters.JSON
 
 @Secured('ROLE_ADMIN')
-class ChatAdminController {
+class AdminChatController {
 
     static final id = 'chatAdmin'
     static ui = true

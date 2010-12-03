@@ -63,13 +63,13 @@ class ChatController {
     ////////////////////////////////////////
     // A SUPPRIMER
     ////////////////////////////////////////
-    /*
+
     println "------------ Status"
-    statusListService.addStatus(user, "toto")
+    statusListService.addStatus(user, "huhuhu")
     statusListService.getStatus(user).each{
       println it
     }
-    */
+
 
     render(template:'widget/widgetView',plugin:'icescrum-chat', model:[
             teamList:teamList,
