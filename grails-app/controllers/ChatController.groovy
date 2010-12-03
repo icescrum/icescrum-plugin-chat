@@ -28,35 +28,25 @@ class ChatController {
   def index = {
 
     def user = User.get(springSecurityService.principal.id)
+    def statusKeys = []
+    def statusLabels =[]
+    def statusIcons = []
 
-    def statusKeys = ['online','dnd','away','disc']
-
-    def statusLabels =[
-            g.message(code:'is.chat.status.online'),
-            g.message(code:'is.chat.status.busy'),
-            g.message(code:'is.chat.status.abs'),
-            g.message(code:'is.chat.status.disconnected')
-    ]
-
-    def statusIcons = [
-            'ui-chat-select ui-chat-status-online',
-            'ui-chat-select ui-chat-status-dnd',
-            'ui-chat-select ui-chat-status-away',
-            'ui-chat-select ui-chat-status-offline'
-    ]
-
-    statusListService.getStatus(user).each{
-      def customStatusKeys = ['online','dnd','away']
-      def customStatusLabel =[it,it,it]
-      def customStatusIcons = [
-              'ui-chat-select ui-chat-status-online',
-              'ui-chat-select ui-chat-status-dnd',
-              'ui-chat-select ui-chat-status-away'
-      ]
-      statusKeys.addAll(customStatusKeys)
-      statusIcons.addAll(customStatusIcons)
-      statusLabels.addAll(customStatusLabel)
+    def statusType = ['online','dnd','away']
+    for(status in statusType){
+      statusKeys.add(status)
+      statusLabels.add(g.message(code:'is.chat.status.'+status))
+      statusIcons.add('ui-chat-select ui-chat-status-'+status)
+      statusListService.getStatus(user).each{
+        statusKeys.add(status)
+        statusLabels.add(it)
+        statusIcons.add('ui-chat-select ui-chat-status-'+status)
+      }
     }
+
+    statusKeys.add('disc')
+    statusLabels.add(g.message(code:'is.chat.status.disconnected'))
+    statusIcons.add('ui-chat-select ui-chat-status-offline')
 
     def teamList = []
     def userList = []
