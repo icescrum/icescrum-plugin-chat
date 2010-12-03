@@ -17,7 +17,7 @@
   jQuery.icescrum.emoticons.initialize("${resource(plugin: 'icescrum-chat', dir: '/images/emoticons')}");
 </jq:jquery>
 
-  <is:select
+<is:select
     container="#widget-content-${id}"
     width="125"
     styleSelect="dropdown"
@@ -26,7 +26,7 @@
     icons="${statusIcons}"
     value="${message(code:'is.chat.status.disconnected')}"
     name="chatstatus"
-    onchange="jQuery.icescrum.chat.presenceChanged(jQuery('.ui-selectmenu-status span').text(),jQuery(this).find('option:selected').val());"/>
+    onchange="jQuery.icescrum.chat.presenceChanged(jQuery('.ui-selectmenu-status').text(),jQuery(this).find('option:selected').val());"/>
 
   <is:link id="chat-list-show" onClick="jQuery.icescrum.chat.displayRoster();" disabled="true">
     <g:message code="is.chat.ui.show"/> <g:message code="is.chat.ui.connected"/> <span class=nb-contacts></span>

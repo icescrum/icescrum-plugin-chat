@@ -312,6 +312,7 @@
         // presence : message du status
         // show : chat, away, dnd, xp
         changeStatus:function(presence, show){
+            console.log(presence+' -- '+show);
             var pres;
             if(show!= "online"){
             pres = $pres()
@@ -328,6 +329,22 @@
             $.cookie("show", show);
             $.cookie("presence", presence);
             console.log(pres);
+
+            $('#chatstatus-button .ui-selectmenu-status').bind('mousedown', function(event){
+                    event.stopPropagation();
+                }).editable($.icescrum.chat.customPresence,{
+                  type : 'statut-editable',
+                  onsubmit:function(settings,original){
+                    if($(this).find('input').val() == ''){
+                      original.reset();
+                      return false;
+                    }
+                  },
+                  width:'75px',
+                  height:'10px',
+                  onblur:'submit'
+                });
+
         },
 
         // Permet de d'être informé lors d'un changement de statut
@@ -509,10 +526,32 @@
         },
 
         customPresence:function(val,settings){
-            alert(val);
-            //Appliquer le statut perso + show + pres
-            //Envoyer le statut perso a Jihane ...
-            //Ajouter le status a la liste
+            if($(".status-custom").length==0){
+                $('#chatstatus .ui-chat-select.ui-chat-status-online').after($('<option></option>')
+                        .attr("value", "online")
+                        .text(val)
+                        .addClass("ui-chat-select ui-chat-status-online status-custom")
+                         );
+                $('#chatstatus .ui-chat-select.ui-chat-status-dnd').after($('<option></option>')
+                        .attr("value", "dnd")
+                        .text(val)
+                        .addClass("ui-chat-select ui-chat-status-dnd status-custom")
+                        );
+                $('#chatstatus .ui-chat-select.ui-chat-status-away').after($('<option></option>')
+                        .attr("value", "away")
+                        .text(val)
+                        .addClass("ui-chat-select ui-chat-status-away status-custom")
+                        );
+
+                $("#chatstatus").selectmenu('refresh');
+
+
+            }
+            else{
+                 $(".status-custom a").text(val);
+            }
+
+            $.icescrum.chat.changeStatus(val, $("#chatstatus").find('option:selected').val());
             return val;
         }
     }
