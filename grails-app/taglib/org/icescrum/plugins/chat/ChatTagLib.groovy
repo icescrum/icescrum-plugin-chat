@@ -15,6 +15,7 @@ class ChatTagLib {
                             server: '${ChatUtils.chatConfig.icescrum.chat.server}',
                             port: '${ChatUtils.chatConfig.icescrum.chat.port}',
                             teamList : '${attrs.teamList}',
+                            emoticonsDir : '${resource(plugin: 'icescrum-chat', dir: '/images/emoticons')}',
                             i18n:{
                                 me:'${message(code:'is.chat.me').encodeAsJavaScript()}',
                                 connectionError:'${message(code:'is.chat.error.server').encodeAsJavaScript()}',
