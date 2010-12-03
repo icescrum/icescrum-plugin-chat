@@ -31,7 +31,7 @@ import grails.converters.JSON
 @Secured('ROLE_ADMIN')
 class AdminChatController {
 
-    static final id = 'chatAdmin'
+    static final id = 'adminChat'
     static ui = true
     static menuBar = [show:[visible:UtilsWebComponents.rendered(renderedOnRoles:"ROLE_ADMIN"),pos:0],title:'is.ui.admin']
     static window =  [title:'is.ui.admin',help:'is.ui.admin.help',toolbar:false]
@@ -39,13 +39,14 @@ class AdminChatController {
     def springSecurityService
 
     def index = {
+
       def server = ChatUtils.chatConfig.icescrum.chat.server
       def port = ChatUtils.chatConfig.icescrum.chat.port
       def resource = ChatUtils.chatConfig.icescrum.chat.resource
       def enabled = 1
       if(ChatUtils.chatConfig.icescrum.chat.enabled)
         enabled = 0
-      render template:'chatAdmin',plugin:'icescrum-chat',
+      render template:'adminChat',plugin:'icescrum-chat',
               model:[server: server,
                       port: port,
                       resource: resource,

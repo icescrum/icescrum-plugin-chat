@@ -24,21 +24,23 @@
                     this.elem.uiChatSmiley.show();
                     var cpt = 0;
                     var emoticontable = "<table>";
-                    for(var emote in jQuery.icescrum.emoticons.emotes){
-                        if(cpt == 0){
-                            emoticontable += "<tr>";
-                        }
-                        emoticontable += "<td><img onclick='jQuery.icescrum.chat.insertEmoticon(\""+this.elem.options.username+"\", \""+jQuery.icescrum.emoticons.emotes[emote][0]+"\")' src='"+jQuery.icescrum.emoticons.icon_folder+"/face-"+emote+".png'/></td>";
-                        cpt++;
-                        if(cpt == 5){
-                            emoticontable += "</tr>";
-                            cpt = 0;
-                        }
-                    }
-                    if(cpt != 0){
-                        emoticontable += "</tr>";
-                    }
-                    emoticontable += "</table>";
+
+//                    for(var emote in jQuery.icescrum.emoticons.emotes){
+//                        if(cpt == 0){
+//                            emoticontable += "<tr>";
+//                        }
+//                        emoticontable += "<td><img onclick=\"jQuery.icescrum.chat.insertEmoticon(this.elem.options.username,jQuery.icescrum.emoticons.emotes[emote][0])\" src=\"jQuery.icescrum.emoticons.icon_folder+\"/face-"+emote+".png"/></td>";
+//                        cpt++;
+//                        if(cpt == 5){
+//                            emoticontable += "</tr>";
+//                            cpt = 0;
+//                        }
+//                    }
+//                    if(cpt != 0){
+//                        emoticontable += "</tr>";
+//                    }
+//                    emoticontable += "</table>";
+
                     $('.ui-chat-emoticons').qtip(
                     {
                         content: emoticontable,

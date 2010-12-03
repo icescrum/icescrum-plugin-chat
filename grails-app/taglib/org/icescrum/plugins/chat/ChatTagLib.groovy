@@ -1,6 +1,6 @@
 package org.icescrum.plugins.chat
-
 import org.icescrum.core.domain.User
+import org.icescrum.core.domain.Task
 
 class ChatTagLib {
 
@@ -30,10 +30,15 @@ class ChatTagLib {
     }
 
     def tooltipChat = { attrs,body ->
+      assert attrs.id
+      def user = User.get(attrs.id)
+      def tasks =  Task.findAllByResponsibleAndState(user,Task.STATE_BUSY,[order:'desc',sort:'lastUpdated'])
+      def content = render(template:'tooltipChat',plugin:'icescrum-chat',model:[m:user,tasks:tasks,nbtasks:tasks.size() > 1 ? 's' : 0])
+
       def params = [
           for:"#chat-user-${attrs.id}",
           positionAdjustX:"10",
-          contentText:"${g.include(controllerName,action:'tooltipChat',params:[id:attrs.id])}",
+          contentText:content,
           hideFixed:"true",
           showDelay:"1000",
           styleWidthMin:"250",
@@ -44,6 +49,7 @@ class ChatTagLib {
           hideWhenEvent:"mouseout",
           hideDelay:"500"
       ]
+
       out << is.tooltip(params)
     }
 }

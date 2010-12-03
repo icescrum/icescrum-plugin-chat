@@ -40,7 +40,7 @@ class ChatController {
       statusListService.getStatus(user).each{
         statusKeys.add(status)
         statusLabels.add(it)
-        statusIcons.add('ui-chat-select ui-chat-status-'+status)
+        statusIcons.add('status-custom ui-chat-select ui-chat-status-'+status)
       }
     }
 
@@ -72,21 +72,6 @@ class ChatController {
   }
 
 
-  def tooltipChat = {
-    if(!params.id) {
-      render(status: 400, contentType:'application/json', text: [notice: [text: message(code:'is.user.error.not.exist')]] as JSON)
-      return
-    }
-    def user = User.get(params.long('id'))
-    if(!user) {
-      render(status: 400, contentType:'application/json', text: [notice: [text: message(code:"is.user.error.not.exist")]] as JSON)
-      return
-    }
-    def tasks =  Task.findAllByResponsibleAndState(user,Task.STATE_BUSY,[order:'desc',sort:'lastUpdated'])
-    render(template:'tooltipUser',plugin:'icescrum-chat',model:[m:user,tasks:tasks,nbtasks:tasks.size() > 1 ? 's' : 0])
-  }
-
-
   def attachConnection = {
     def user = User.get(springSecurityService.principal.id)
     def chatConnection = new ChatConnection()
@@ -97,7 +82,7 @@ class ChatController {
     }
   }
 
-  def showToolTipChat = {
+  def showToolTip = {
     if(params.id)
       render(status:200, text:is.tooltipChat(params,null))
     else

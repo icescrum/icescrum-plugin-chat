@@ -3,10 +3,10 @@
     <is:avatar userid="${m.id}" class="ico"/>
   </div>
   <div class="chat-tooltip-right">
-    <span id="" class="ui-chat-user-status-${m.username} ui-chat-status ui-chat-status-offline" title="">
+    <span class="ui-chat-user-status-${m.username} ui-chat-status ui-chat-status-offline" title="">
       <is:scrumLink controller="user" action='profile' id="${m.username}">${m.firstName} ${m.lastName}</is:scrumLink>
     </span>
-    <!-- <span class="ui-chat-user-status-text">Status perso</span> -->
+    <span class="ui-chat-user-status-text ui-chat-user-status-text-${m.username}"></span>
     <g:if test="${tasks}">
       <span class="chat-user-task-title">
         <strong>
@@ -40,7 +40,9 @@
   </div>
 </div>
 <jq:jquery>
+  var user = $('#chat-user-status-${m.username}');
   $('.chat-tooltip-right .ui-chat-user-status-${m.username}')
         .removeClass()
-        .addClass('ui-chat-user-status-${m.username} ui-chat-status ui-chat-status-'+$('#chat-user-status-${m.username}').attr('status'));
+        .addClass('ui-chat-user-status-${m.username} ui-chat-status ui-chat-status-'+user.attr('status'));
+  $('.chat-tooltip-right .ui-chat-user-status-text-${m.username}').text(user.attr('title'));
 </jq:jquery>

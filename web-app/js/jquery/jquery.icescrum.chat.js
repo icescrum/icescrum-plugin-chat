@@ -253,6 +253,7 @@
                 }
               },
               width:'75px',
+              select:true,
               height:'10px',
               onblur:'submit'
             });
@@ -356,7 +357,6 @@
 
         presenceChanged:function(presence, show){
             if(show == 'disc'){
-                debugger;
                 $.icescrum.chat.o.connection.send($pres({type: "unavailable"}));
                 $.icescrum.chat.o.connection.flush();
                 $.icescrum.chat.o.connection.disconnect();
@@ -505,7 +505,7 @@
 							                        '</div></li>');
                         $.ajax({
                             type: "POST",
-                            url: $.icescrum.o.grailsServer + '/chat/showToolTipChat',
+                            url: $.icescrum.o.grailsServer + '/chat/showToolTip',
                             data: 'id=' + this.id,
                             success:function(data) {
                                 $('.chat-group').append(data);
@@ -560,17 +560,17 @@
                         $("#chatstatus").selectmenu(opts);
                     }else{
                         for each(pres in presList){
-                            $('#chatstatus .ui-chat-select.ui-chat-status-'+pres+':last').text(val);
-                            $('#chatstatus-menu .ui-chat-select.ui-chat-status-'+pres+' a:last').text(val);
+                            $('#chatstatus .status-custom.ui-chat-select.ui-chat-status-'+pres+':first').text(val);
+                            $('#chatstatus-menu .status-custom.ui-chat-select.ui-chat-status-'+pres+' a:first').text(val);
                         }
                     }
                     $.icescrum.chat.changeStatus(val, $("#chatstatus").find('option:selected').val());
+                    $.icescrum.chat._editableSelectList();
                 },
                 error:function() {
                     $.icescrum.renderNotice($.icescrum.chat.o.i18n.customStatusError,'error');
                 }
             });
-            $.icescrum.chat._editableSelectList();
             return val;
         }
     }
