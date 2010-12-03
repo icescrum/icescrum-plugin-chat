@@ -6,7 +6,7 @@
     <span id="" class="ui-chat-user-status-${m.username} ui-chat-status ui-chat-status-offline" title="">
       <is:scrumLink controller="user" action='profile' id="${m.username}">${m.firstName} ${m.lastName}</is:scrumLink>
     </span>
-    <span class="ui-chat-user-status-text">Status perso</span>
+    <!-- <span class="ui-chat-user-status-text">Status perso</span> -->
     <g:if test="${tasks}">
       <span class="chat-user-task-title">
         <strong>
