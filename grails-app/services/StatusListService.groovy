@@ -10,6 +10,6 @@ class StatusListService {
   }
 
   String[] getStatus(def user) {
-    return StatusList.findByUser(user).status.findAll{it != null}.toArray()
+    return StatusList.findByUser(user)?.status?.findAll{it != null}?.toArray()
   }
 }

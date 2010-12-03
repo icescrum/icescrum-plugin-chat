@@ -45,6 +45,19 @@ class ChatController {
             'ui-chat-select ui-chat-status-offline'
     ]
 
+    statusListService.getStatus(user).each{
+      def customStatusKeys = ['online','dnd','away']
+      def customStatusLabel =[it,it,it]
+      def customStatusIcons = [
+              'ui-chat-select ui-chat-status-online',
+              'ui-chat-select ui-chat-status-dnd',
+              'ui-chat-select ui-chat-status-away'
+      ]
+      statusKeys.addAll(customStatusKeys)
+      statusIcons.addAll(customStatusIcons)
+      statusLabels.addAll(customStatusLabel)
+    }
+
     def teamList = []
     def userList = []
     user.teams.each{t->
@@ -58,18 +71,6 @@ class ChatController {
       teamList.add(teamname:t.name, teamid:t.id, users:jsonTeam)
     }
     teamList = teamList as JSON
-
-
-    ////////////////////////////////////////
-    // A SUPPRIMER
-    ////////////////////////////////////////
-
-    println "------------ Status"
-    statusListService.addStatus(user, "huhuhu")
-    statusListService.getStatus(user).each{
-      println it
-    }
-
 
     render(template:'widget/widgetView',plugin:'icescrum-chat', model:[
             teamList:teamList,
@@ -111,5 +112,19 @@ class ChatController {
       render(status:200, text:is.tooltipChat(params,null))
     else
       render(status:400)
+  }
+
+  def saveCustomStatus = {
+    def user = User.get(springSecurityService.principal.id)
+    try {
+      if(user){
+        statusListService.addStatus(user,params.status)
+        render(status:200)
+      }else{
+        render(status:400)
+      }
+    }catch(Exception e){
+      render(status:400)
+    }
   }
 }

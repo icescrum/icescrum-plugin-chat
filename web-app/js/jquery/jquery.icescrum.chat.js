@@ -20,6 +20,7 @@
             emoticonsDir : null,
             i18n:{
                 me:'me',
+                customStatusError:'Error while trying to save your custom status',
                 connectionError:'Error chat server is offline.',
                 connecting:'Connection to chat server in progress.',
                 loginError:'Connection to chat server failed, please check your login / password.',
@@ -43,8 +44,6 @@
             var show = $.cookie("show");
             if (show != null && show != 'disc'){
                 this._initConnect();
-            }else{
-                this._disconnected();
             }
         },
 
@@ -128,9 +127,14 @@
             $.icescrum.chat.o.connection.addTimedHandler(4000,$.icescrum.chat._onPeriodicPauseStateCheck);
             $.icescrum.chat.o.connected = true;
             if($.icescrum.chat.o.sendPresence){
-                $.icescrum.chat.o.connection.send($pres().tree());
+                if ($.cookie("show") != null){
+                    $.icescrum.chat.changeStatus($.cookie("presence"),$.cookie("show"));
+                }else{
+                    $.icescrum.chat.o.connection.send($pres().tree());
+                }
             }
             console.log("[icescrum-chat] Connected ready to chat");
+            $.icescrum.chat._editableSelectList();
             $(window).trigger("connected");
         },
 
@@ -234,6 +238,10 @@
         _editableSelectList:function(){
             $('#chatstatus-button .ui-selectmenu-status')
             .bind('mousedown', function(event){
+                event.stopPropagation();
+            })
+            .bind('keydown', function(event){
+                console.log('ezf');
                 event.stopPropagation();
             })
             .editable($.icescrum.chat.customPresence,{
@@ -348,6 +356,7 @@
 
         presenceChanged:function(presence, show){
             if(show == 'disc'){
+                debugger;
                 $.icescrum.chat.o.connection.send($pres({type: "unavailable"}));
                 $.icescrum.chat.o.connection.flush();
                 $.icescrum.chat.o.connection.disconnect();
@@ -413,7 +422,6 @@
             $.icescrum.chat.o.connection.send(pres.tree());
             $.cookie("show", show);
             $.cookie("presence", presence);
-            $.icescrum.chat._editableSelectList();
         },
 
         // Change l'image et le tool tip du statut
@@ -527,32 +535,42 @@
         },
 
         customPresence:function(val,settings){
-            if($(".status-custom").length==0){
-                $('#chatstatus .ui-chat-select.ui-chat-status-online').after($('<option></option>')
-                        .attr("value", "online")
-                        .text(val)
-                        .addClass("ui-chat-select ui-chat-status-online status-custom")
-                         );
-                $('#chatstatus .ui-chat-select.ui-chat-status-dnd').after($('<option></option>')
-                        .attr("value", "dnd")
-                        .text(val)
-                        .addClass("ui-chat-select ui-chat-status-dnd status-custom")
-                        );
-                $('#chatstatus .ui-chat-select.ui-chat-status-away').after($('<option></option>')
-                        .attr("value", "away")
-                        .text(val)
-                        .addClass("ui-chat-select ui-chat-status-away status-custom")
-                        );
+            $.ajax({type:'POST',
+                global:false,
+                data:'status='+val,
+                url: $.icescrum.o.grailsServer + '/chat/saveCustomStatus',
+                success:function() {
+                    var presList = ['online','dnd','away'];
+                    var pres;
 
-                $("#chatstatus").selectmenu('refresh');
-
-
-            }
-            else{
-                 $(".status-custom a").text(val);
-            }
-
-            $.icescrum.chat.changeStatus(val, $("#chatstatus").find('option:selected').val());
+                    if($("#chatstatus .status-custom").length < 9){
+                        for each(pres in presList){
+                            var newpres = $('<option></option>')
+                                .attr("value", pres)
+                                .text(val)
+                                .addClass("ui-chat-select ui-chat-status-"+pres+" status-custom");
+                            if ($('#chatstatus-button').hasClass("ui-chat-status-"+pres))
+                            {
+                                newpres.attr("selected","selected");
+                            }
+                            $('#chatstatus .ui-chat-select.ui-chat-status-'+pres+':last').after(newpres);
+                        }
+                        var opts = $("#chatstatus").selectmenu('settings');
+                        $("#chatstatus").selectmenu('destroy');
+                        $("#chatstatus").selectmenu(opts);
+                    }else{
+                        for each(pres in presList){
+                            $('#chatstatus .ui-chat-select.ui-chat-status-'+pres+':last').text(val);
+                            $('#chatstatus-menu .ui-chat-select.ui-chat-status-'+pres+' a:last').text(val);
+                        }
+                    }
+                    $.icescrum.chat.changeStatus(val, $("#chatstatus").find('option:selected').val());
+                },
+                error:function() {
+                    $.icescrum.renderNotice($.icescrum.chat.o.i18n.customStatusError,'error');
+                }
+            });
+            $.icescrum.chat._editableSelectList();
             return val;
         }
     }
