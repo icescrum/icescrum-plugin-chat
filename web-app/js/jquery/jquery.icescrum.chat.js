@@ -116,6 +116,8 @@
             $.icescrum.chat.o.connected = false;
             $.icescrum.chat.displayRoster();
             $(window).trigger("disconnected");
+            $('#chat-roster-list').html('');
+            $('.nb-contacts').html('');
         },
 
         _connected:function(){
