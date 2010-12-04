@@ -258,6 +258,7 @@ $(document).ready(function(){
                     .attr('id', 'ui-chat-input-box-'+options.username)
                     .appendTo(uiChatInputWrapper)
                     .focus(function(){
+                       self.uiChatTitleBar.addClass("ui-state-focus");
                        self.uiChatTitleBar.removeClass('ui-chat-header-unread');
                     })
                     .keyup(function(event) {
