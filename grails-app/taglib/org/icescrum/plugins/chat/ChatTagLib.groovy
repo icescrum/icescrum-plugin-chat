@@ -5,17 +5,23 @@ import org.icescrum.core.domain.Task
 class ChatTagLib {
 
   static namespace = 'is'
-    def springSecurityService
 
+    def springSecurityService
+    def chatService
 
     def loadChatJSContext = { attrs,body ->
 
       def user = User.get(springSecurityService.principal.id)
+      def chatPreferences = chatService.getChatPreferences(user)
       def jsCode = """\$.icescrum.chat.init({
                             server: '${ChatUtils.chatConfig.icescrum.chat.server}',
                             port: '${ChatUtils.chatConfig.icescrum.chat.port}',
                             teamList : '${attrs.teamList}',
                             emoticonsDir : '${resource(plugin: 'icescrum-chat', dir: '/images/emoticons')}',
+                            currentStatus : {
+                                show:'${chatPreferences.show}',
+                                presence:'${chatPreferences.presence?chatPreferences.presence.encodeAsJavaScript():''}'
+                            },
                             i18n:{
                                 alertNewMessages:'${message(code:'is.chat.ui.alertNewMessages').encodeAsJavaScript()}',
                                 me:'${message(code:'is.chat.me').encodeAsJavaScript()}',

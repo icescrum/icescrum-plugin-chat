@@ -23,7 +23,7 @@ class ChatController {
 
   def teamService
   def springSecurityService
-  def statusListService
+  def chatService
 
   def index = {
 
@@ -37,9 +37,9 @@ class ChatController {
       statusKeys.add(status)
       statusLabels.add(g.message(code:'is.chat.status.'+status))
       statusIcons.add('ui-chat-select ui-chat-status-'+status)
-      statusListService.getStatus(user).each{
+      chatService.getChatPreferences(user)?.statusList?.findAll{it != null}?.toArray()?.each{
         statusKeys.add(status)
-        statusLabels.add(it)
+        statusLabels.add(it.encodeAsJavaScript())
         statusIcons.add('status-custom ui-chat-select ui-chat-status-'+status)
       }
     }
@@ -89,11 +89,14 @@ class ChatController {
       render(status:400)
   }
 
-  def saveCustomStatus = {
+  def saveStatus = {
     def user = User.get(springSecurityService.principal.id)
     try {
       if(user){
-        statusListService.addStatus(user,params.status)
+        if (params.boolean('custom')){
+          chatService.addStatus(user,params.presence)
+        }
+        chatService.setCurrentStatus(user,params.show,params.presence)
         render(status:200)
       }else{
         render(status:400)

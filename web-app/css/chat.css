@@ -288,5 +288,9 @@
 .ui-chat-header-unread {
     background-image:url("../images/ui-bg_highlight-soft_100_f8da4e_1x100.png");
     background-color:#f8da4e;
+}
 
+.ui-selectmenu-status input {
+    font-size:10px;
+    line-height:8px;
 }
