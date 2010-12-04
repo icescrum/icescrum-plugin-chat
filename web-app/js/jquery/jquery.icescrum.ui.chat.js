@@ -1,9 +1,28 @@
+var originalTitle = null;
+var windowFocus = true;
+var displayAlert = false;
+
+$(document).ready(function(){
+	$([window, document]).blur(function(){
+		windowFocus = false;
+	}).focus(function(){
+		windowFocus = true;
+        displayAlert = false;
+        if (originalTitle != null){
+            document.title = originalTitle;
+            originalTitle = null;
+        }
+	});
+});
+
+
 (function($){
 
     $.widget("ui.chat", {
 	    options: {
             id: null,
             title: "No Title",
+            alertNewMessages: "new messages",
             status: null,
             username: null,
             hidden:false,
@@ -16,34 +35,22 @@
             stateSent: function(username, state){},
 
             chatManager: {
-
                 init: function(elem) {
                     this.elem = elem;
                     this.elem.uiChatComposing.hide();
                     this.elem.uiChatPaused.hide();
                     this.elem.uiChatSmiley.show();
-                    var cpt = 0;
-                    var emoticontable = "<table>";
-
-//                    for(var emote in jQuery.icescrum.emoticons.emotes){
-//                        if(cpt == 0){
-//                            emoticontable += "<tr>";
-//                        }
-//                        emoticontable += "<td><img onclick=\"jQuery.icescrum.chat.insertEmoticon(this.elem.options.username,jQuery.icescrum.emoticons.emotes[emote][0])\" src=\"jQuery.icescrum.emoticons.icon_folder+\"/face-"+emote+".png"/></td>";
-//                        cpt++;
-//                        if(cpt == 5){
-//                            emoticontable += "</tr>";
-//                            cpt = 0;
-//                        }
-//                    }
-//                    if(cpt != 0){
-//                        emoticontable += "</tr>";
-//                    }
-//                    emoticontable += "</table>";
-
+                    var emoticons = $('<div></div>');
+                    emoticons.addClass('ui-chat-emoticons-list');
+                    for(var emote in jQuery.icescrum.emoticons.emotes){
+                        var emoticon = $('<img/>')
+                                        .attr('src',jQuery.icescrum.emoticons.icon_folder+"/face-"+emote+".png")
+                                        .attr('onclick',"$.icescrum.chat.insertEmoticon('"+this.elem.options.username+"',$.icescrum.emoticons.emotes['"+emote+"'][0])");
+                        emoticons.append(emoticon);
+                    }
                     $('.ui-chat-emoticons').qtip(
                     {
-                        content: emoticontable,
+                        content: emoticons,
                         hide: { when: { event:'click mouseout' }, fixed: true, delay: 100 },
                         position: {
                            target: 'mouse',
@@ -72,6 +79,12 @@
                         if (self.elem.uiChatContent.is(':hidden')){
                             self.elem.uiChat.effect("bounce", {times:3}, 300);
                         }
+                    }
+                    if (!self.elem.uiChatTitleBar.hasClass("ui-state-focus")){
+                        self.elem.uiChatTitleBar.addClass("ui-chat-header-unread");
+                    }
+                    if (!windowFocus && originalTitle == null){
+                        this.elem._alertDocument(true);
                     }
                 },
 
@@ -118,6 +131,29 @@
             }
 	    },
 
+        _alertDocument: function(firstTime){
+            var self = this;
+            if (firstTime){
+                originalTitle = document.title;
+                $.doTimeout(1000,function(){
+                    return self._alertDocument(false);
+                });
+            }
+            if(!windowFocus){
+                if (!displayAlert){
+                    document.title = self.options.alert;
+                    displayAlert = true;
+                }else{
+                    document.title = originalTitle;
+                    displayAlert = false;
+                }
+                return true;
+            }else{
+                document.title = originalTitle;
+                return false;
+            }
+        },
+
         toggleContent: function() {
             this.uiChatContent.toggle();
             if(this.uiChatContent.is(":visible")) {
@@ -137,7 +173,7 @@
             var uiChat = self.uiChat = $('<div></div>')
                      .addClass('ui-widget ui-corner-top ui-chat')
                      .attr('outline', 0)
-                     .focusin(function(){ self.uiChatTitleBar.addClass('ui-state-focus');})
+                     .focusin(function(){self.uiChatTitleBar.addClass('ui-state-focus');})
                      .focusout(function(){ self.uiChatTitleBar.removeClass('ui-state-focus');})
                      .appendTo(document.body);
 
@@ -221,6 +257,9 @@
                     .addClass('ui-widget-content ui-chat-input-box ui-corner-all')
                     .attr('id', 'ui-chat-input-box-'+options.username)
                     .appendTo(uiChatInputWrapper)
+                    .focus(function(){
+                       self.uiChatTitleBar.removeClass('ui-chat-header-unread');
+                    })
                     .keyup(function(event) {
                         if(event.keyCode) {
                             var msg = $.trim($(this).val());

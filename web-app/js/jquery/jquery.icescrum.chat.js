@@ -20,9 +20,10 @@
             emoticonsDir : null,
             i18n:{
                 me:'me',
+                alertNewMessages:'new messages',
                 customStatusError:'Error while trying to save your custom status',
                 connectionError:'Error chat server is offline.',
-                connecting:'Connection to chat server in progress.',
+                connecting:'Connecting...',
                 loginError:'Connection to chat server failed, please check your login / password.',
                 disconnected:'You are disconnected from chat server.',
                 connected:'Your are connected on chat server.'
@@ -33,7 +34,8 @@
 
         // Initialisation de la connexion
         init:function(options) {
-            // Initialise l'object o avec les attributs/valeurs de default
+            $.icescrum.debug(true);
+            //Initialise l'object o avec les attributs/valeurs de default
             this.o = jQuery.extend({}, this.defaults, options);
             this._nbMaxChat();
             $(window).bind('resize.chat', function (){
@@ -41,20 +43,27 @@
             }).trigger('resize');
             this.o.sendPresence = true;
             $.icescrum.emoticons.initialize(this.o.emoticonsDir);
-            var show = $.cookie("show");
-            if (show != null && show != 'disc'){
+
+            var show = $.cookie("chat_show") ? $.cookie("chat_show") : 'online';
+            if (show != 'disc'){
                 this._initConnect();
             }
         },
 
         _initConnect:function(){
             this.o.connection = new Strophe.Connection("http://"+this.o.server+":"+this.o.port+"/http-bind/");
+
+            $("#chatstatus-button .ui-selectmenu-status").text(this.o.i18n.connecting);
+            $("#chatstatus-button").removeClass('ui-chat-status-away ui-chat-status-chat ui-chat-status-online ui-chat-status-xa ui-chat-status-dnd').addClass('ui-chat-select ui-chat-status-offline');
             console.log("[icescrum-chat] Connecting to server...");
+
             if (this.o.connection == null){
                 console.log("[icescrum-chat] Error not connected to server");
                 $.icescrum.renderNotice(this.o.i18n.connectionError,'error');
             }
+
             console.log("[icescrum-chat] Login from iceScrum server");
+
             $.ajax({type:'POST',
                 global:false,
                 url: $.icescrum.o.grailsServer + '/chat/attachConnection',
@@ -108,7 +117,7 @@
         },
 
         _disconnected:function(){
-            $("#chatstatus").selectmenu("value", 3);
+            $("#chatstatus").selectmenu("value",$("#chatstatus option:last").index());
             $('.ui-chat-status')
                     .removeClass('ui-chat-status-away ui-chat-status-xa ui-chat-status-dnd ui-chat-status-chat')
                     .addClass('ui-chat-status-offline');
@@ -126,13 +135,27 @@
             $.icescrum.chat.o.connection.addHandler($.icescrum.chat._onReceiveServiceDiscoveryGet, null, 'iq', 'get', null, null);
             $.icescrum.chat.o.connection.addTimedHandler(4000,$.icescrum.chat._onPeriodicPauseStateCheck);
             $.icescrum.chat.o.connected = true;
+
             if($.icescrum.chat.o.sendPresence){
-                if ($.cookie("show") != null){
-                    $.icescrum.chat.changeStatus($.cookie("presence"),$.cookie("show"));
+                var show = $.cookie("chat_show");
+                var pres = $.cookie("chat_presence");
+                var found = false;
+                if (show != null &&  pres != null){
+                    $('#chatstatus .ui-chat-status-'+show).each(function(){
+                        if($(this).text() == pres){
+                            $("#chatstatus").selectmenu('value',$(this).index());
+                            $("#chatstatus-button").removeClass('ui-chat-status-offline');
+                            found = true;
+                        }
+                    });
+                }
+                if (found){
+                    $.icescrum.chat.changeStatus(pres,show);
                 }else{
                     $.icescrum.chat.o.connection.send($pres().tree());
                 }
             }
+
             console.log("[icescrum-chat] Connected ready to chat");
             $.icescrum.chat._editableSelectList();
             $(window).trigger("connected");
@@ -165,7 +188,8 @@
         _onChatMessage:function(from,text){
             console.log("[icescrum-chat] Message received from "+from);
             var extractedText = (text[0].text) ? text[0].text : (text[0].textContent) ? text[0].textContent : "";
-            $("#chat-" + from).chat("option", "chatManager").addMsg(from, extractedText);
+            var name = $('#chat-user-status-'+from+' a').attr('firstname') ? $('#chat-user-status-'+from+' a').attr('firstname') : from;
+            $("#chat-" + from).chat("option", "chatManager").addMsg(name, extractedText);
         },
 
         // Permet de d'être informé lors d'un changement de statut
@@ -306,11 +330,12 @@
                 var el = document.createElement('div');
                 el.setAttribute('id', id);
                 $(el).chat({id : id,
+                            alert : this.o.i18n.alertNewMessages,
                             username : user,
-                            status : $('#chat-user-status-'+user).attr('status'),
+                            status : $('#chat-user-status-'+user).attr('status') ? $('#chat-user-status-'+user).attr('status') : 'offline',
                             hidden : false,
                             width : this.o.width,
-                            title : user,
+                            title : $('#chat-user-status-'+user+' a').attr('name') ? $('#chat-user-status-'+user+' a').attr('name') : user,
                             offset : this._getNextOffset(),
                             messageSent : this.sendMessage,
                             chatClosed : this.closeChat,
@@ -361,14 +386,11 @@
                 $.icescrum.chat.o.connection.flush();
                 $.icescrum.chat.o.connection.disconnect();
                 $.icescrum.chat._disconnected();
-                $.cookie("show", show);
+                $.cookie("chat_show", show);
             }else{
                 if(!$.icescrum.chat.o.connected){
-                     $(window).bind("connected", function(){
-                                    $.icescrum.chat.changeStatus(presence, show);
-                                    $(window).unbind("connected");
-                     });
-                     $.icescrum.chat.o.sendPresence = false;
+                     $.cookie("chat_show", show);
+                     $.cookie("chat_presence", presence);
                      $.icescrum.chat._initConnect();
                 }
                 else{
@@ -420,8 +442,8 @@
                         .t(presence).up();
             }
             $.icescrum.chat.o.connection.send(pres.tree());
-            $.cookie("show", show);
-            $.cookie("presence", presence);
+            $.cookie("chat_show", show);
+            $.cookie("chat_presence", presence);
         },
 
         // Change l'image et le tool tip du statut
@@ -499,8 +521,8 @@
                     if($.inArray(this.username, jabberList) > -1) {
                         nbContacts ++;
                         $('#team-'+teamid).append('<li><div id="chat-user-status-' + this.username + '" class="ui-chat-user-status-'+this.username+' ui-chat-status ui-chat-status-offline" status="offline" title="">' +
-								                    '<a id="chat-user-'+this.id+'" disabled="true" href="javascript:;" class="chat-user-link" username="'+this.username+'" name="'+this.name+'">' +
-                                                        $.icescrum.chat.truncate(this.username + " ("+this.name+")", 35) +
+								                    '<a id="chat-user-'+this.id+'" disabled="true" href="javascript:;" class="chat-user-link" username="'+this.username+'" name="'+$.icescrum.chat.truncate(this.firstname +' '+this.lastname, 35)+'" firstname="'+this.firstname+'">' +
+                                                        $.icescrum.chat.truncate(this.firstname +' '+this.lastname, 35) +
                                                     '</a>' +
 							                        '</div></li>');
                         $.ajax({
