@@ -263,6 +263,11 @@
             $('#chatstatus-button .ui-selectmenu-status')
             .bind('mousedown', function(event){
                 event.stopPropagation();
+                return false;
+            })
+            .bind('click', function(event){
+                event.stopPropagation();
+                return false;
             })
             .bind('keydown', function(event){
                 console.log('ezf');
