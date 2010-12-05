@@ -4,7 +4,7 @@
   </div>
   <div class="chat-tooltip-right">
     <span class="ui-chat-user-status-${m.username} ui-chat-status ui-chat-status-offline" title="">
-      <is:scrumLink controller="user" action='profile' id="${m.username}">${m.firstName} ${m.lastName}</is:scrumLink>
+      <is:scrumLink controller="user" action='profile' id="${m.username}">${m.firstName.encodeAsHTML()} ${m.lastName.encodeAsHTML()}</is:scrumLink>
     </span>
     <span class="ui-chat-user-status-text ui-chat-user-status-text-${m.username}"></span>
     <g:if test="${tasks}">

@@ -1,3 +1,4 @@
+//gestion des alertes de messages
 var originalTitle = null;
 var windowFocus = true;
 var displayAlert = false;
