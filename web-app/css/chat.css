@@ -96,9 +96,10 @@
     border-color: #6699FF;
 }
 
-.ui-chat-msg {
+.ui-chat-msg,.ui-chat-msg-tab {
     float: left;
     clear: both;
+    margin-left:5px;
 }
 
 .ui-chat-msg span {

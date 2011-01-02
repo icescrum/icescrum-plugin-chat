@@ -70,8 +70,11 @@ $(document).ready(function(){
                     var self = this;
                     var chat = self.elem.uiChatLog;
                     var e = document.createElement('div');
-                    $(e).html("<span>" + name +":</span> " + msg)
-                    .addClass("ui-chat-msg");
+                    if (chat.find('.ui-chat-msg:last span').text() == (name +":")){
+                        $(e).html(""+msg).addClass("ui-chat-msg-tab");
+                    }else{
+                        $(e).html("<span>" + name +":</span> " + msg).addClass("ui-chat-msg");
+                    }
                     chat.append(e);
                     self._scrollToBottom();
                     if(!self.elem.uiChatTitleBar.hasClass("ui-state-focus") && !self.highlightLock) {
