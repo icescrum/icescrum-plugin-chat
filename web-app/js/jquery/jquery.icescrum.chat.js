@@ -30,7 +30,8 @@
                 connecting:'Connecting...',
                 loginError:'Connection to chat server failed, please check your login / password.',
                 disconnected:'You are disconnected from chat server.',
-                connected:'Your are connected on chat server.'
+                connected:'Your are connected on chat server.',
+                teamNonIcescrum:'External contacts'
             }
         },
 
@@ -259,7 +260,7 @@
                 }
                 jabberList.push($.icescrum.chat._retrieveUsername($(this).attr('jid')));
             });
-            $.icescrum.chat.mergeContactLists(jabberList);
+            $.icescrum.chat.mergeContactLists(jabberList,true);
         },
 
         _editableSelectList:function(){
@@ -517,29 +518,24 @@
                 console.log("[icescrum-chat] " + username + " is " + state);
         },
 
-        mergeContactLists:function(jabberList) {
-            var teamListObject = $.parseJSON($.icescrum.chat.o.teamList);
+        mergeContactLists:function(jabberList,displayExternalContacts) {
+            var teamList = $.parseJSON($.icescrum.chat.o.teamList);
             console.log("[icescrum-chat] Merging team members and jabber roster");
-            var nbContacts = 0;
-            $(teamListObject).each(function () {
+            $.icescrum.chat.addTeamContacts(teamList,jabberList);
+            $.icescrum.chat.putContactLinks();
+            if(displayExternalContacts) {
+                $.icescrum.chat.addJabberContacts(jabberList);
+            }
+            $.icescrum.chat.finalizeContactList();
+        },
+
+        addTeamContacts:function(teamList, jabberList){
+           $(teamList).each(function () {
                 var teamid = this.teamid;
                 $('#chat-roster-list').append('<ul class="chat-group" id="team-'+teamid+'"><span class="chat-group-title">'+this.teamname+'</span>');
                 $(this.users).each(function(){
                     if($.inArray(this.username, jabberList) > -1) {
-                        nbContacts ++;
-                        $('#team-'+teamid).append('<li><div id="chat-user-status-' + this.username + '" class="ui-chat-user-status-'+this.username+' ui-chat-status ui-chat-status-offline" status="offline" title="">' +
-								                    '<a id="chat-user-'+this.id+'" disabled="true" href="javascript:;" class="chat-user-link" username="'+this.username+'" name="'+$.icescrum.chat.truncate(this.firstname +' '+this.lastname, 35)+'" firstname="'+this.firstname+'">' +
-                                                        $.icescrum.chat.truncate(this.firstname +' '+this.lastname, 35) +
-                                                    '</a>' +
-							                        '</div></li>');
-                        $.ajax({
-                            type: "POST",
-                            url: $.icescrum.o.grailsServer + '/chat/showToolTip',
-                            data: 'id=' + this.id,
-                            success:function(data) {
-                                $('.chat-group').append(data);
-                            }
-                        });
+                        $.icescrum.chat.addTeamContact(this, teamid);
                     }
                     else {
                         console.log("[icescrum-chat] Team member not found in jabber roster : " + this.username + " (" + this.name + ")");
@@ -547,13 +543,26 @@
                 });
                 $('#chat-roster-list').append('</ul>');
             });
-            $('.nb-contacts').html('('+nbContacts+')');
-            $.icescrum.chat.putContactLinks();
-            $('.chat-group').each(function(){
-               if($(this).find('li').length == 0) {
-                   $(this).remove();
-               }
+        },
+
+        addTeamContact:function(user,teamid) {
+            $('#team-'+teamid).append('<li><div id="chat-user-status-' + user.username + '" class="ui-chat-user-status-'+user.username+' ui-chat-status ui-chat-status-offline" status="offline" title="">' +
+								        '<a id="chat-user-'+user.id+'" disabled="true" href="javascript:;" class="chat-user-link" username="'+user.username+'" name="'+$.icescrum.chat.truncate(user.firstname +' '+user.lastname, 35)+'" firstname="'+user.firstname+'">' +
+                                            $.icescrum.chat.truncate(user.firstname +' '+user.lastname, 35) +
+                                        '</a>' +
+							          '</div></li>');
+            $.ajax({
+                type: "POST",
+                url: $.icescrum.o.grailsServer + '/chat/showToolTip',
+                data: 'id=' + user.id,
+                success:function(data) {
+                    $('.chat-group').append(data);
+                }
             });
+        },
+
+        addJabberContacts:function(jabberList) {
+            $('#chat-roster-list').append('<ul class="chat-group" id="team-non-icescrum"><span class="chat-group-title">'+$.icescrum.chat.o.i18n.teamNonIcescrum+'</span>');
         },
 
         putContactLinks:function() {
@@ -561,6 +570,20 @@
                 $.icescrum.chat.createOrOpenChat('chat-'+$(this).attr('username'),$(this).attr('username'),true);
                 event.preventDefault();
             });
+        },
+
+        finalizeContactList:function() {
+            var nbContacts = 0;
+            $('.chat-group').each(function(){
+               var nbTeamContacts = $(this).find('li').length;
+               if(nbTeamContacts == 0) {
+                   $(this).remove();
+               }
+               else{
+                   nbContacts += nbTeamContacts;
+               }
+            });
+            $('.nb-contacts').html('('+nbContacts+')');
         },
 
         customPresence:function(val,settings){

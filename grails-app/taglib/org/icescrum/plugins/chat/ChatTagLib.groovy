@@ -23,6 +23,7 @@ class ChatTagLib {
                                 presence:'${chatPreferences.presence?chatPreferences.presence.encodeAsJavaScript():''}'
                             },
                             i18n:{
+                                teamNonIcescrum:'${message(code:'is.chat.ui.teamNonIcescrum').encodeAsJavaScript()}',
                                 alertNewMessages:'${message(code:'is.chat.ui.alertNewMessages').encodeAsJavaScript()}',
                                 me:'${message(code:'is.chat.me').encodeAsJavaScript()}',
                                 connectionError:'${message(code:'is.chat.error.server').encodeAsJavaScript()}',
