@@ -258,7 +258,7 @@
                 if ($(this).attr('ask')) {
                         return true;
                 }
-                jabberList.push($.icescrum.chat._retrieveUsername($(this).attr('jid')));
+                jabberList.push({jid:$(this).attr('jid'), name:$(this).attr('name')});
             });
             $.icescrum.chat.mergeContactLists(jabberList,true);
         },
@@ -522,10 +522,10 @@
             var teamList = $.parseJSON($.icescrum.chat.o.teamList);
             console.log("[icescrum-chat] Merging team members and jabber roster");
             $.icescrum.chat.addTeamContacts(teamList,jabberList);
-            $.icescrum.chat.putContactLinks();
             if(displayExternalContacts) {
-                $.icescrum.chat.addJabberContacts(jabberList);
+                $.icescrum.chat.addJabberContacts(teamList,jabberList);
             }
+            $.icescrum.chat.putContactLinks();
             $.icescrum.chat.finalizeContactList();
         },
 
@@ -534,12 +534,12 @@
                 var teamid = this.teamid;
                 $('#chat-roster-list').append('<ul class="chat-group" id="team-'+teamid+'"><span class="chat-group-title">'+this.teamname+'</span>');
                 $(this.users).each(function(){
-                    if($.inArray(this.username, jabberList) > -1) {
-                        $.icescrum.chat.addTeamContact(this, teamid);
-                    }
-                    else {
-                        console.log("[icescrum-chat] Team member not found in jabber roster : " + this.username + " (" + this.name + ")");
-                    }
+                    var user = this;
+                    $(jabberList).each(function () {
+                        if(Strophe.getNodeFromJid(this.jid) == user.username && Strophe.getDomainFromJid(this.jid) == $.icescrum.chat.o.server) {
+                            $.icescrum.chat.addTeamContact(user, teamid);
+                        }
+                    });
                 });
                 $('#chat-roster-list').append('</ul>');
             });
@@ -561,8 +561,41 @@
             });
         },
 
-        addJabberContacts:function(jabberList) {
+        addJabberContacts:function(teamList, jabberList) {
             $('#chat-roster-list').append('<ul class="chat-group" id="team-non-icescrum"><span class="chat-group-title">'+$.icescrum.chat.o.i18n.teamNonIcescrum+'</span>');
+            $(jabberList).each(function(){
+                var jabberUser = this;
+                if(Strophe.getDomainFromJid(jabberUser.jid) != $.icescrum.chat.o.server) {
+                   $.icescrum.chat.addJabberContact(jabberUser);
+                }
+                else {
+                    var found = false;
+                    $(teamList).each(function(){
+                        $(this.users).each(function(){
+                            if(this.username == Strophe.getNodeFromJid(jabberUser.jid)) {
+                                found = true;
+                            }
+                        });
+                    });
+                    if(!found) {
+                        $.icescrum.chat.addJabberContact(jabberUser);
+                    }
+                }
+            });
+        },
+
+        addJabberContact:function(jabberUser){
+            var displayedName = jabberUser.name;
+            if(displayedName == null || displayedName == 'null') {
+                displayedName = Strophe.getNodeFromJid(jabberUser.jid);
+            }
+            displayedName += ' (' + Strophe.getDomainFromJid(jabberUser.jid) + ') ';
+            var username = Strophe.getNodeFromJid(jabberUser.jid);
+            $('#team-non-icescrum').append('<li><div id="chat-user-status-' + username + '" class="ui-chat-user-status-'+username+' ui-chat-status ui-chat-status-offline" status="offline" title="">' +
+								        '<a id="chat-user-'+jabberUser.jid+'" disabled="true" href="javascript:;" class="chat-user-link" username="'+username+'" name="'+$.icescrum.chat.truncate(displayedName, 35)+'" firstname="'+displayedName+'">' +
+                                            $.icescrum.chat.truncate(displayedName, 35) +
+                                        '</a>' +
+							          '</div></li>');
         },
 
         putContactLinks:function() {
