@@ -3,10 +3,10 @@
     <is:avatar userid="${m.id}" class="ico"/>
   </div>
   <div class="chat-tooltip-right">
-    <span class="ui-chat-user-status-${m.username} ui-chat-status ui-chat-status-offline" title="">
-      <is:scrumLink controller="user" action='profile' id="${m.username}">${m.firstName.encodeAsHTML()} ${m.lastName.encodeAsHTML()}</is:scrumLink>
+    <span class="ui-chat-user-status-${escapedJid} ui-chat-status ui-chat-status-offline" title="">
+      <is:scrumLink controller="user" action='profile' id="${escapedJid}">${m.firstName.encodeAsHTML()} ${m.lastName.encodeAsHTML()}</is:scrumLink>
     </span>
-    <span class="ui-chat-user-status-text ui-chat-user-status-text-${m.username}"></span>
+    <span class="ui-chat-user-status-text ui-chat-user-status-text-${escapedJid}"></span>
     <g:if test="${tasks}">
       <span class="chat-user-task-title">
         <strong>
@@ -33,16 +33,16 @@
     <is:button
           type="link"
           class="chat-user-link"
-          username="${m.username}"
+          jid="${escapedJid}"
           disabled="true"
           value="${message(code:'is.chat.ui.talk')}"
           history="false"/>
   </div>
 </div>
 <jq:jquery>
-  var user = $('#chat-user-status-${m.username}');
-  $('.chat-tooltip-right .ui-chat-user-status-${m.username}')
+  var user = $('#chat-user-status-${escapedJid}');
+  $('.chat-tooltip-right .ui-chat-user-status-${escapedJid}')
         .removeClass()
-        .addClass('ui-chat-user-status-${m.username} ui-chat-status ui-chat-status-'+user.attr('status'));
-  $('.chat-tooltip-right .ui-chat-user-status-text-${m.username}').text(user.attr('title'));
+        .addClass('ui-chat-user-status-${escapedJid} ui-chat-status ui-chat-status-'+user.attr('status'));
+  $('.chat-tooltip-right .ui-chat-user-status-text-${escapedJid}').text(user.attr('title'));
 </jq:jquery>

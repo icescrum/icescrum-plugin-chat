@@ -95,13 +95,6 @@
             }
         },
 
-        // Extrait le userName du JID
-        // existe peut être-déjà ?
-        // http://code.stanziq.com/strophe/strophejs/doc/1.0.1/files/core-js.html#Strophe.getNodeFromJid
-        _retrieveUsername:function(jid){
-            return jid.split('@')[0];
-        },
-
         // Retourne le décalage absolu par rapport au bord droit
         // pour positionner la prochaine fenêtre
         _getNextOffset:function() {
@@ -170,40 +163,38 @@
         // - ajout du message à la fenêtre
         // - prend en compte le changement d'état
         _onReceiveMessage:function(msg){
-            var from = msg.getAttribute('from');
+            var escapedJid = $.icescrum.chat.escapeJid(Strophe.getBareJidFromJid(msg.getAttribute('from')));
             var to = msg.getAttribute('to');
             var type = msg.getAttribute('type');
             var body = msg.getElementsByTagName('body');
-            var username = $.icescrum.chat._retrieveUsername(from);
-            var chatId = 'chat-'+username;
+            var chatId = 'chat-'+escapedJid;
             if (type == "chat") {
                 if(body.length > 0) {
-                    $.icescrum.chat.createOrOpenChat(chatId,username,false);
-                    $.icescrum.chat._onChatMessage(username,body);
+                    $.icescrum.chat.createOrOpenChat(chatId,escapedJid,false);
+                    $.icescrum.chat._onChatMessage(escapedJid,body);
                 }
                 if($.icescrum.chat.o.chatList.indexOf(chatId) != -1) {
-                    $.icescrum.chat.manageStateReception(msg, username);
+                    $.icescrum.chat.manageStateReception(msg, escapedJid);
                 }
             }
             return true;
         },
 
         // Ajoute le message à la fenêtre de chat
-        _onChatMessage:function(from,text){
-            console.log("[icescrum-chat] Message received from "+from);
+        _onChatMessage:function(escapedJid,text){
+            console.log("[icescrum-chat] Message received from "+$.icescrum.chat.unescapeJid(escapedJid));
             var extractedText = (text[0].text) ? text[0].text : (text[0].textContent) ? text[0].textContent : "";
-            var name = $('#chat-user-status-'+from+' a').attr('firstname') ? $('#chat-user-status-'+from+' a').attr('firstname') : from;
-            $("#chat-" + from).chat("option", "chatManager").addMsg(name, extractedText);
+            var name = $('#chat-user-status-'+escapedJid+' a').attr('firstname') ? $('#chat-user-status-'+escapedJid+' a').attr('firstname') : escapedJid;
+            $("#chat-" + escapedJid).chat("option", "chatManager").addMsg(name, extractedText);
         },
 
         // Permet de d'être informé lors d'un changement de statut
         _onPresenceChange:function(presence){
             var show = $(presence).find('show').text();
             var status = $(presence).find('status').text();
-            var from = $(presence).attr('from');
+            var escapedJid = $.icescrum.chat.escapeJid(Strophe.getBareJidFromJid($(presence).attr('from')));
             var type = $(presence).attr('type');
-            var username = from.split('@')[0];
-            $.icescrum.chat.changeImageStatus(username, status, show, type);
+            $.icescrum.chat.changeImageStatus(escapedJid, status, show, type);
             return true;
         },
 
@@ -224,7 +215,6 @@
         },
 
         _onPeriodicPauseStateCheck:function(){
-            console.log("[icescrum-chat] check the paused chat windows");
             var chatKey;
             for(chatKey in $.icescrum.chat.o.chatList){
                 var chatId = $.icescrum.chat.o.chatList[chatKey];
@@ -235,8 +225,8 @@
                         $("#"+chatId).chat("option","hasChanged", false);
                     }
                     else{
-                        var username = chatId.split("-")[1];
-                        $.icescrum.chat.sendState(username,"paused");
+                        var escapedJid = chatId.split("-")[1];
+                        $.icescrum.chat.sendState(escapedJid,"paused");
                         $("#"+chatId).chat("option","isComposing", false);
                     }
                 }
@@ -258,7 +248,7 @@
                 if ($(this).attr('ask')) {
                         return true;
                 }
-                jabberList.push({jid:$(this).attr('jid'), name:$(this).attr('name')});
+                jabberList.push({rawJid:$(this).attr('jid'), name:$(this).attr('name')});
             });
             $.icescrum.chat.mergeContactLists(jabberList,true);
         },
@@ -284,25 +274,25 @@
             });
         },
 
-        insertEmoticon:function(username, pemot){
-            var content = $("#ui-chat-input-box-"+username).val();
-            var posCur = $("#ui-chat-input-box-"+username).caret().start;
+        insertEmoticon:function(escapedJid, pemot){
+            var content = $("#ui-chat-input-box-"+escapedJid).val();
+            var posCur = $("#ui-chat-input-box-"+escapedJid).caret().start;
             if(posCur != 0 && content.charAt(posCur-1) != " "){
-                $("#ui-chat-input-box-"+username).val(content.substr(0, posCur) + " ");
+                $("#ui-chat-input-box-"+escapedJid).val(content.substr(0, posCur) + " ");
             }else{
-                $("#ui-chat-input-box-"+username).val(content.substr(0, posCur));
+                $("#ui-chat-input-box-"+escapedJid).val(content.substr(0, posCur));
             }
-            $("#ui-chat-input-box-"+username).val($("#ui-chat-input-box-"+username).val() + pemot);
+            $("#ui-chat-input-box-"+escapedJid).val($("#ui-chat-input-box-"+escapedJid).val() + pemot);
             if(content.charAt(posCur) != " "){
-                $("#ui-chat-input-box-"+username).val($("#ui-chat-input-box-"+username).val() + " ");
+                $("#ui-chat-input-box-"+escapedJid).val($("#ui-chat-input-box-"+escapedJid).val() + " ");
             }
-            $("#ui-chat-input-box-"+username).val($("#ui-chat-input-box-"+username).val() + content.substr(posCur, content.length));
-            $("#ui-chat-input-box-"+username).focus();
+            $("#ui-chat-input-box-"+escapedJid).val($("#ui-chat-input-box-"+escapedJid).val() + content.substr(posCur, content.length));
+            $("#ui-chat-input-box-"+escapedJid).focus();
 
         },
 
         // Création ou ouverture du chat
-        createOrOpenChat:function(id,user,toggle) {
+        createOrOpenChat:function(id,escapedJid,toggle) {
             var idx1 = this.o.showList.indexOf(id);
             var idx2 = this.o.chatList.indexOf(id);
             // Si le chat est dans la showList
@@ -332,11 +322,11 @@
                 el.setAttribute('id', id);
                 $(el).chat({id : id,
                             alert : this.o.i18n.alertNewMessages,
-                            username : user,
-                            status : $('#chat-user-status-'+user).attr('status') ? $('#chat-user-status-'+user).attr('status') : 'offline',
+                            escapedJid : escapedJid,
+                            status : $('#chat-user-status-'+escapedJid).attr('status') ? $('#chat-user-status-'+escapedJid).attr('status') : 'offline',
                             hidden : false,
                             width : this.o.width,
-                            title : $('#chat-user-status-'+user+' a').attr('name') ? $('#chat-user-status-'+user+' a').attr('name') : user,
+                            title : $('#chat-user-status-'+escapedJid+' a').attr('name') ? $('#chat-user-status-'+escapedJid+' a').attr('name') : escapedJid,
                             offset : this._getNextOffset(),
                             messageSent : this.sendMessage,
                             chatClosed : this.closeChat,
@@ -351,16 +341,17 @@
             }
         },
 
-        // Envoie msg à username
+        // Envoie msg au jid
         // et ajoute msg à la fenêtre de chat correspondant
         // Pourquoi id en parametre ? -> c'est l'ui qui envoie l'id de la fenetre ca peut être utile..
-        sendMessage:function(id, username, msg){
-            var message = $msg({type: 'chat', to: username+'@'+$.icescrum.chat.o.server})
+        sendMessage:function(id, escapedJid, msg){
+            var rawJid = $.icescrum.chat.unescapeJid(escapedJid)
+            var message = $msg({type: 'chat', to: rawJid})
                                                 .c('body').t(msg)
                                                 .up().c('active', {xmlns:'http://jabber.org/protocol/chatstates'});
             $.icescrum.chat.o.connection.send(message.tree());
-            $("#chat-" + username).chat("option", "chatManager").addMsg($.icescrum.chat.o.i18n.me, msg);
-            console.log("[icescrum-chat] Message sent to "+username+'@'+$.icescrum.chat.o.server);
+            $("#chat-" + escapedJid).chat("option", "chatManager").addMsg($.icescrum.chat.o.i18n.me, msg);
+            console.log("[icescrum-chat] Message sent to "+rawJid);
         },
 
         // Ferme le chat id s'il est ouvert
@@ -455,22 +446,22 @@
         },
 
         // Change l'image et le tooltip du statut
-        changeImageStatus:function(username, status, show, type){
-            var image = $('.ui-chat-user-status-'+username);
+        changeImageStatus:function(escapedJid, status, show, type){
+            var image = $('.ui-chat-user-status-'+escapedJid);
             if(type == 'unavailable'){
                 image.removeClass();
-                $('#chat-user-status-'+username).attr('status','offline');
-                image.addClass("ui-chat-user-status-"+username+" ui-chat-status ui-chat-status-offline");
+                $('#chat-user-status-'+escapedJid).attr('status','offline');
+                image.addClass("ui-chat-user-status-"+escapedJid+" ui-chat-status ui-chat-status-offline");
                 image.attr('title', '');
             } else {
                 if(show.length > 0){
                     image.removeClass();
-                    $('#chat-user-status-'+username).attr('status',show);
-                    image.addClass("ui-chat-user-status-"+username+" ui-chat-status ui-chat-status-"+show);
+                    $('#chat-user-status-'+escapedJid).attr('status',show);
+                    image.addClass("ui-chat-user-status-"+escapedJid+" ui-chat-status ui-chat-status-"+show);
                 }
                 if(show.length == 0){
-                    $('#chat-user-status-'+username).attr('status','chat');
-                    image.addClass("ui-chat-user-status-"+username+" ui-chat-status ui-chat-status-online");
+                    $('#chat-user-status-'+escapedJid).attr('status','chat');
+                    image.addClass("ui-chat-user-status-"+escapedJid+" ui-chat-status ui-chat-status-online");
                 }
             }
             if(status.length > 0){
@@ -481,17 +472,18 @@
         },
 
         // Envoie le stanza qui indique un changement d'état
-        sendState:function(username, state) {
-            var composingStateMessage = $msg({type: 'chat', to: username+'@'+$.icescrum.chat.o.server})
+        sendState:function(escapedJid, state) {
+            var rawJid = $.icescrum.chat.unescapeJid(escapedJid);
+            var composingStateMessage = $msg({type: 'chat', to: rawJid})
                                         .c(state, {xmlns:'http://jabber.org/protocol/chatstates'});
             $.icescrum.chat.o.connection.send(composingStateMessage.tree());
-            console.log("[icescrum-chat] " + state +  " state sent to " + username);
+            console.log("[icescrum-chat] " + state +  " state sent to " + rawJid);
         },
 
         // Gère la reception de chat states
-        manageStateReception:function(msg, username){
+        manageStateReception:function(msg, escapedJid){
             var state = '';
-            var manager= $("#chat-" + username).chat("option", "chatManager");
+            var manager= $("#chat-" + escapedJid).chat("option", "chatManager");
             if(msg.getElementsByTagName('active').length > 0) {
                  state = 'active';
                  manager.hideComposing();
@@ -515,7 +507,7 @@
                  manager.hidePaused();
             }
             if(state != '')
-                console.log("[icescrum-chat] " + username + " is " + state);
+                console.log("[icescrum-chat] " + $.icescrum.chat.unescapeJid(escapedJid) + " is " + state);
         },
 
         mergeContactLists:function(jabberList,displayExternalContacts) {
@@ -536,8 +528,8 @@
                 $(this.users).each(function(){
                     var user = this;
                     $(jabberList).each(function () {
-                        if(Strophe.getNodeFromJid(this.jid) == user.username && Strophe.getDomainFromJid(this.jid) == $.icescrum.chat.o.server) {
-                            $.icescrum.chat.addTeamContact(user, teamid);
+                        if(Strophe.getNodeFromJid(this.rawJid) == user.username && Strophe.getDomainFromJid(this.rawJid) == $.icescrum.chat.o.server) {
+                            $.icescrum.chat.addTeamContact(this.rawJid,user, teamid);
                         }
                     });
                 });
@@ -545,34 +537,18 @@
             });
         },
 
-        addTeamContact:function(user,teamid) {
-            $('#team-'+teamid).append('<li><div id="chat-user-status-' + user.username + '" class="ui-chat-user-status-'+user.username+' ui-chat-status ui-chat-status-offline" status="offline" title="">' +
-								        '<a id="chat-user-'+user.id+'" disabled="true" href="javascript:;" class="chat-user-link" username="'+user.username+'" name="'+$.icescrum.chat.truncate(user.firstname +' '+user.lastname, 35)+'" firstname="'+user.firstname+'">' +
-                                            $.icescrum.chat.truncate(user.firstname +' '+user.lastname, 35) +
-                                        '</a>' +
-							          '</div></li>');
-            $.ajax({
-                type: "POST",
-                url: $.icescrum.o.grailsServer + '/chat/showToolTip',
-                data: 'id=' + user.id,
-                success:function(data) {
-                    $('.chat-group').append(data);
-                }
-            });
-        },
-
         addJabberContacts:function(teamList, jabberList) {
             $('#chat-roster-list').append('<ul class="chat-group" id="team-non-icescrum"><span class="chat-group-title">'+$.icescrum.chat.o.i18n.teamNonIcescrum+'</span>');
             $(jabberList).each(function(){
                 var jabberUser = this;
-                if(Strophe.getDomainFromJid(jabberUser.jid) != $.icescrum.chat.o.server) {
+                if(Strophe.getDomainFromJid(jabberUser.rawJid) != $.icescrum.chat.o.server) {
                    $.icescrum.chat.addJabberContact(jabberUser);
                 }
                 else {
                     var found = false;
                     $(teamList).each(function(){
                         $(this.users).each(function(){
-                            if(this.username == Strophe.getNodeFromJid(jabberUser.jid)) {
+                            if(this.username == Strophe.getNodeFromJid(jabberUser.rawJid)) {
                                 found = true;
                             }
                         });
@@ -584,23 +560,40 @@
             });
         },
 
-        addJabberContact:function(jabberUser){
-            var displayedName = jabberUser.name;
-            if(displayedName == null || displayedName == 'null') {
-                displayedName = Strophe.getNodeFromJid(jabberUser.jid);
-            }
-            displayedName += ' (' + Strophe.getDomainFromJid(jabberUser.jid) + ') ';
-            var username = Strophe.getNodeFromJid(jabberUser.jid);
-            $('#team-non-icescrum').append('<li><div id="chat-user-status-' + username + '" class="ui-chat-user-status-'+username+' ui-chat-status ui-chat-status-offline" status="offline" title="">' +
-								        '<a id="chat-user-'+jabberUser.jid+'" disabled="true" href="javascript:;" class="chat-user-link" username="'+username+'" name="'+$.icescrum.chat.truncate(displayedName, 35)+'" firstname="'+displayedName+'">' +
-                                            $.icescrum.chat.truncate(displayedName, 35) +
+        addContact:function(teamid,rawJid,name,firstname) {
+            var escapedJid = $.icescrum.chat.escapeJid(rawJid);
+            $('#team-'+teamid).append('<li><div id="chat-user-status-' + escapedJid + '" class="ui-chat-user-status-'+escapedJid+' ui-chat-status ui-chat-status-offline" status="offline" title="">' +
+								        '<a id="chat-user-'+escapedJid+'" disabled="true" href="javascript:;" class="chat-user-link" jid="'+escapedJid+'" name="'+$.icescrum.chat.truncate(name, 35)+'" firstname="'+firstname+'">' +
+                                            $.icescrum.chat.truncate(name, 35) +
                                         '</a>' +
 							          '</div></li>');
         },
 
+        addTeamContact:function(rawJid,user,teamid) {
+            $.icescrum.chat.addContact(teamid,rawJid,user.firstname +' '+user.lastname,user.firstname)
+            $.ajax({
+                type: "POST",
+                url: $.icescrum.o.grailsServer + '/chat/showToolTip',
+                data: 'id=' + user.id + '&escapedJid=' + $.icescrum.chat.escapeJid(rawJid),
+                success:function(data) {
+                    $('.chat-group').append(data);
+                }
+            });
+        },
+
+        addJabberContact:function(jabberUser){
+            var teamid = "non-icescrum";
+            var displayedName = jabberUser.name;
+            if(displayedName == null || displayedName == 'null') {
+                displayedName = Strophe.getNodeFromJid(jabberUser.rawJid);
+            }
+            displayedName += ' (' + Strophe.getDomainFromJid(jabberUser.rawJid) + ')';
+            $.icescrum.chat.addContact(teamid,jabberUser.rawJid,displayedName,displayedName)
+        },
+
         putContactLinks:function() {
             $('.chat-user-link').die('click.chat').live('click.chat',function(event){
-                $.icescrum.chat.createOrOpenChat('chat-'+$(this).attr('username'),$(this).attr('username'),true);
+                $.icescrum.chat.createOrOpenChat('chat-'+$(this).attr('jid'),$(this).attr('jid'),true);
                 event.preventDefault();
             });
         },
@@ -652,6 +645,14 @@
             $.icescrum.chat.changeStatus(val, $("#chatstatus").find('option:selected').val(),true);
             $.icescrum.chat._editableSelectList();
             return val;
+        },
+
+        escapeJid:function(rawJid) {
+            return rawJid.replace(/\./g,'_point_').replace(/@/g,'_at_');
+        },
+
+        unescapeJid:function(escapedJid) {
+            return escapedJid.replace(/_point_/g,'.').replace(/_at_/g,'@');
         }
     }
 })(jQuery);

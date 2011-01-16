@@ -25,15 +25,15 @@ $(document).ready(function(){
             title: "No Title",
             alertNewMessages: "new messages",
             status: null,
-            username: null,
+            escapedJid: null,
             hidden:false,
             offset:0,
             width: 230,
             isComposing:false,
             hasChanged:false,
-            messageSent: function(id, username, msg){},
+            messageSent: function(id, escapedJid, msg){},
             chatClosed: function(id){},
-            stateSent: function(username, state){},
+            stateSent: function(escapedJid, state){},
 
             chatManager: {
                 init: function(elem) {
@@ -46,7 +46,7 @@ $(document).ready(function(){
                     for(var emote in jQuery.icescrum.emoticons.emotes){
                         var emoticon = $('<img/>')
                                         .attr('src',jQuery.icescrum.emoticons.icon_folder+"/face-"+emote+".png")
-                                        .attr('onclick',"$.icescrum.chat.insertEmoticon('"+this.elem.options.username+"',$.icescrum.emoticons.emotes['"+emote+"'][0])");
+                                        .attr('onclick',"$.icescrum.chat.insertEmoticon('"+this.elem.options.escapedJid+"',$.icescrum.emoticons.emotes['"+emote+"'][0])");
                         emoticons.append(emoticon);
                     }
                     $('.ui-chat-emoticons').qtip(
@@ -189,7 +189,7 @@ $(document).ready(function(){
 
             self.uiChatStatus = $('<div></div>');
             var uiChatStatus = self.uiChatStatus
-                    .addClass("ui-chat-user-status-"+options.username+" ui-chat-status ui-chat-status-"+options.status)
+                    .addClass("ui-chat-user-status-"+options.escapedJid+" ui-chat-status ui-chat-status-"+options.status)
                     .appendTo(uiChatTitleBar);
 
             self.uiChatTitle = $('<div></div>');
@@ -259,7 +259,7 @@ $(document).ready(function(){
             self.uiChatInput = $('<textarea></textarea>');
             var uiChatInput = self.uiChatInput
                     .addClass('ui-widget-content ui-chat-input-box ui-corner-all')
-                    .attr('id', 'ui-chat-input-box-'+options.username)
+                    .attr('id', 'ui-chat-input-box-'+options.escapedJid)
                     .appendTo(uiChatInputWrapper)
                     .focus(function(){
                        self.uiChatTitleBar.addClass("ui-state-focus");
@@ -270,7 +270,7 @@ $(document).ready(function(){
                             var msg = $.trim($(this).val());
                             if(event.keyCode == $.ui.keyCode.ENTER) {
                                 if(msg.length > 0) {
-                                    self.options.messageSent(self.options.id, self.options.username, msg);
+                                    self.options.messageSent(self.options.id, self.options.escapedJid, msg);
                                 }
                                 $(this).val('');
                                 self.options.isComposing = false;
@@ -281,10 +281,10 @@ $(document).ready(function(){
                                 self.options.hasChanged = true;
                                 if(!self.options.isComposing && msg.length > 0) {
                                     self.options.isComposing = true;
-                                    self.options.stateSent(self.options.username,'composing');
+                                    self.options.stateSent(self.options.escapedJid,'composing');
                                 } if(msg.length == 0){
                                   self.options.isComposing = false;
-                                  self.options.stateSent(self.options.username,'active');
+                                  self.options.stateSent(self.options.escapedJid,'active');
                                 }
                             }
                         }

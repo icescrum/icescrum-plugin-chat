@@ -41,10 +41,10 @@ class ChatTagLib {
       assert attrs.id
       def user = User.get(attrs.id)
       def tasks =  Task.findAllByResponsibleAndState(user,Task.STATE_BUSY,[order:'desc',sort:'lastUpdated'])
-      def content = render(template:'tooltipChat',plugin:'icescrum-chat',model:[m:user,tasks:tasks,nbtasks:tasks.size() > 1 ? 's' : 0])
+      def content = render(template:'tooltipChat',plugin:'icescrum-chat',model:[escapedJid:attrs.escapedJid,m:user,tasks:tasks,nbtasks:tasks.size() > 1 ? 's' : 0])
 
       def params = [
-          for:"#chat-user-${attrs.id}",
+          for:"#chat-user-${attrs.escapedJid}",
           positionAdjustX:"10",
           contentText:content,
           hideFixed:"true",
