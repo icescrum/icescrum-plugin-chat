@@ -130,6 +130,7 @@
             this._retrieveRoster();
             $.icescrum.chat.o.connection.addHandler($.icescrum.chat._onPresenceChange, null, 'presence', null, null,  null);
             $.icescrum.chat.o.connection.addHandler($.icescrum.chat._onPresenceSubscription, null, 'presence', 'subscribe', null, null);
+            $.icescrum.chat.o.connection.addHandler($.icescrum.chat._onPresenceSubscriptionResponse, null, 'presence', 'subscribed', null, null);
             $.icescrum.chat.o.connection.addHandler($.icescrum.chat._onPresenceError, null, 'presence', 'error', null, null);
             $.icescrum.chat.o.connection.addHandler($.icescrum.chat._onReceiveMessage, null, 'message', null, null,  null);
             $.icescrum.chat.o.connection.addHandler($.icescrum.chat._onReceiveServiceDiscoveryGet, null, 'iq', 'get', null, null);
@@ -207,9 +208,19 @@
         _onPresenceSubscription:function(presence){
             var escapedJid = $.icescrum.chat.escapeJid(Strophe.getBareJidFromJid($(presence).attr('from')));
             var rawJid = $(presence).attr('from');
+            // Send a suscribed response
             var responseMessage = $pres({type: 'subscribed', to: rawJid});
             $.icescrum.chat.o.connection.send(responseMessage.tree());
-            console.log("[icescrum-chat] Accepting presence subscription from "+ $.icescrum.chat.unescapeJid(escapedJid));
+            // Send a subscription
+            var subscriptionMessage = $pres({type: 'subscribe', to: rawJid});
+            $.icescrum.chat.o.connection.send(subscriptionMessage.tree());
+            console.log("[icescrum-chat] Accepting presence subscription from "+ rawJid);
+            return true;
+        },
+
+        _onPresenceSubscriptionResponse:function(presence){
+            var rawJid = $(presence).attr('from');
+            console.log("[icescrum-chat] Receiving subscription acceptation from "+ rawJid);
             return true;
         },
 
