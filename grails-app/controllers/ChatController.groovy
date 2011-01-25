@@ -1,11 +1,9 @@
+import grails.converters.JSON
 import org.icescrum.components.UtilsWebComponents
 import org.icescrum.core.domain.User
-import org.icescrum.core.domain.Task
-import grails.converters.JSON
-import org.icescrum.core.domain.Team
+import org.icescrum.core.support.ApplicationSupport
 import org.icescrum.plugins.chat.ChatConnection
 import org.icescrum.plugins.chat.ChatUtils
-import org.icescrum.core.support.ApplicationSupport
 
 class ChatController {
   static ui = true

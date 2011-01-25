@@ -21,12 +21,11 @@
  *
  */
 
-import org.icescrum.components.UtilsWebComponents
-import org.icescrum.core.domain.User
 import grails.plugins.springsecurity.Secured
-import org.icescrum.plugins.chat.ChatUtils
-import org.icescrum.plugins.chat.ChatConnection
+
 import grails.converters.JSON
+import org.icescrum.components.UtilsWebComponents
+import org.icescrum.plugins.chat.ChatUtils
 
 @Secured('ROLE_ADMIN')
 class AdminChatController {
