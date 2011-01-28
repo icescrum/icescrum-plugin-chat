@@ -46,7 +46,7 @@ $(document).ready(function(){
                     for(var emote in jQuery.icescrum.emoticons.emotes){
                         var emoticon = $('<img/>')
                                         .attr('src',jQuery.icescrum.emoticons.icon_folder+"/face-"+emote+".png")
-                                        .attr('onclick',"$.icescrum.chat.insertEmoticon('"+this.elem.options.escapedJid+"',$.icescrum.emoticons.emotes['"+emote+"'][0])");
+                                        .attr('onClick',"$.icescrum.chat.insertEmoticon('"+this.elem.options.escapedJid+"',$.icescrum.emoticons.emotes['"+emote+"'][0])");
                         emoticons.append(emoticon);
                     }
                     $('.ui-chat-emoticons').qtip(
