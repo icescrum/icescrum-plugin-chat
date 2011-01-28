@@ -496,6 +496,7 @@
                 }
             }
             if(status.length > 0){
+                $('.chat-tooltip-right .ui-chat-user-status-text-'+escapedJid).text(status);
                 image.attr('title', status);
             } else {
                 image.attr('title', '');
