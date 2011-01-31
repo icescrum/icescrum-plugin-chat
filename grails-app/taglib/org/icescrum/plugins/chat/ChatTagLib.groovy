@@ -9,11 +9,11 @@ class ChatTagLib {
     def springSecurityService
     def chatService
 
-    def loadChatJSContext = { attrs,body ->
+    def loadChatVar = { attrs,body ->
 
       def user = User.get(springSecurityService.principal.id)
       def chatPreferences = chatService.getChatPreferences(user)
-      def jsCode = """\$.icescrum.chat.init({
+      def jsCode = """var icescrumChat = {
                             server: '${ChatUtils.chatConfig.icescrum.chat.server}',
                             port: '${ChatUtils.chatConfig.icescrum.chat.port}',
                             teamList : '${attrs.teamList}',
@@ -32,9 +32,10 @@ class ChatTagLib {
                                 disconnected:'${message(code:'is.chat.disconnected').encodeAsJavaScript()}',
                                 connected:'${message(code:'is.chat.connected').encodeAsJavaScript()}'
                             }
-                        });
+                        };
+                        jQuery.icescrum.chat.init();
                    """
-      out << jq.jquery(null, jsCode)
+      out << g.javascript(null, jsCode)
     }
 
     def tooltipChat = { attrs,body ->

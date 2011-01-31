@@ -1,3 +1,5 @@
+var flensed={base_path:''};
+
 (function($) {
     $.icescrum.chat = {
 
@@ -39,9 +41,9 @@
 
         // Initialisation de la connexion
         init:function(options) {
-            $.icescrum.debug(true);
+            if (typeof icescrumChat === undefined) { icescrumChat = options; }
             //Initialise l'object o avec les attributs/valeurs de default
-            this.o = jQuery.extend({}, this.defaults, options);
+            this.o = jQuery.extend({}, this.defaults, icescrumChat);
             this._nbMaxChat();
             $(window).bind('resize.chat', function (){
                 $.icescrum.chat._nbMaxChat();
