@@ -16,5 +16,6 @@ class ChatPreferences {
 
   static mapping={
     table 'icescrum_plugin_chat'
+    show column:'show_col'
   }
 }

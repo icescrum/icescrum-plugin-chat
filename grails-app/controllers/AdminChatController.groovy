@@ -32,7 +32,7 @@ class AdminChatController {
 
     static final id = 'adminChat'
     static ui = true
-    static menuBar = [show:[visible:UtilsWebComponents.rendered(renderedOnRoles:"ROLE_ADMIN"),pos:0],title:'is.ui.admin']
+    //static menuBar = [show:[visible:UtilsWebComponents.rendered(renderedOnRoles:"ROLE_ADMIN"),pos:0],title:'is.ui.admin']
     static window =  [title:'is.ui.admin',help:'is.ui.admin.help',toolbar:false]
 
     def springSecurityService
