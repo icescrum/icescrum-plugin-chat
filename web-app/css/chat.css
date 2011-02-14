@@ -295,3 +295,12 @@
     font-size:10px;
     line-height:8px;
 }
+
+.subscription .ui-button {
+    margin-left: 3px;
+    padding: 1px;
+}
+
+.subscription {
+    margin: 2px;
+}

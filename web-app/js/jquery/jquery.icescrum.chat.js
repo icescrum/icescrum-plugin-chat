@@ -33,7 +33,10 @@ var flensed={base_path:''};
                 loginError:'Connection to chat server failed, please check your login / password.',
                 disconnected:'You are disconnected from chat server.',
                 connected:'Your are connected on chat server.',
-                teamNonIcescrum:'External contacts'
+                teamNonIcescrum:'External contacts',
+                yes:'Yes',
+                no:'No',
+                accept:'Accept:'
             }
         },
 
@@ -208,16 +211,24 @@ var flensed={base_path:''};
         },
 
         _onPresenceSubscription:function(presence){
-            var escapedJid = $.icescrum.chat.escapeJid(Strophe.getBareJidFromJid($(presence).attr('from')));
-            var rawJid = $(presence).attr('from');
-            // Send a suscribed response
-            var responseMessage = $pres({type: 'subscribed', to: rawJid});
-            $.icescrum.chat.o.connection.send(responseMessage.tree());
-            // Send a subscription
-            var subscriptionMessage = $pres({type: 'subscribe', to: rawJid});
-            $.icescrum.chat.o.connection.send(subscriptionMessage.tree());
-            console.log("[icescrum-chat] Accepting presence subscription from "+ rawJid);
+            if ($('#subscription-' + escapedJid).length == 0){
+                var escapedJid = $.icescrum.chat.escapeJid(Strophe.getBareJidFromJid($(presence).attr('from')));
+                $.icescrum.chat.addSubscriptionContact(escapedJid);
+                console.log("[icescrum-chat] Receive presence subscription from "+ escapedJid);
+            }
             return true;
+        },
+
+        answerPresenceSubscription:function(escapedJid, answer){
+            //Send response
+            var responseMessage = $pres({type: answer, to: $.icescrum.chat.unescapeJid(escapedJid)});
+            $.icescrum.chat.o.connection.send(responseMessage.tree());
+            //request subscription back
+            if (answer == 'subscribed'){
+                var subscriptionMessage = $pres({type: 'subscribe', to: $.icescrum.chat.unescapeJid(escapedJid)});
+                $.icescrum.chat.o.connection.send(subscriptionMessage.tree());
+            }
+            $('#subscription-' + escapedJid).remove();
         },
 
         _onPresenceSubscriptionResponse:function(presence){
@@ -480,6 +491,12 @@ var flensed={base_path:''};
 
         // Change l'image et le tooltip du statut
         changeImageStatus:function(escapedJid, status, show, type){
+            //Subscription receive
+            if (!$('.ui-chat-user-status-'+escapedJid).length){
+                var jabberList = [];
+                jabberList.push({rawJid:$.icescrum.chat.unescapeJid(escapedJid), name:""});
+                $.icescrum.chat.mergeContactLists(jabberList,true);
+            }
             var image = $('.ui-chat-user-status-'+escapedJid);
             if(type == 'unavailable'){
                 image.removeClass();
@@ -564,6 +581,8 @@ var flensed={base_path:''};
                     $(jabberList).each(function () {
                         if(Strophe.getNodeFromJid(this.rawJid) == user.username && Strophe.getDomainFromJid(this.rawJid) == $.icescrum.chat.o.server) {
                             $.icescrum.chat.addTeamContact(this.rawJid,user, teamid);
+                        }else if(Strophe.getDomainFromJid(this.rawJid) == $.icescrum.chat.o.server){
+
                         }
                     });
                 });
@@ -601,6 +620,10 @@ var flensed={base_path:''};
                                             $.icescrum.chat.truncate(name, 35) +
                                         '</a>' +
 							          '</div></li>');
+        },
+
+        addSubscriptionContact:function(escapedJid) {
+            $('#chat-roster-list').before('<div class="subscription" id="subscription-'+escapedJid+'">'+$.icescrum.chat.o.i18n.accept+' '+$.icescrum.chat.truncate($.icescrum.chat.unescapeJid(escapedJid), 35)+' ?<button onclick="$.icescrum.chat.answerPresenceSubscription(\''+escapedJid+'\',\'subscribed\');" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">'+$.icescrum.chat.o.i18n.yes+'</button> <button onclick="$.icescrum.chat.answerPresenceSubscription(\''+escapedJid+'\',\'unsubscribed\');" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">'+$.icescrum.chat.o.i18n.no+'</button></div>');
         },
 
         addTeamContact:function(rawJid,user,teamid) {
