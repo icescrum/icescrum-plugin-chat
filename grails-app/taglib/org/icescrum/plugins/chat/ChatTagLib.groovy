@@ -16,7 +16,7 @@ class ChatTagLib {
       def jsCode = """var icescrumChat = {
                             server: '${ChatUtils.chatConfig.icescrum.chat.server}',
                             port: '${ChatUtils.chatConfig.icescrum.chat.port}',
-                            teamList : '${attrs.teamList}',
+                            teamList : '${attrs.teamList.encodeAsJavaScript()}',
                             emoticonsDir : '${resource(plugin: 'icescrum-chat', dir: '/images/emoticons')}',
                             currentStatus : {
                                 show:'${chatPreferences.show}',
