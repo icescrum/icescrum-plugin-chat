@@ -429,7 +429,7 @@ var flensed={base_path:''};
         },
 
         displayRoster:function(){
-            if ($.icescrum.chat.o.connected){
+            if ($.icescrum.chat.o.connected && $('#chat-roster-list .chat-group').length > 0){
                 if ($('#chat-roster-list').is(':hidden')){
                     $('#chat-roster-list').show();
                     $('#chat-list-hide').css('display','block');
