@@ -136,11 +136,10 @@ var flensed={base_path:''};
         _connected:function(){
             this._retrieveRoster();
             $.icescrum.chat.o.connection.addHandler($.icescrum.chat._onPresenceChange, null, 'presence', null, null,  null);
-            $.icescrum.chat.o.connection.addHandler($.icescrum.chat._onPresenceSubscription, null, 'presence', 'subscribe', null, null);
-            $.icescrum.chat.o.connection.addHandler($.icescrum.chat._onPresenceSubscriptionResponse, null, 'presence', 'subscribed', null, null);
             $.icescrum.chat.o.connection.addHandler($.icescrum.chat._onPresenceError, null, 'presence', 'error', null, null);
             $.icescrum.chat.o.connection.addHandler($.icescrum.chat._onReceiveMessage, null, 'message', null, null,  null);
             $.icescrum.chat.o.connection.addHandler($.icescrum.chat._onReceiveServiceDiscoveryGet, null, 'iq', 'get', null, null);
+            $.icescrum.chat.o.connection.addHandler($.icescrum.chat._onSetChange, null, 'iq', 'set', null, null);
             $.icescrum.chat.o.connection.addTimedHandler(4000,$.icescrum.chat._onPeriodicPauseStateCheck);
             $.icescrum.chat.o.connected = true;
 
@@ -201,46 +200,34 @@ var flensed={base_path:''};
         // Permet de d'être informé lors d'un changement de statut
         _onPresenceChange:function(presence){
             var type = $(presence).attr('type');
+            var show = $(presence).find('show').text();
+            var status = $(presence).find('status').text();
+            var rawJid = $(presence).attr('from');
+            var escapedJid = $.icescrum.chat.escapeJid(Strophe.getBareJidFromJid(rawJid));
+
             if(type == null)
             {
-                var show = $(presence).find('show').text();
-                var status = $(presence).find('status').text();
-                var escapedJid = $.icescrum.chat.escapeJid(Strophe.getBareJidFromJid($(presence).attr('from')));
                 $.icescrum.chat.changeImageStatus(escapedJid, status, show, type);
                 console.log("[icescrum-chat] Presence received from "+ $.icescrum.chat.unescapeJid(escapedJid) + " show: " + show + " status:" + status);
             }
-            return true;
-        },
-
-        _onPresenceSubscription:function(presence){
-            console.log("[icescrum-chat] Receive presence subscription from "+ escapedJid);
-            var escapedJid = $.icescrum.chat.escapeJid(Strophe.getBareJidFromJid($(presence).attr('from')));
-            if (!$('#chat-user-status-' + escapedJid).length > 0){
-                $.icescrum.chat.confirmSubscriptionContact(escapedJid);
-                console.log("[icescrum-chat] need confirmation for "+ escapedJid);
-            }else{
-                var responseMessage = $pres({type: 'subscribed', to: $(presence).attr('from')});
-                $.icescrum.chat.o.connection.send(responseMessage.tree());
-                console.log("[icescrum-chat] subscribed back for "+ escapedJid);
+            else if(type == 'subscribe'){
+                 console.log("[icescrum-chat] Receive presence subscription from "+ escapedJid);
+                if (!$('#chat-user-status-' + escapedJid).length > 0){
+                    $.icescrum.chat.confirmSubscriptionContact(escapedJid);
+                    console.log("[icescrum-chat] need confirmation for "+ escapedJid);
+                }else{
+                    var responseMessage = $pres({type: 'subscribed', to: $(presence).attr('from')});
+                    $.icescrum.chat.o.connection.send(responseMessage.tree());
+                    console.log("[icescrum-chat] subscribed back for "+ escapedJid);
+                }
             }
-            return true;
-        },
-
-        answerPresenceSubscription:function(escapedJid, answer){
-            //Send response
-            var responseMessage = $pres({type: answer, to: $.icescrum.chat.unescapeJid(escapedJid)});
-            $.icescrum.chat.o.connection.send(responseMessage.tree());
-            //request subscription back
-            if (answer == 'subscribed'){
-                var subscriptionMessage = $pres({type: 'subscribe', to: $.icescrum.chat.unescapeJid(escapedJid)});
-                $.icescrum.chat.o.connection.send(subscriptionMessage.tree());
+            else if(type == 'subscribed'){
+                console.log("[icescrum-chat] Receiving subscription acceptation from "+ rawJid);
             }
-            $('#subscription-' + escapedJid).remove();
-        },
-
-        _onPresenceSubscriptionResponse:function(presence){
-            var rawJid = $(presence).attr('from');
-            console.log("[icescrum-chat] Receiving subscription acceptation from "+ rawJid);
+            else if(type == 'unavailable'){
+                console.log("[icescrum-chat] Receive presence unsubscription from "+ escapedJid);
+                $.icescrum.chat.changeImageStatus(escapedJid, '', show, type);
+            }
             return true;
         },
 
@@ -292,6 +279,27 @@ var flensed={base_path:''};
 	        $.icescrum.chat.o.connection.sendIQ(iq, this._onRosterReceived);
         },
 
+        _onSetChange:function(iq){
+            var query = iq.getElementsByTagName('query')[0].namespaceURI;
+            if (query == Strophe.NS.ROSTER){
+                var jabberList = [];
+                $(iq).find("item").each(function(){
+                    var subscription = $(this).attr('subscription');
+                    var jid = $(this).attr('jid');
+                    if (subscription != ('remove' || 'to')){
+                        if ($('#chat-user-status-'+ $.icescrum.chat.unescapeJid(jid)).length == 0){
+                            jabberList.push({rawJid:jid, name:$(this).attr('name')});
+                        }
+                    }
+                    if (subscription == 'remove' || subscription == 'none'){
+                        $('#chat-user-status-'+ $.icescrum.chat.unescapeJid(jid)).remove();
+                    }
+                    console.log("[icescrum-chat] updating roster "+subscription);
+                });
+                $.icescrum.chat.mergeContactLists(jabberList,true);
+            }
+        },
+
         _onRosterReceived:function(iq) {
             console.log("[icescrum-chat] Receiving roster");
             var jabberList = [];
@@ -302,6 +310,41 @@ var flensed={base_path:''};
                 jabberList.push({rawJid:$(this).attr('jid'), name:$(this).attr('name')});
             });
             $.icescrum.chat.mergeContactLists(jabberList,true);
+        },
+
+        answerPresenceSubscription:function(escapedJid, answer){
+            //Send response
+            var responseMessage = $pres({type: answer, to: $.icescrum.chat.unescapeJid(escapedJid)});
+            $.icescrum.chat.o.connection.send(responseMessage.tree());
+            //request subscription back
+            if (answer == 'subscribed'){
+                var subscriptionMessage = $pres({type: 'subscribe', to: $.icescrum.chat.unescapeJid(escapedJid)});
+                $.icescrum.chat.o.connection.send(subscriptionMessage.tree());
+            }
+            $('#subscription-' + escapedJid).remove();
+        },
+
+        requestSubscriptionContact:function() {
+            var rawJid = $('#chat-add-contact').val();
+            if (rawJid.indexOf('@') == -1){
+                rawJid = rawJid+'@'+$.icescrum.chat.o.server;
+                $('#chat-add-contact').val(rawJid);
+            }
+            var escapedJid = $.icescrum.chat.escapeJid(rawJid);
+            if ($.icescrum.isValidEmail(rawJid) && $('#chat-user-status-' + escapedJid).length == 0){
+                var subscriptionMessage = $pres({type: 'subscribe', to: rawJid});
+                $.icescrum.chat.o.connection.send(subscriptionMessage.tree());
+                $('#chat-add-contact').val("");
+                $.icescrum.renderNotice($.icescrum.chat.o.i18n.requestSent+rawJid);
+            }else if($('#chat-user-status-' + escapedJid).length > 0){
+                $('#chat-add-contact').val("");
+            }else{
+                $.icescrum.renderNotice($.icescrum.chat.o.i18n.requestError,'error');
+            }
+        },
+
+        confirmSubscriptionContact:function(escapedJid) {
+            $('#chat-roster-list').before('<div class="subscription" id="subscription-'+escapedJid+'">'+$.icescrum.chat.o.i18n.accept+' '+$.icescrum.chat.truncate($.icescrum.chat.unescapeJid(escapedJid), 35)+' ?<button onclick="$.icescrum.chat.answerPresenceSubscription(\''+escapedJid+'\',\'subscribed\');" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">'+$.icescrum.chat.o.i18n.yes+'</button> <button onclick="$.icescrum.chat.answerPresenceSubscription(\''+escapedJid+'\',\'unsubscribed\');" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">'+$.icescrum.chat.o.i18n.no+'</button></div>');
         },
 
         _editableSelectList:function(){
@@ -499,9 +542,6 @@ var flensed={base_path:''};
         // Change l'image et le tooltip du statut
         changeImageStatus:function(escapedJid, status, show, type){
             //Subscription receive
-            if (!$('.ui-chat-user-status-'+escapedJid).length){
-                $.icescrum.chat.mergeContactLists({rawJid:$.icescrum.chat.unescapeJid(escapedJid)},true);
-            }
             var image = $('.ui-chat-user-status-'+escapedJid);
             if(type == 'unavailable'){
                 image.removeClass();
@@ -625,30 +665,6 @@ var flensed={base_path:''};
                                             $.icescrum.chat.truncate(name, 35) +
                                         '</a>' +
 							          '</div></li>');
-        },
-
-        requestSubscriptionContact:function() {
-            var rawJid = $('#chat-add-contact').val();
-            if (rawJid.indexOf('@') == -1){
-                rawJid = rawJid+'@'+$.icescrum.chat.o.server;
-                $('#chat-add-contact').val(rawJid);
-            }
-            var escapedJid = $.icescrum.chat.escapeJid(rawJid);
-            if ($.icescrum.isValidEmail(rawJid) && $('#chat-user-status-' + escapedJid).length == 0){
-                var subscriptionMessage = $pres({type: 'subscribe', to: rawJid});
-                $.icescrum.chat.o.connection.send(subscriptionMessage.tree());
-                $.icescrum.chat.mergeContactLists({rawJid:rawJid},true);
-                $('#chat-add-contact').val("");
-                $.icescrum.renderNotice($.icescrum.chat.o.i18n.requestSent+rawJid);
-            }else if($('#chat-user-status-' + escapedJid).length > 0){
-                $('#chat-add-contact').val("");
-            }else{
-                $.icescrum.renderNotice($.icescrum.chat.o.i18n.requestError,'error');
-            }
-        },
-
-        confirmSubscriptionContact:function(escapedJid) {
-            $('#chat-roster-list').before('<div class="subscription" id="subscription-'+escapedJid+'">'+$.icescrum.chat.o.i18n.accept+' '+$.icescrum.chat.truncate($.icescrum.chat.unescapeJid(escapedJid), 35)+' ?<button onclick="$.icescrum.chat.answerPresenceSubscription(\''+escapedJid+'\',\'subscribed\');" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">'+$.icescrum.chat.o.i18n.yes+'</button> <button onclick="$.icescrum.chat.answerPresenceSubscription(\''+escapedJid+'\',\'unsubscribed\');" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">'+$.icescrum.chat.o.i18n.no+'</button></div>');
         },
 
         addTeamContact:function(rawJid,user,teamid) {
