@@ -36,7 +36,9 @@ var flensed={base_path:''};
                 teamNonIcescrum:'External contacts',
                 yes:'Yes',
                 no:'No',
-                accept:'Accept:'
+                accept:'Accept:',
+                requestSent:'Request sent to ',
+                requestError:'Error invalid email address'
             }
         },
 
@@ -211,10 +213,15 @@ var flensed={base_path:''};
         },
 
         _onPresenceSubscription:function(presence){
-            if ($('#subscription-' + escapedJid).length == 0){
-                var escapedJid = $.icescrum.chat.escapeJid(Strophe.getBareJidFromJid($(presence).attr('from')));
-                $.icescrum.chat.addSubscriptionContact(escapedJid);
-                console.log("[icescrum-chat] Receive presence subscription from "+ escapedJid);
+            console.log("[icescrum-chat] Receive presence subscription from "+ escapedJid);
+            var escapedJid = $.icescrum.chat.escapeJid(Strophe.getBareJidFromJid($(presence).attr('from')));
+            if (!$('#chat-user-status-' + escapedJid).length > 0){
+                $.icescrum.chat.confirmSubscriptionContact(escapedJid);
+                console.log("[icescrum-chat] need confirmation for "+ escapedJid);
+            }else{
+                var responseMessage = $pres({type: 'subscribed', to: $(presence).attr('from')});
+                $.icescrum.chat.o.connection.send(responseMessage.tree());
+                console.log("[icescrum-chat] subscribed back for "+ escapedJid);
             }
             return true;
         },
@@ -493,9 +500,7 @@ var flensed={base_path:''};
         changeImageStatus:function(escapedJid, status, show, type){
             //Subscription receive
             if (!$('.ui-chat-user-status-'+escapedJid).length){
-                var jabberList = [];
-                jabberList.push({rawJid:$.icescrum.chat.unescapeJid(escapedJid), name:""});
-                $.icescrum.chat.mergeContactLists(jabberList,true);
+                $.icescrum.chat.mergeContactLists({rawJid:$.icescrum.chat.unescapeJid(escapedJid)},true);
             }
             var image = $('.ui-chat-user-status-'+escapedJid);
             if(type == 'unavailable'){
@@ -622,7 +627,27 @@ var flensed={base_path:''};
 							          '</div></li>');
         },
 
-        addSubscriptionContact:function(escapedJid) {
+        requestSubscriptionContact:function() {
+            var rawJid = $('#chat-add-contact').val();
+            if (rawJid.indexOf('@') == -1){
+                rawJid = rawJid+'@'+$.icescrum.chat.o.server;
+                $('#chat-add-contact').val(rawJid);
+            }
+            var escapedJid = $.icescrum.chat.escapeJid(rawJid);
+            if ($.icescrum.isValidEmail(rawJid) && $('#chat-user-status-' + escapedJid).length == 0){
+                var subscriptionMessage = $pres({type: 'subscribe', to: rawJid});
+                $.icescrum.chat.o.connection.send(subscriptionMessage.tree());
+                $.icescrum.chat.mergeContactLists({rawJid:rawJid},true);
+                $('#chat-add-contact').val("");
+                $.icescrum.renderNotice($.icescrum.chat.o.i18n.requestSent+rawJid);
+            }else if($('#chat-user-status-' + escapedJid).length > 0){
+                $('#chat-add-contact').val("");
+            }else{
+                $.icescrum.renderNotice($.icescrum.chat.o.i18n.requestError,'error');
+            }
+        },
+
+        confirmSubscriptionContact:function(escapedJid) {
             $('#chat-roster-list').before('<div class="subscription" id="subscription-'+escapedJid+'">'+$.icescrum.chat.o.i18n.accept+' '+$.icescrum.chat.truncate($.icescrum.chat.unescapeJid(escapedJid), 35)+' ?<button onclick="$.icescrum.chat.answerPresenceSubscription(\''+escapedJid+'\',\'subscribed\');" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">'+$.icescrum.chat.o.i18n.yes+'</button> <button onclick="$.icescrum.chat.answerPresenceSubscription(\''+escapedJid+'\',\'unsubscribed\');" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">'+$.icescrum.chat.o.i18n.no+'</button></div>');
         },
 

@@ -20,4 +20,7 @@
     <g:message code="is.chat.ui.hide"/> <g:message code="is.chat.ui.connected"/> <span class=nb-contacts></span>
   </is:link>
  <div id="chat-roster-list">
+     <div class="add-contact">
+        <is:input id="chat-add-contact" name="addcontact"/><button onclick="$.icescrum.chat.requestSubscriptionContact();" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">${message(code:'is.chat.ui.add')}</button>
+     </div>
  </div>

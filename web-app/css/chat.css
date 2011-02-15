@@ -304,3 +304,13 @@
 .subscription {
     margin: 2px;
 }
+
+.add-contact {
+    position:relative;
+}
+
+.add-contact .ui-button {
+    margin-left: 5px;
+    margin-top: 0;
+    padding: 3px;
+}
