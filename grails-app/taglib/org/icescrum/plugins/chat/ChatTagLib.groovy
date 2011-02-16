@@ -33,8 +33,9 @@ class ChatTagLib {
                                 connected:'${message(code:'is.chat.connected').encodeAsJavaScript()}',
                                 yes:'${message(code:'is.chat.ui.yes').encodeAsJavaScript()}',
                                 no:'${message(code:'is.chat.ui.no').encodeAsJavaScript()}',
-                                requestSent:'${message(code:'is.chat.request.sent').encodeAsJavaScript()}',
-                                requestError:'${message(code:'is.chat.request.error').encodeAsJavaScript()}'
+                                requestSent:'${message(code:'is.chat.ui.request.sent').encodeAsJavaScript()}',
+                                accept:'${message(code:'is.chat.ui.accept').encodeAsJavaScript()}',
+                                requestError:'${message(code:'is.chat.ui.request.error').encodeAsJavaScript()}'
                             }
                         };
                         jQuery.icescrum.chat.init();

@@ -298,11 +298,12 @@
 
 .subscription .ui-button {
     margin-left: 3px;
-    padding: 1px;
+    padding: 3px;
 }
 
 .subscription {
     margin: 2px;
+    line-height:20px;
 }
 
 .add-contact {
@@ -313,4 +314,13 @@
     margin-left: 5px;
     margin-top: 0;
     padding: 3px;
+}
+
+.chat-delete-contact {
+     background-image:url("../images/delete.gif");
+     height:14px;
+     width:14px;
+     display:none;
+     float:right;
+     cursor:pointer;
 }
