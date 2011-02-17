@@ -8,8 +8,11 @@ import com.kenai.jbosh.BodyQName
 import org.jivesoftware.smack.packet.Presence
 import org.jivesoftware.smack.RosterListener
 import org.jivesoftware.smack.Roster
+import org.apache.commons.logging.LogFactory
 
 class ChatConnection implements BOSHClientRequestListener{
+
+  private static final log = LogFactory.getLog(this)
 
   String sid
   String rid
@@ -46,7 +49,7 @@ class ChatConnection implements BOSHClientRequestListener{
       conn.disconnect()
 
     }catch(Exception e){
-      e.printStackTrace()
+      if (log.debugEnabled) e.printStackTrace()
       conn.disconnect()
     }
 
