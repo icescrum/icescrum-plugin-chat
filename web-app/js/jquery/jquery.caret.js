@@ -1,9 +1,91 @@
-(function(k,e,i,j){k.fn.caret=function(b,l){var a,c,f=this[0],d=k.browser.msie;if(typeof b==="object"&&typeof b.start==="number"&&typeof b.end==="number"){a=b.start;c=b.end}else if(typeof b==="number"&&typeof l==="number"){a=b;c=l}else if(typeof b==="string")if((a=f.value.indexOf(b))>-1)c=a+b[e];else a=null;else if(Object.prototype.toString.call(b)==="[object RegExp]"){b=b.exec(f.value);if(b!=null){a=b.index;c=a+b[0][e]}}if(typeof a!="undefined"){if(d){d=this[0].createTextRange();d.collapse(true);
-d.moveStart("character",a);d.moveEnd("character",c-a);d.select()}else{this[0].selectionStart=a;this[0].selectionEnd=c}this[0].focus();return this}else{if(d){c=document.selection;if(this[0].tagName.toLowerCase()!="textarea"){d=this.val();a=c[i]()[j]();a.moveEnd("character",d[e]);var g=a.text==""?d[e]:d.lastIndexOf(a.text);a=c[i]()[j]();a.moveStart("character",-d[e]);var h=a.text[e]}else{a=c[i]();c=a[j]();c.moveToElementText(this[0]);c.setEndPoint("EndToEnd",a);g=c.text[e]-a.text[e];h=g+a.text[e]}}else{g=
-f.selectionStart;h=f.selectionEnd}a=f.value.substring(g,h);return{start:g,end:h,text:a,replace:function(m){return f.value.substring(0,g)+m+f.value.substring(h,f.value[e])}}}}})(jQuery,"length","createRange","duplicate");/**
- * Created by IntelliJ IDEA.
- * User: Marc-Antoine
- * Date: 1 déc. 2010
- * Time: 20:56:37
- * To change this template use File | Settings | File Templates.
- */
+(function($){
+  $.fn.insertAtCaret = function(text, opts) {
+    var element = $(this).get(0);
+
+    if (document.selection) {
+      element.focus();
+      var orig = element.value.replace(/\r\n/g, "\n");
+      var range = document.selection.createRange();
+
+      if (range.parentElement() != element) {
+        return false;
+      }
+
+      range.text = text;
+
+      var actual = tmp = element.value.replace(/\r\n/g, "\n");
+
+      for (var diff = 0; diff < orig.length; diff++) {
+        if (orig.charAt(diff) != actual.charAt(diff)) break;
+      }
+
+      for (var index = 0, start = 0; tmp.match(text) && (tmp = tmp.replace(text, "")) && index <= diff; index = start + text.length ) {
+        start = actual.indexOf(text, index);
+      }
+    } else if (element.selectionStart) {
+      var start = element.selectionStart;
+      var end   = element.selectionEnd;
+
+      element.value = element.value.substr(0, start) + text + element.value.substr(end, element.value.length);
+    }
+    
+    if (start) {
+      setCaretTo(element, start + text.length);
+    } else {
+      element.value = text + element.value;
+    }
+    
+    return this;
+  }
+  
+  $.fn.setCaretPosition = function(start, end) {
+    var element = $(this).get(0);
+    element.focus();
+    setCaretTo(element, start, end);
+    return this;
+  }
+  
+  
+  $.fn.getCaretPosition = function() {
+    var element = $(this).get(0);
+    $(element).focus();
+    return getCaretPosition(element);
+  }
+
+  $.fn.getSelectedText = function() {
+    var element = $(this).get(0);
+    
+    // workaround for firefox because window.getSelection does not work inside inputs
+    if (typeof element.selectionStart == 'number') {
+      return $(element).val().substr(element.selectionStart, element.selectionEnd - element.selectionStart);
+    } else if (document.getSelection) {
+      return document.getSelection();
+    } else if (window.getSelection) {
+      return window.getSelection();
+    }
+  }
+  
+  // privates
+  function setCaretTo(element, start, end) {
+    if(element.createTextRange) {
+      var range = element.createTextRange();
+      range.moveStart('character', start);
+      range.moveEnd('character',   (end || start));
+      range.select();
+    } else if(element.selectionStart) {
+      element.focus();
+      element.setSelectionRange(start, (end || start));
+    }
+  }
+  
+  function getCaretPosition(element) {
+    if (typeof element.selectionStart == 'number'){
+      return element.selectionStart;
+    } else if (document.selection) {
+      var range = document.selection.createRange();
+      var rangeLength = range.text.length;
+      range.moveStart('character', -element.value.length);
+      return range.text.length - rangeLength;
+    }
+  }
+})(jQuery);

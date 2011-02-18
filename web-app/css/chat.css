@@ -40,6 +40,7 @@
     bottom:0;
     padding: 2px;
     padding: 2px;
+    z-index: 100;
 }
 
 .ui-chat-titlebar {

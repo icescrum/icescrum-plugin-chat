@@ -35,7 +35,7 @@
           class="chat-user-link"
           jid="${escapedJid}"
           disabled="true"
-          value="${message(code:'is.chat.ui.talk')}"
+          value="${message(code:'is.chat.ui.tooltip.talk')}"
           history="false"/>
   </div>
 </div>

@@ -317,6 +317,8 @@ $(document).ready(function(){
             if(!self.options.hidden) {
                 uiChat.show();
             }
+
+            self.uiChatInput.focus();
         },
 
         _setOption: function(option, value) {

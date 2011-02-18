@@ -401,18 +401,14 @@ var flensed={base_path:''};
         },
 
         insertEmoticon:function(escapedJid, pemot){
+            var start = $("#ui-chat-input-box-"+escapedJid).getCaretPosition();
             var content = $("#ui-chat-input-box-"+escapedJid).val();
-            var posCur = $("#ui-chat-input-box-"+escapedJid).caret().start;
-            if(posCur != 0 && content.charAt(posCur-1) != " "){
-                $("#ui-chat-input-box-"+escapedJid).val(content.substr(0, posCur) + " ");
+            var lastChar = content.substring(start-1,start);
+            if (start == 0 || lastChar == " "){
+                $("#ui-chat-input-box-"+escapedJid).insertAtCaret(pemot+" ");
             }else{
-                $("#ui-chat-input-box-"+escapedJid).val(content.substr(0, posCur));
+                $("#ui-chat-input-box-"+escapedJid).insertAtCaret(" "+pemot+" ");
             }
-            $("#ui-chat-input-box-"+escapedJid).val($("#ui-chat-input-box-"+escapedJid).val() + pemot);
-            if(content.charAt(posCur) != " "){
-                $("#ui-chat-input-box-"+escapedJid).val($("#ui-chat-input-box-"+escapedJid).val() + " ");
-            }
-            $("#ui-chat-input-box-"+escapedJid).val($("#ui-chat-input-box-"+escapedJid).val() + content.substr(posCur, content.length));
             $("#ui-chat-input-box-"+escapedJid).focus();
 
         },
