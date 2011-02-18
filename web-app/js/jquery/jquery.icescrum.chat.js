@@ -64,12 +64,10 @@ var flensed={base_path:''};
         },
 
         _initConnect:function(){
-            this.o.connection = new Strophe.Connection("http://"+this.o.server+":"+this.o.port+"/http-bind/");
-
-            $("#chatstatus-button .ui-selectmenu-status").text(this.o.i18n.connecting);
             $("#chatstatus-button").removeClass('ui-chat-status-away ui-chat-status-chat ui-chat-status-online ui-chat-status-xa ui-chat-status-dnd').addClass('ui-chat-select ui-chat-status-offline');
+            $("#chatstatus-button .ui-selectmenu-status").text(this.o.i18n.connecting);
             console.log("[icescrum-chat] Connecting to server...");
-
+            this.o.connection = new Strophe.Connection("http://"+this.o.server+":"+this.o.port+"/http-bind/");
             if (this.o.connection == null){
                 console.log("[icescrum-chat] Error not connected to server");
                 $.icescrum.renderNotice(this.o.i18n.connectionError,'error');
