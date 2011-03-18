@@ -30,6 +30,8 @@ import org.icescrum.core.domain.User
 
 class ChatPreferences {
 
+  String password
+  String username
   String[] statusList = new String[2]
   String show = "online"
   String presence

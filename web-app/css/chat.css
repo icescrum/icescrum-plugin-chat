@@ -353,3 +353,11 @@
      float:right;
      cursor:pointer;
 }
+
+.ui-chat-status-single {
+    float: left;
+    height: 17px;
+    line-height: 29px;
+    width: 17px;
+    padding-left: 0;
+}

@@ -36,6 +36,8 @@ import org.icescrum.plugins.chat.ChatUtils
 class ChatController {
   static ui = true
   static final id = 'chat'
+  static final pluginName = 'icescrum-chat'
+
 
   static menuBar = [show:false]
   static widget =  [
@@ -130,5 +132,25 @@ class ChatController {
     }catch(Exception e){
       render(status:400)
     }
+  }
+
+  def displayStatus = {
+    def posters = params.story?.comments*.poster?:null
+    posters?.unique()
+    render(template:'displayStatus',plugin:pluginName, model:[members:posters])
+  }
+
+  def form = {
+      def chatPref = chatService.getChatPreferences(params.user)
+      render(template:'dialogs/profile', plugin:pluginName, model:[username:chatPref.username])
+  }
+
+  def update = {
+      if (params.saveChat?.usernameChat && request.user){
+        def chatPref = chatService.getChatPreferences(request.user)
+        chatPref.username = params.saveChat.usernameChat
+        chatPref.save()
+        render(status:200)
+      }
   }
 }

@@ -96,4 +96,14 @@ class ChatTagLib {
 
       out << is.tooltip(params)
     }
+
+    def displayStatus = { attrs, body ->
+       attrs.members?.each{
+        //out << it.username
+       }
+       def jqCode = """
+            jQuery("#comments .comment-details .scrum-link").prepend("<div class='chat-user-link ui-chat-status-single ui-chat-user-status-vbarrier_at_kagilum_point_com ui-chat-status-offline'></div>");
+       """
+       out << jq.jquery(null,jqCode)
+    }
 }
