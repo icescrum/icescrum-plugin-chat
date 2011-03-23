@@ -219,9 +219,11 @@ var flensed={base_path:''};
 
         // Ajoute le message à la fenêtre de chat
         _onChatMessage:function(escapedJid,text){
-            console.log("[icescrum-chat] Message received from "+$.icescrum.chat.unescapeJid(escapedJid));
+            var rawJid = $.icescrum.chat.unescapeJid(escapedJid);
+            console.log("[icescrum-chat] Message received from "+rawJid);
             var extractedText = (text[0].text) ? text[0].text : (text[0].textContent) ? text[0].textContent : "";
-            var name = $('#chat-user-status-'+escapedJid+' a').attr('firstname') ? $('#chat-user-status-'+escapedJid+' a').attr('firstname') : escapedJid;
+            var name = $('#chat-user-status-'+escapedJid+' a').attr('firstname') ? $('#chat-user-status-'+escapedJid+' a').attr('firstname') : rawJid;
+            name = $.icescrum.chat.truncate(name,15);
             $("#chat-" + escapedJid).chat("option", "chatManager").addMsg(name, extractedText);
         },
 
@@ -470,13 +472,16 @@ var flensed={base_path:''};
             else{
                 var el = document.createElement('div');
                 el.setAttribute('id', id);
+                var rawJid = $.icescrum.chat.unescapeJid(escapedJid);
+                var title = $('#chat-user-status-'+escapedJid+' a').attr('name') ? $('#chat-user-status-'+escapedJid+' a').attr('name') : rawJid;
+                title = $.icescrum.chat.truncate(title,25);
                 $(el).chat({id : id,
                             alert : this.o.i18n.alertNewMessages,
                             escapedJid : escapedJid,
                             status : $('#chat-user-status-'+escapedJid).attr('status') ? $('#chat-user-status-'+escapedJid).attr('status') : 'offline',
                             hidden : false,
                             width : this.o.width,
-                            title : $('#chat-user-status-'+escapedJid+' a').attr('name') ? $('#chat-user-status-'+escapedJid+' a').attr('name') : escapedJid,
+                            title : title,
                             offset : this._getNextOffset(),
                             messageSent : this.sendMessage,
                             chatClosed : this.closeChat,
