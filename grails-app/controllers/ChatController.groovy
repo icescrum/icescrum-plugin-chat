@@ -55,7 +55,12 @@ class ChatController {
 
   def index = {
 
-    def user = User.get(springSecurityService.principal.id)
+    def user = springSecurityService.currentUser
+    def chatPreferences = chatService.getChatPreferences(user)
+    if (chatPreferences.needConfiguration()){
+        render(template:'widget/widgetView',plugin:'icescrum-chat', model:[needConfiguration:true])
+        return
+    }
     def statusKeys = []
     def statusLabels =[]
     def statusIcons = []
@@ -96,14 +101,15 @@ class ChatController {
             statusKeys:statusKeys,
             statusLabels:statusLabels,
             statusIcons:statusIcons,
+            needConfiguration:false,
             id:id])
   }
 
 
   def attachConnection = {
-    def user = User.get(springSecurityService.principal.id)
+    def user = springSecurityService.currentUser
     def chatConnection = new ChatConnection()
-    if(chatConnection.connect(user.username,session['j_password'])){
+    if(chatConnection.connect(chatService.getChatPreferences(user))){
       render(status:200,text:[sid:chatConnection.sid,rid:chatConnection.rid,jid:chatConnection.jid] as JSON)
     }else{
       render(status:400)
@@ -124,7 +130,7 @@ class ChatController {
         if (params.boolean('custom')){
           chatService.addStatus(user,params.presence)
         }
-        chatService.setCurrentStatus(user,params.show,params.presence)
+        chatService.setChatPreferences([user:user,show:params.show,presence:params.presence])
         render(status:200)
       }else{
         render(status:400)
@@ -142,15 +148,15 @@ class ChatController {
 
   def form = {
       def chatPref = chatService.getChatPreferences(params.user)
-      render(template:'dialogs/profile', plugin:pluginName, model:[username:chatPref.username])
+      render(template:'dialogs/profile', plugin:pluginName, model:[chatPreferences:chatPref])
   }
 
   def update = {
-      if (params.saveChat?.usernameChat && request.user){
-        def chatPref = chatService.getChatPreferences(request.user)
-        chatPref.username = params.saveChat.usernameChat
-        chatPref.save()
-        render(status:200)
+      if(params.chatPreferences instanceof Map){
+          params.chatPreferences.user = springSecurityService.currentUser
+          params.chatPreferences.secure = params.chatPreferencesSecure
+          chatService.setChatPreferences(params.chatPreferences)
       }
+      render(status:200)
   }
 }

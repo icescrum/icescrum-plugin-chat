@@ -35,20 +35,18 @@
 #chat-roster-list {
     display:none;
     margin-left:2px;
-    padding-bottom:5px;
-    padding-top:5px;
-    width:98%;
+    margin-top:2px;
+    margin-bottom:2px;
+    width:250px;
 }
 
-#chat-roster-list li
-{
+#chat-roster-list li{
     list-style-type:none;
 }
 
 #chat-roster-list ul {
     padding:0;
     margin:0;
-    margin-top:10px;
 }
 
 #local #widget-id-chat.box {
@@ -171,6 +169,35 @@
     background-image:url('../images/user_chat.gif');
 }
 
+.ui-chat-status-away:hover {
+    background:url('../images/user_away.gif') #f5f5f5;
+    background-repeat:no-repeat;
+    background-position: left center;
+}
+
+.ui-chat-status-xa:hover {
+    background:url('../images/user_away.gif') #f5f5f5;
+    background-repeat:no-repeat;
+}
+
+.ui-chat-status-dnd:hover {
+    background:url('../images/user_dnd.gif') #f5f5f5;
+    background-repeat:no-repeat;
+    background-position: left center;
+}
+
+.ui-chat-status-offline:hover {
+    background:url('../images/user_offline.gif') #f5f5f5;
+    background-repeat:no-repeat;
+    background-position: left center;
+}
+
+.ui-chat-status-online:hover,.ui-chat-status-chat:hover {
+    background:url('../images/user_chat.gif') #f5f5f5;
+    background-repeat:no-repeat;
+    background-position: left center;
+}
+
 .ui-chat-select {
     background-position:left;
     background-repeat:no-repeat;
@@ -181,8 +208,12 @@
 }
 
 .ui-chat-status {
-    padding-left:17px;
-    background-repeat:no-repeat;
+    background-position: left center;
+    background-repeat: no-repeat;
+    padding-bottom: 0;
+    padding-left: 17px;
+    padding-top: 2px;
+    cursor:pointer;
 }
 
 .chat-tooltip {
@@ -276,22 +307,13 @@
     color:#444444;
 }
 
-.chat-group {
-    border-style:solid;
-    border-color:#C4C4C4;
-    border-width:1px;
-}
-
-.chat-group li {
-    padding:5px 5px;
-}
-
 .chat-group-title {
-    background:none repeat scroll 0 0 #FFFFFF;
+    background:#f5f5f5;
     display:inline-block;
-    margin-left:5px;
+    width:250px;
+    text-align:center;
+    font-weight:bold;
     position:relative;
-    margin-top:-9px;
 }
 
 .ui-chat-emoticons {
@@ -336,10 +358,10 @@
 }
 
 .add-contact {
-    position:relative;
+    float:right;
 }
 
-.add-contact .ui-button {
+.add-contact .ui-button,.chat-offline-toggle .ui-button {
     margin-left: 5px;
     margin-top: 0;
     padding: 3px;
@@ -360,4 +382,21 @@
     line-height: 29px;
     width: 17px;
     padding-left: 0;
+}
+
+#chat-manage {
+    height:24px;
+    display:none;
+}
+
+.chat-offline-toggle {
+    float:left;
+}
+
+.chat-need-configuration {
+    text-align:center;
+}
+
+.ui-chat-status .chat-user-link {
+    text-decoration:none;
 }

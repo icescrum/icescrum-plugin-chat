@@ -26,8 +26,26 @@
  *
  *--%>
 
-<is:fieldset title="is.dialog.profile.chat.title">
-    <is:fieldInput for="usernameChat" label="is.user.username" noborder="true">
-      <is:input id="usernameChat" name="saveChat.usernameChat" value="${username}"/>
+<is:accordionSection title="is.chat.ui.dialog.chat.title">
+    <is:fieldInput for="chatPreferences.username" label="is.chat.ui.dialog.chat.username">
+      <is:input id="chatPreferences.username" name="chatPreferences.username" value="${chatPreferences.username}"/>
     </is:fieldInput>
-</is:fieldset>
+    <is:fieldInput for="chatPreferences.password" label="is.chat.ui.dialog.chat.password">
+      <is:password id="chatPreferences.password" name="chatPreferences.password" value="${chatPreferences.password}"/>
+    </is:fieldInput>
+    <is:fieldRadio for="chatPreferencesHideOffline" label="is.chat.ui.dialog.chat.hideOffline">
+      <is:radio id="chatPreferencesHideOffline" name="chatPreferencesHideOffline" value="${chatPreferences.hideOffline}"/>
+    </is:fieldRadio>
+    <is:fieldInput for="chatPreferences.server" label="is.chat.ui.dialog.chat.server">
+      <is:input id="chatPreferences.server" name="chatPreferences.server" value="${chatPreferences.server}"/>
+    </is:fieldInput>
+    <is:fieldInput for="chatPreferences.port" label="is.chat.ui.dialog.chat.port">
+      <is:input id="chatPreferences.port" name="chatPreferences.port" value="${chatPreferences.port}"/>
+    </is:fieldInput>
+    <is:fieldInput for="chatPreferences.boshPath" label="is.chat.ui.dialog.chat.boshPath">
+      <is:input id="chatPreferences.boshPath" name="chatPreferences.boshPath" value="${chatPreferences.boshPath}"/>
+    </is:fieldInput>
+    <is:fieldRadio for="chatPreferencesSecure" label="is.chat.ui.dialog.chat.secure" noborder="true">
+      <is:radio id="chatPreferencesSecure" name="chatPreferencesSecure" value="${chatPreferences.secure}"/>
+    </is:fieldRadio>
+</is:accordionSection>

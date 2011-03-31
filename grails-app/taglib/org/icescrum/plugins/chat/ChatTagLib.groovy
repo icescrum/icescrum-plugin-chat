@@ -42,8 +42,10 @@ class ChatTagLib {
       def user = User.get(springSecurityService.principal.id)
       def chatPreferences = chatService.getChatPreferences(user)
       def jsCode = """var icescrumChat = {
-                            server: '${ChatUtils.chatConfig.icescrum.chat.server}',
-                            port: '${ChatUtils.chatConfig.icescrum.chat.port}',
+                            server: '${chatPreferences.server}',
+                            port: '${chatPreferences.port}',
+                            boshPath: '${chatPreferences.boshPath}',
+                            hideOffline: '${chatPreferences.hideOffline}',
                             teamList : '${attrs.teamList.encodeAsJavaScript()}',
                             emoticonsDir : '${resource(plugin: 'icescrum-chat', dir: '/images/emoticons')}',
                             currentStatus : {

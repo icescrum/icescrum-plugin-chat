@@ -37,15 +37,13 @@ class ChatService {
     preferences.save()
   }
 
-  def setCurrentStatus(def user, String show, String presence){
-    ChatPreferences preferences = (ChatPreferences.findByUser(user)) ? ChatPreferences.findByUser(user) : new ChatPreferences(user : user)
-    preferences.show = show
-    preferences.presence = presence
-    preferences.save();
-  }
-
   def getChatPreferences(def user){
     return ChatPreferences.findByUser(user)? ChatPreferences.findByUser(user) : new ChatPreferences(user : user)
   }
 
+  def setChatPreferences(def chatPreferences){
+    ChatPreferences preferences = (ChatPreferences.findByUser(chatPreferences.user)) ? ChatPreferences.findByUser(chatPreferences.user) : new ChatPreferences(chatPreferences)
+    preferences.properties = chatPreferences
+    preferences.save()
+  }
 }

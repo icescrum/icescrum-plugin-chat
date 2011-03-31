@@ -9,6 +9,7 @@ import org.jivesoftware.smack.packet.Presence
 import org.jivesoftware.smack.RosterListener
 import org.jivesoftware.smack.Roster
 import org.apache.commons.logging.LogFactory
+import org.jivesoftware.smack.Connection
 
 class ChatConnection implements BOSHClientRequestListener{
 
@@ -21,15 +22,14 @@ class ChatConnection implements BOSHClientRequestListener{
   ChatConnection(){
   }
 
-  boolean connect(def login, def password){
-
+  boolean connect(def chatPreferences){
     def isConnected = false
     BOSHConfiguration config = new BOSHConfiguration(
-            ChatUtils.chatConfig.icescrum.chat.secure.toBoolean(),
-            ChatUtils.chatConfig.icescrum.chat.server,
-            ChatUtils.chatConfig.icescrum.chat.port.toInteger(),
-            ChatUtils.chatConfig.icescrum.chat.boshPath,
-            ChatUtils.chatConfig.icescrum.chat.server
+            chatPreferences.secure,
+            chatPreferences.server,
+            chatPreferences.port,
+            chatPreferences.boshPath,
+            (String)chatPreferences.username.split('@')[1]
     )
     config.setRosterLoadedAtLogin(false)
     config.setSendPresence(false)
@@ -38,7 +38,7 @@ class ChatConnection implements BOSHClientRequestListener{
       conn.connect()
 
       conn.client.addBOSHClientRequestListener(this)
-      conn.login(login,password,ChatUtils.chatConfig.icescrum.chat.resource)
+      conn.login(chatPreferences.username,chatPreferences.password,ChatUtils.chatConfig.icescrum.chat.resource)
 
       isConnected = conn.isConnected()
 

@@ -94,7 +94,12 @@ $(document).ready(function(){
                 },
 
                 addMsg: function(name, msg) {
+                    msg = $('<pre>').text(msg).html();
                     msg = $.icescrum.emoticons.replace(msg);
+
+                    var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+                    msg = msg.replace(exp,"<a href='$1' target='_blank'>$1</a>");
+
                     var self = this;
                     var chat = self.elem.uiChatLog;
                     var e = document.createElement('div');

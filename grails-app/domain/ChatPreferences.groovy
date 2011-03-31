@@ -30,22 +30,35 @@ import org.icescrum.core.domain.User
 
 class ChatPreferences {
 
-  String password
-  String username
   String[] statusList = new String[2]
   String show = "online"
   String presence
 
+  String username
+  String password
+  String server
+  boolean secure = false
+  boolean hideOffline = true
+  String boshPath = '/http-bind/'
+  Integer port = 8080
+
   User user
+
+  static transients = ['needConfiguration']
 
   static constraints = {
     statusList(nullable: false)
     show(nullable: false)
     presence(nullable: true)
+    username(email:true)
   }
 
   static mapping={
     table 'icescrum_plugin_chat'
     show column:'show_col'
+  }
+
+  def needConfiguration = {
+      return !(this.username && this.password && this.server && this.boshPath && this.port > 0)
   }
 }

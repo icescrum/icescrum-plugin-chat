@@ -28,27 +28,46 @@
 
 <r:use module="chat"/>
 
-<is:select
-    container="#widget-content-${id}"
-    width="125"
-    styleSelect="dropdown"
-    from="${statusLabels}"
-    keys="${statusKeys}"
-    icons="${statusIcons}"
-    value="${message(code:'is.chat.status.disconnected')}"
-    name="chatstatus"
-    onchange="jQuery.icescrum.chat.presenceChanged(jQuery('.ui-selectmenu-status').text(),jQuery(this).find('option:selected').val());"/>
+<g:if test="${needConfiguration}">
+  <div class="chat-need-configuration">
+      <is:remoteDialog
+              action="openProfile"
+              controller="user"
+              valid="[action:'update',controller:'user',onSuccess:'\$.icescrum.updateProfile(data)']"
+              title="is.dialog.profile"
+              width="600"
+              noprefix="true"
+              resizable="false"
+              draggable="false">
+            <g:message code='is.chat.ui.needConfiguration'/>
+      </is:remoteDialog>
+  </div>
+</g:if>
+<g:else>
+    <is:select
+        container="#widget-content-${id}"
+        width="125"
+        styleSelect="dropdown"
+        from="${statusLabels}"
+        keys="${statusKeys}"
+        icons="${statusIcons}"
+        value="${message(code:'is.chat.status.disconnected')}"
+        name="chatstatus"
+        onchange="jQuery.icescrum.chat.presenceChanged(jQuery('.ui-selectmenu-status').text(),jQuery(this).find('option:selected').val());"/>
 
-<is:loadChatVar teamList="${teamList}"/>
+    <is:loadChatVar teamList="${teamList}"/>
 
-  <is:link id="chat-list-show" onClick="jQuery.icescrum.chat.displayRoster();" disabled="true">
-    <g:message code="is.chat.ui.show"/> <g:message code="is.chat.ui.connected"/> <span class=nb-contacts></span>
-  </is:link>
-  <is:link id="chat-list-hide" onClick="jQuery.icescrum.chat.displayRoster();" disabled="true">
-    <g:message code="is.chat.ui.hide"/> <g:message code="is.chat.ui.connected"/> <span class=nb-contacts></span>
-  </is:link>
- <div id="chat-roster-list">
-     <div class="add-contact">
-        <is:input id="chat-add-contact" name="addcontact"/><button onclick="$.icescrum.chat.requestSubscriptionContact();" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">${message(code:'is.chat.ui.add')}</button>
+      <is:link id="chat-list-show" onClick="jQuery.icescrum.chat.displayRoster();" disabled="true">
+        <g:message code="is.chat.ui.show"/> <span class=nb-contacts></span>
+      </is:link>
+      <is:link id="chat-list-hide" onClick="jQuery.icescrum.chat.displayRoster();" disabled="true">
+        <g:message code="is.chat.ui.hide"/> <span class=nb-contacts></span>
+      </is:link>
+    <div id="chat-manage">
+         <div class="add-contact">
+            <is:input id="chat-add-contact" name="addcontact"/><button onclick="$.icescrum.chat.requestSubscriptionContact();" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">${message(code:'is.chat.ui.add')}</button>
+         </div>
      </div>
- </div>
+     <div id="chat-roster-list">
+     </div>
+</g:else>

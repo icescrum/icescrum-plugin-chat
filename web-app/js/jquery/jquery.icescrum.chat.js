@@ -37,11 +37,13 @@ var flensed={base_path:''};
         defaults:{
             server : null,
             port : 7070,
+            boshPath:null,
             connection : null,
             connected : false,
             width : 210,
             gap : 20,
             sendPresence:true,
+            hideOffline:true,
             maxChats : 5,
             status : "#chat-status",
             chatList : new Array(),
@@ -95,7 +97,7 @@ var flensed={base_path:''};
             $("#chatstatus-button").removeClass('ui-chat-status-away ui-chat-status-chat ui-chat-status-online ui-chat-status-xa ui-chat-status-dnd').addClass('ui-chat-select ui-chat-status-offline');
             $("#chatstatus-button .ui-selectmenu-status").text(this.o.i18n.connecting);
             console.log("[icescrum-chat] Connecting to server...");
-            this.o.connection = new Strophe.Connection("http://"+this.o.server+":"+this.o.port+"/http-bind/");
+            this.o.connection = new Strophe.Connection("http://"+this.o.server+":"+this.o.port+this.o.boshPath);
             if (this.o.connection == null){
                 console.log("[icescrum-chat] Error not connected to server");
                 $.icescrum.renderNotice(this.o.i18n.connectionError,'error');
@@ -258,6 +260,7 @@ var flensed={base_path:''};
                 console.log("[icescrum-chat] Receive presence unsubscription from "+ escapedJid);
                 $.icescrum.chat.changeImageStatus(escapedJid, '', show, type);
             }
+            $.icescrum.chat.finalizeContactList();
             return true;
         },
 
@@ -322,7 +325,7 @@ var flensed={base_path:''};
                         }
                     }
                     if (subscription == 'remove'){
-                        $('#chat-user-status-'+ $.icescrum.chat.escapeJid(jid)).parent().remove();
+                        $('#chat-user-status-'+ $.icescrum.chat.escapeJid(jid)).remove();
                         $.icescrum.chat.finalizeContactList();
                     }
                     console.log("[icescrum-chat] updating roster subscription:"+subscription);
@@ -554,16 +557,22 @@ var flensed={base_path:''};
             if ($.icescrum.chat.o.connected){
                 if ($('#chat-roster-list').is(':hidden')){
                     $('#chat-roster-list').show();
+                    $('#chat-manage').show();
                     $('#chat-list-hide').css('display','block');
                     $('#chat-list-show').hide();
+                    if ($("#chat-roster-list").find('.scrollbar-wrapper').length == 0){
+                        $("#chat-roster-list").scrollbar({contentHeight:parseInt(200),position:'right'});
+                    }
                 }else{
                     $('#chat-roster-list').hide();
                     $('#chat-list-hide').hide();
+                    $('#chat-manage').hide();
                     $('#chat-list-show').css('display','block');
                 }
             }else{
                 $('#chat-roster-list').hide();
                 $('#chat-list-hide').hide();
+                $('#chat-manage').hide();
                 $('#chat-list-show').css('display','block');
             }
         },
@@ -603,28 +612,56 @@ var flensed={base_path:''};
         // Change l'image et le tooltip du statut
         changeImageStatus:function(escapedJid, status, show, type){
             //Subscription receive
-            var image = $('.ui-chat-user-status-'+escapedJid);
+            var user = $('.ui-chat-user-status-'+escapedJid);
+            var userInList = $('#chat-user-status-'+escapedJid);
+            var group = userInList.parent();
+
             if(type == 'unavailable'){
-                image.removeClass();
-                $('#chat-user-status-'+escapedJid).attr('status','offline');
-                image.addClass("ui-chat-user-status-"+escapedJid+" ui-chat-status ui-chat-status-offline");
-                image.attr('title', '');
+                group.append(userInList);
+                $.icescrum.chat.o.hideOffline ? userInList.hide() : userInList.show();
+                user.removeClass();
+                userInList.attr('status','offline');
+                user.addClass("grey-status ui-chat-user-status-"+escapedJid+" ui-chat-status ui-chat-status-offline");
+                userInList.attr('title', '');
             } else {
+                var last = 0;
                 if(show.length > 0){
-                    image.removeClass();
-                    $('#chat-user-status-'+escapedJid).attr('status',show);
-                    image.addClass("ui-chat-user-status-"+escapedJid+" ui-chat-status ui-chat-status-"+show);
+                    user.removeClass();
+                    if (show == 'xa' || show == 'away'){
+                        user.addClass("orange-status");
+                    }else if(show == 'dnd'){
+                        user.addClass("red-status");
+                    }
+                    userInList.attr('status',show);
+                    user.addClass("ui-chat-user-status-"+escapedJid+" ui-chat-status ui-chat-status-"+show);
                 }
                 if(show.length == 0){
-                    $('#chat-user-status-'+escapedJid).attr('status','chat');
-                    image.addClass("ui-chat-user-status-"+escapedJid+" ui-chat-status ui-chat-status-online");
+                    user.removeClass();
+                    userInList.attr('status','chat');
+                    user.addClass("green-status ui-chat-user-status-"+escapedJid+" ui-chat-status ui-chat-status-online");
                 }
+                user.show();
             }
             if(status.length > 0){
                 $('.chat-tooltip-right .ui-chat-user-status-text-'+escapedJid).text(status);
-                image.attr('title', status);
+                user.attr('title', status);
             } else {
-                image.attr('title', '');
+                user.attr('title', '');
+            }
+            //On sort le global
+            var sort = $.icescrum.chat.o.hideOffline ? group.find('li').not('ui-chat-status-offline') : group.find('li');
+            sort.sortElements(function(a,b){
+                var statusA = $(a);
+                var statusB = $(b);
+                var valA = statusA.hasClass('green-status') ? 2 : statusA.hasClass('red-status') ? 1 : statusA.hasClass('orange-status') ? 0 : -1;
+                var valB = statusB.hasClass('green-status') ? 2 : statusB.hasClass('red-status') ? 1 : statusB.hasClass('orange-status') ? 0 : -1;
+                return valA < valB ? 1 : -1;
+            });
+            group.find('li.green-status').sortElements(function(a,b){return $(a).text().toUpperCase() > $(b).text().toUpperCase() ? 1 : -1;});
+            group.find('li.red-status').sortElements(function(a,b){return $(a).text().toUpperCase() > $(b).text().toUpperCase() ? 1 : -1;});
+            group.find('li.orange-status').sortElements(function(a,b){return $(a).text().toUpperCase() > $(b).text().toUpperCase() ? 1 : -1;});
+            if (!$.icescrum.chat.o.hideOffline){
+                group.find('li.grey-status').sortElements(function(a,b){ return $(a).text().toUpperCase() > $(b).text().toUpperCase() ? 1 : -1;});
             }
         },
 
@@ -680,6 +717,7 @@ var flensed={base_path:''};
 
         addTeamContacts:function(teamList, jabberList){
            $(teamList).each(function () {
+                this.users = this.users.sort(function(a, b){return a.firstname > b.firstname ? 1 : -1;});
                 var teamid = this.teamid;
                 $('#chat-roster-list').append('<ul class="chat-group" id="team-'+teamid+'"><span class="chat-group-title">'+this.teamname+'</span>');
                 $(this.users).each(function(){
@@ -697,6 +735,7 @@ var flensed={base_path:''};
         },
 
         addJabberContacts:function(teamList, jabberList) {
+            jabberList = jabberList.sort(function(a, b){return a.name > b.name ? 1 : -1;});
             $('#chat-roster-list').append('<ul class="chat-group" id="team-non-icescrum"><span class="chat-group-title">'+$.icescrum.chat.o.i18n.teamNonIcescrum+'</span>');
             $(jabberList).each(function(){
                 var jabberUser = this;
@@ -721,12 +760,14 @@ var flensed={base_path:''};
 
         addContact:function(teamid,rawJid,name,firstname) {
             var escapedJid = $.icescrum.chat.escapeJid(rawJid);
-            $('#team-'+teamid).append('<li><div id="chat-user-status-' + escapedJid + '" class="ui-chat-user-status-'+escapedJid+' ui-chat-status ui-chat-status-offline" status="offline" title="">' +
-								        '<a id="chat-user-'+escapedJid+'" disabled="true" href="javascript:;" class="chat-user-link" jid="'+escapedJid+'" name="'+$.icescrum.chat.truncate(name, 35)+'" firstname="'+firstname+'">' +
-                                            $.icescrum.chat.truncate(name, 35) +
-                                        '</a>' +
-                                        '<div class="chat-delete-contact"></div>' +
-							          '</div></li>');
+            if ($('#chat-user-status-' + escapedJid).length == 0){
+                $('#team-'+teamid).append('<li id="chat-user-status-' + escapedJid + '" class="ui-chat-user-status-'+escapedJid+' grey-status ui-chat-status ui-chat-status-offline" status="offline" title="">' +
+                                            '<a id="chat-user-'+escapedJid+'" href="javascript:;" class="chat-user-link" jid="'+escapedJid+'" name="'+$.icescrum.chat.truncate(name, 35)+'" firstname="'+firstname+'">' +
+                                                $.icescrum.chat.truncate(name, 35) +
+                                            '</a>' +
+                                            '<div class="chat-delete-contact"></div>' +
+                                            '</li>');
+            }
         },
 
         addTeamContact:function(rawJid,user,teamid) {
@@ -747,34 +788,50 @@ var flensed={base_path:''};
             if(displayedName == null || displayedName == 'null') {
                 displayedName = Strophe.getNodeFromJid(jabberUser.rawJid);
             }
-            displayedName += ' (' + Strophe.getDomainFromJid(jabberUser.rawJid) + ')';
             $.icescrum.chat.addContact(teamid,jabberUser.rawJid,displayedName,displayedName)
         },
 
         putContactLinks:function() {
-            $('.chat-user-link').die('click.chat').live('click.chat',function(event){
-                $.icescrum.chat.createOrOpenChat('chat-'+$(this).attr('jid'),$(this).attr('jid'),true);
+            $('.ui-chat-status').die('click.chat').live('click.chat',function(event){
+                var link = $(this).children('a');
+                $.icescrum.chat.createOrOpenChat('chat-'+link.attr('jid'),link.attr('jid'),true);
                 event.preventDefault();
             });
-            $('.chat-group li').hover(function(){ $(this).find('.chat-delete-contact').show();},function(){$(this).find('.chat-delete-contact').hide();});
+
+            var showDelete;
+            $('.chat-group li').hover(
+                function(){
+                    var del = $(this);
+                    showDelete = setTimeout(function(){del.find('.chat-delete-contact').show();},2000);;
+                },
+                function(){
+                    clearTimeout(showDelete);
+                    $(this).find('.chat-delete-contact').hide();
+                }
+            );
+
             $('.chat-delete-contact').die('click.delete').live('click.delete',function(event){
                 $.icescrum.chat.cancelSubscription($(this).parent().find('.chat-user-link').attr('jid'));
+                event.stopPropagation();
                 event.preventDefault();
             });
         },
 
         finalizeContactList:function() {
             var nbContacts = 0;
+            var nbContactsNotOffline = 0;
             $('.chat-group').each(function(){
-               var nbTeamContacts = $(this).find('li').length;
+               var nbTeamContacts =  $(this).find('li').length;
                if(nbTeamContacts == 0) {
                    $(this).remove();
                }
                else{
                    nbContacts += nbTeamContacts;
                }
+               nbContactsNotOffline += $(this).find('li').not('.ui-chat-status-offline').length;
             });
-            $('.nb-contacts').html('('+nbContacts+')');
+            $('.nb-contacts').html('('+nbContactsNotOffline+'/'+nbContacts+')');
+            $.icescrum.chat.o.hideOffline ? $('#chat-roster-list .ui-chat-status-offline').hide() : $('#chat-roster-list .ui-chat-status-offline').show();
         },
 
         customPresence:function(val,settings){
@@ -832,3 +889,30 @@ jQuery.editable.addInputType('statut-editable', {
             return(input);
         }
 });
+
+jQuery.fn.sortElements = (function(){
+    var sort = [].sort;
+    return function(comparator, getSortable) {
+        getSortable = getSortable || function(){return this;};
+        var placements = this.map(function(){
+            var sortElement = getSortable.call(this),
+                parentNode = sortElement.parentNode,
+                nextSibling = parentNode.insertBefore(
+                    document.createTextNode(''),
+                    sortElement.nextSibling
+                );
+            return function() {
+                if (parentNode === this) {
+                    throw new Error(
+                        "You can't sort elements if any one is a descendant of another."
+                    );
+                }
+                parentNode.insertBefore(this, nextSibling);
+                parentNode.removeChild(nextSibling);
+            };
+        });
+        return sort.call(this, comparator).each(function(i){
+            placements[i].call(getSortable.call(this));
+        });
+    };
+})();
