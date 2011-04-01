@@ -89,7 +89,10 @@ class ChatController {
       def jsonTeam = []
       t.members?.each{u->
         if(u.id != user.id && !userList.contains(u.id)) {
-          jsonTeam.add([id:u.id, username:u.username.toLowerCase(), lastname:u.lastName, firstname:u.firstName])
+          def chatPref = chatService.getChatPreferences(u)
+          if (chatPref.username){
+            jsonTeam.add([id:u.id, jid:chatPref.username, lastname:u.lastName, firstname:u.firstName])
+          }
           userList.add(u.id)
         }
       }
@@ -132,7 +135,10 @@ class ChatController {
         if (params.boolean('custom')){
           chatService.addStatus(user,params.presence)
         }
-        chatService.setChatPreferences([user:user,show:params.show,presence:params.presence])
+        def chatPreferences = chatService.getChatPreferences(user)
+        chatPreferences.show = params.show
+        chatPreferences.presence = params.presence
+        chatService.saveChatPreferences(chatPreferences)
         render(status:200)
       }else{
         render(status:400)
@@ -155,11 +161,18 @@ class ChatController {
 
   def update = {
       if(params.chatPreferences instanceof Map){
-          params.chatPreferences.user = springSecurityService.currentUser
           params.chatPreferences.secure = params.chatPreferencesSecure
-          chatService.setChatPreferences(params.chatPreferences)
+          params.chatPreferences.hideOffline = params.chatPreferencesHideOffline
+          def chatPref = chatService.getChatPreferences(springSecurityService.currentUser)
+          try {
+            chatPref.properties = params.chatPreferences
+            chatService.saveChatPreferences(chatPref)
+          } catch (RuntimeException re) {
+              render(status: 400, contentType: 'application/json', text:[renderErrors(bean:chatPref)] as JSON)
+              return
+          }
       }
-      render(status:200)
+      render(status:200, render:"\$.icescrum.chat.reloadChat();")
   }
 
   def urlMessage = {

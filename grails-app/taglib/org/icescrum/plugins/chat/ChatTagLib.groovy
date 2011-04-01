@@ -45,7 +45,7 @@ class ChatTagLib {
                             server: '${chatPreferences.server}',
                             port: '${chatPreferences.port}',
                             boshPath: '${chatPreferences.boshPath}',
-                            hideOffline: '${chatPreferences.hideOffline}',
+                            hideOffline: ${chatPreferences.hideOffline},
                             teamList : '${attrs.teamList.encodeAsJavaScript()}',
                             emoticonsDir : '${resource(plugin: 'icescrum-chat', dir: '/images/emoticons')}',
                             currentStatus : {

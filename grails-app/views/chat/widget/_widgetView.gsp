@@ -41,6 +41,8 @@
               draggable="false">
             <g:message code='is.chat.ui.needConfiguration'/>
       </is:remoteDialog>
+      <br/>
+      <a href="javascript:;" onclick="$.icescrum.chat.reloadChat();"><g:message code="is.chat.ui.reload"/></a>
   </div>
 </g:if>
 <g:else>

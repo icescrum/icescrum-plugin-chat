@@ -93,6 +93,12 @@ var flensed={base_path:''};
             }
         },
 
+        reloadChat:function(){
+            $("#widget-id-chat").data('id','chat');
+            $.icescrum.closeWidget($("#widget-id-chat"),true);
+            $.icescrum.addToWidgetBar('chat');
+        },
+
         _initConnect:function(){
             $("#chatstatus-button").removeClass('ui-chat-status-away ui-chat-status-chat ui-chat-status-online ui-chat-status-xa ui-chat-status-dnd').addClass('ui-chat-select ui-chat-status-offline');
             $("#chatstatus-button .ui-selectmenu-status").text(this.o.i18n.connecting);
@@ -726,7 +732,7 @@ var flensed={base_path:''};
                 $(this.users).each(function(){
                     var user = this;
                     $(jabberList).each(function () {
-                        if(Strophe.getNodeFromJid(this.rawJid) == user.username && Strophe.getDomainFromJid(this.rawJid) == $.icescrum.chat.o.server) {
+                        if(this.rawJid == user.jid) {
                             $.icescrum.chat.addTeamContact(this.rawJid,user, teamid);
                         }else if(Strophe.getDomainFromJid(this.rawJid) == $.icescrum.chat.o.server){
 

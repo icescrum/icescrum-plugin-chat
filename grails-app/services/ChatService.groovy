@@ -41,9 +41,9 @@ class ChatService {
     return ChatPreferences.findByUser(user)? ChatPreferences.findByUser(user) : new ChatPreferences(user : user)
   }
 
-  def setChatPreferences(def chatPreferences){
-    ChatPreferences preferences = (ChatPreferences.findByUser(chatPreferences.user)) ? ChatPreferences.findByUser(chatPreferences.user) : new ChatPreferences(chatPreferences)
-    preferences.properties = chatPreferences
-    preferences.save()
+  def saveChatPreferences(def chatPreferences){
+    if (!chatPreferences.save()){
+        throw new RuntimeException()
+    }
   }
 }
