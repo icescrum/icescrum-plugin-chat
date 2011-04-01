@@ -133,6 +133,11 @@
     font-weight:bold;
 }
 
+.ui-chat-msg a,.ui-chat-msg-tab a {
+    color: #4382BD;
+    font-weight: bold;
+}
+
 .ui-chat-composing {
     background-image:url("../images/comment_edit.png");
     background-repeat:no-repeat;

@@ -32,6 +32,7 @@ import org.icescrum.core.domain.User
 import org.icescrum.core.support.ApplicationSupport
 import org.icescrum.plugins.chat.ChatConnection
 import org.icescrum.plugins.chat.ChatUtils
+import org.icescrum.core.domain.Story
 
 class ChatController {
   static ui = true
@@ -51,6 +52,7 @@ class ChatController {
 
   def teamService
   def springSecurityService
+  def securityService
   def chatService
 
   def index = {
@@ -110,7 +112,7 @@ class ChatController {
     def user = springSecurityService.currentUser
     def chatConnection = new ChatConnection()
     if(chatConnection.connect(chatService.getChatPreferences(user))){
-      render(status:200,text:[sid:chatConnection.sid,rid:chatConnection.rid,jid:chatConnection.jid] as JSON)
+      render(status:200,text:[sid:chatConnection.sid,rid:chatConnection.rid,jid:chatConnection.jid] as JSON, contentType: 'application/json')
     }else{
       render(status:400)
     }
@@ -158,5 +160,22 @@ class ChatController {
           chatService.setChatPreferences(params.chatPreferences)
       }
       render(status:200)
+  }
+
+  def urlMessage = {
+      def stories = Story.getAll(params.list('id'))
+      def urls = []
+      stories.each{
+            if (!it.backlog.preferences.hidden || securityService.inProduct(it.backlog.id, springSecurityService.authentication)){
+                urls << [id:'story-'+it.id,
+                       external:createLink(absolute: true, mapping: "shortURL", params: [product: it.backlog.pkey], id: it.id),
+                       internal:is.createScrumLink(product:it.backlog.id,controller:'backlogElement',id:it.id),
+                       name:it.name,
+                       estimation:it.effort?:'?',
+                       state:is.bundleFromController(controller:'productBacklog',bundle:'stateBundle',value:it.state)]
+            }
+
+      }
+      render(status:200,text:urls as JSON, contentType: 'application/json')
   }
 }

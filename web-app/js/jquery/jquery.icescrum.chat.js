@@ -109,7 +109,6 @@ var flensed={base_path:''};
                 global:false,
                 url: $.icescrum.o.grailsServer + '/chat/attachConnection',
                 success:function(data) {
-                    data = $.parseJSON(data);
                     console.log("[icescrum-chat] Attaching connection");
                     $.icescrum.chat.o.connection.attach(data.jid, data.sid,parseInt(data.rid) + 1, $.icescrum.chat._connectionHandler);
                     $.icescrum.chat.o.ownjid = data.jid;
@@ -226,7 +225,9 @@ var flensed={base_path:''};
             var extractedText = (text[0].text) ? text[0].text : (text[0].textContent) ? text[0].textContent : "";
             var name = $('#chat-user-status-'+escapedJid+' a').attr('firstname') ? $('#chat-user-status-'+escapedJid+' a').attr('firstname') : rawJid;
             name = $.icescrum.chat.truncate(name,15);
-            $("#chat-" + escapedJid).chat("option", "chatManager").addMsg(name, extractedText);
+            extractedText = $('<pre>').text(extractedText).html();
+            extractedText = $.icescrum.chat.displayBacklogElementUrl(extractedText,'story');
+            $("#chat-" + escapedJid).chat("option", "chatManager").addMsg(name, extractedText[1]);
         },
 
         // Permet de d'être informé lors d'un changement de statut
@@ -503,12 +504,14 @@ var flensed={base_path:''};
         // et ajoute msg à la fenêtre de chat correspondant
         // Pourquoi id en parametre ? -> c'est l'ui qui envoie l'id de la fenetre ca peut être utile..
         sendMessage:function(id, escapedJid, msg){
-            var rawJid = $.icescrum.chat.unescapeJid(escapedJid)
+            var rawJid = $.icescrum.chat.unescapeJid(escapedJid);
+            msg = $('<pre>').text(msg).html();
+            msg = $.icescrum.chat.displayBacklogElementUrl(msg,'story');
             var message = $msg({type: 'chat', to: rawJid})
-                                                .c('body').t(msg)
+                                                .c('body').t(msg[0])
                                                 .up().c('active', {xmlns:'http://jabber.org/protocol/chatstates'});
             $.icescrum.chat.o.connection.send(message.tree());
-            $("#chat-" + escapedJid).chat("option", "chatManager").addMsg($.icescrum.chat.o.i18n.me, msg);
+            $("#chat-" + escapedJid).chat("option", "chatManager").addMsg($.icescrum.chat.o.i18n.me, msg[1]);
             console.log("[icescrum-chat] Message sent to "+rawJid);
         },
 
@@ -875,6 +878,34 @@ var flensed={base_path:''};
 
         unescapeJid:function(escapedJid) {
             return escapedJid.replace(/_point_/g,'.').replace(/_at_/g,'@');
+        },
+
+        displayBacklogElementUrl:function(msg,type,external){
+            var val = [msg,msg];
+            var re = new RegExp(type+'-[0-9]*',"g");
+            var stories = msg.match(re);
+            if (stories){
+                var ids = ['type='+type];
+                $(stories).each(function(){
+                    ids.push('id=' + this.replace(/story-/g,''));
+                });
+                $.ajax({type:'POST',
+                    global:false,
+                    data:ids.join('&'),
+                    dataType:'json',
+                    async:false,
+                    url: $.icescrum.o.grailsServer + '/chat/urlMessage',
+                    success:function(data) {
+                        $(data).each(function(){
+                            var reg = new RegExp(this.id,"g");
+                            val[0] = val[0].replace(reg,'#'+this.id+': '+this.name+' / '+this.external+' #');
+                            val[1] = val[1].replace(reg,'<a class="scrum-link" title=" '+this.id+' / '+this.estimation+' / '+this.state+' " href="'+this.internal+'">'+this.name+'</a>');
+                        });
+                    }
+                });
+
+            }
+            return val;
         }
     }
 })(jQuery);
