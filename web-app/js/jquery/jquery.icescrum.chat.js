@@ -672,6 +672,11 @@ var flensed={base_path:''};
             if (!$.icescrum.chat.o.hideOffline){
                 group.find('li.grey-status').sortElements(function(a,b){ return $(a).text().toUpperCase() > $(b).text().toUpperCase() ? 1 : -1;});
             }
+            if (group.length > 0){
+                var titleGroup = group.children('span').text();
+                titleGroup = titleGroup.replace(/([0-9]*\/[0-9]*)/g,group.find('li').not('.grey-status').length+'/'+group.find('li').length);
+                group.children('span').text(titleGroup);
+            }
         },
 
         // Envoie le stanza qui indique un changement d'état
@@ -728,7 +733,7 @@ var flensed={base_path:''};
            $(teamList).each(function () {
                 this.users = this.users.sort(function(a, b){return a.firstname > b.firstname ? 1 : -1;});
                 var teamid = this.teamid;
-                $('#chat-roster-list').append('<ul class="chat-group" id="team-'+teamid+'"><span class="chat-group-title">'+this.teamname+'</span>');
+                $('#chat-roster-list').append('<ul class="chat-group" id="team-'+teamid+'"><span class="chat-group-title">'+this.teamname+' (0/0)</span>');
                 $(this.users).each(function(){
                     var user = this;
                     $(jabberList).each(function () {
@@ -745,7 +750,7 @@ var flensed={base_path:''};
 
         addJabberContacts:function(teamList, jabberList) {
             jabberList = jabberList.sort(function(a, b){return a.name > b.name ? 1 : -1;});
-            $('#chat-roster-list').append('<ul class="chat-group" id="team-non-icescrum"><span class="chat-group-title">'+$.icescrum.chat.o.i18n.teamNonIcescrum+'</span>');
+            $('#chat-roster-list').append('<ul class="chat-group" id="team-non-icescrum"><span class="chat-group-title">'+$.icescrum.chat.o.i18n.teamNonIcescrum+' (0/0)</span>');
             $(jabberList).each(function(){
                 var jabberUser = this;
                 if(Strophe.getDomainFromJid(jabberUser.rawJid) != $.icescrum.chat.o.server) {

@@ -74,7 +74,7 @@ class ChatController {
       statusIcons.add('ui-chat-select ui-chat-status-'+status)
       chatService.getChatPreferences(user)?.statusList?.findAll{it != null}?.toArray()?.each{
         statusKeys.add(status)
-        statusLabels.add(it.encodeAsJavaScript())
+        statusLabels.add(it)
         statusIcons.add('status-custom ui-chat-select ui-chat-status-'+status)
       }
     }
