@@ -395,7 +395,7 @@ var flensed={base_path:''};
             if ($('#subscription-'+escapedJid).length > 0){
                 return;
             }
-            $('#chat-roster-list').before('<div class="subscription" id="subscription-'+escapedJid+'">' +
+            $('#chat-manage').before('<div class="subscription" id="subscription-'+escapedJid+'">' +
                     $.icescrum.chat.o.i18n.accept+' '+$.icescrum.chat.truncate($.icescrum.chat.unescapeJid(escapedJid), 35)+' ?' +
                     '<button onclick="$.icescrum.chat.answerPresenceSubscription(\''+escapedJid+'\',\'subscribed\');" ' +
                     'class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">'+$.icescrum.chat.o.i18n.yes+'</button> ' +
