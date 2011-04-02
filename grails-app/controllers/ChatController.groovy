@@ -168,7 +168,7 @@ class ChatController {
             chatPref.properties = params.chatPreferences
             chatService.saveChatPreferences(chatPref)
           } catch (RuntimeException re) {
-              render(status: 400, contentType: 'application/json', text:[renderErrors(bean:chatPref)] as JSON)
+              render(status: 400, contentType: 'application/json', text:[notice: [text: renderErrors(bean:chatPref)]] as JSON)
               return
           }
       }
