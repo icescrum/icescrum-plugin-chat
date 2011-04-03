@@ -60,7 +60,7 @@
   <div class="chat-tooltip-bottom">
     <is:button
           type="link"
-          class="chat-user-link"
+          class="tooltip-chat-user-link"
           jid="${escapedJid}"
           disabled="true"
           value="${message(code:'is.chat.ui.tooltip.talk')}"

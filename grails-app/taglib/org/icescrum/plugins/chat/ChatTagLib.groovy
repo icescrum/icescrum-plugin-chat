@@ -82,7 +82,7 @@ class ChatTagLib {
       def content = render(template:'tooltipChat',plugin:'icescrum-chat',model:[escapedJid:attrs.escapedJid,m:user,tasks:tasks,nbtasks:tasks.size() > 1 ? 's' : 0])
 
       def params = [
-          for:"#chat-user-${attrs.escapedJid}",
+          for:"#chat-user-status-${attrs.escapedJid}",
           positionAdjustX:"10",
           contentText:content,
           hideFixed:"true",

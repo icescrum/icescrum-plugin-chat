@@ -483,7 +483,7 @@ var flensed={base_path:''};
                 var el = document.createElement('div');
                 el.setAttribute('id', id);
                 var rawJid = $.icescrum.chat.unescapeJid(escapedJid);
-                var title = $('#chat-user-status-'+escapedJid+' a').attr('name') ? $('#chat-user-status-'+escapedJid+' a').attr('name') : rawJid;
+                var title = $('#chat-user-status-'+escapedJid).attr('name') ? $('#chat-user-status-'+escapedJid).attr('name') : rawJid;
                 title = $.icescrum.chat.truncate(title,25);
                 $(el).chat({id : id,
                             alert : this.o.i18n.alertNewMessages,
@@ -633,7 +633,6 @@ var flensed={base_path:''};
                 user.addClass("grey-status ui-chat-user-status-"+escapedJid+" ui-chat-status ui-chat-status-offline");
                 userInList.attr('title', '');
             } else {
-                var last = 0;
                 if(show.length > 0){
                     user.removeClass();
                     if (show == 'xa' || show == 'away'){
@@ -775,17 +774,15 @@ var flensed={base_path:''};
         addContact:function(teamid,rawJid,name,firstname) {
             var escapedJid = $.icescrum.chat.escapeJid(rawJid);
             if ($('#chat-user-status-' + escapedJid).length == 0){
-                $('#team-'+teamid).append('<li id="chat-user-status-' + escapedJid + '" class="ui-chat-user-status-'+escapedJid+' grey-status ui-chat-status ui-chat-status-offline" status="offline" title="">' +
-                                            '<a id="chat-user-'+escapedJid+'" href="javascript:;" class="chat-user-link" jid="'+escapedJid+'" name="'+$.icescrum.chat.truncate(name, 35)+'" firstname="'+firstname+'">' +
-                                                $.icescrum.chat.truncate(name, 35) +
-                                            '</a>' +
+                $('#team-'+teamid).append('<li id="chat-user-status-' + escapedJid + '" jid="'+escapedJid+'" name="'+$.icescrum.chat.truncate(name, 35)+'" firstname="'+firstname+'" class="ui-chat-user-status-'+escapedJid+' grey-status ui-chat-status ui-chat-status-offline" status="offline" title="">' +
+                                            '<a href="javascript:;" class="chat-user-link">'+$.icescrum.chat.truncate(name, 35)+'</a>' +
                                             '<div class="chat-delete-contact"></div>' +
                                             '</li>');
             }
         },
 
         addTeamContact:function(rawJid,user,teamid) {
-            $.icescrum.chat.addContact(teamid,rawJid,user.firstname +' '+user.lastname,user.firstname)
+            $.icescrum.chat.addContact(teamid,rawJid,user.firstname +' '+user.lastname,user.firstname);
             $.ajax({
                 type: "POST",
                 url: $.icescrum.o.grailsServer + '/chat/showToolTip',
@@ -806,9 +803,8 @@ var flensed={base_path:''};
         },
 
         putContactLinks:function() {
-            $('.ui-chat-status').die('click.chat').live('click.chat',function(event){
-                var link = $(this).children('a');
-                $.icescrum.chat.createOrOpenChat('chat-'+link.attr('jid'),link.attr('jid'),true);
+            $('.ui-chat-status,.tooltip-chat-user-link').die('click.chat').live('click.chat',function(event){
+                $.icescrum.chat.createOrOpenChat('chat-'+$(this).attr('jid'),$(this).attr('jid'),true);
                 event.preventDefault();
             });
 
@@ -816,7 +812,7 @@ var flensed={base_path:''};
             $('.chat-group li').hover(
                 function(){
                     var del = $(this);
-                    showDelete = setTimeout(function(){del.find('.chat-delete-contact').show();},2000);;
+                    showDelete = setTimeout(function(){del.find('.chat-delete-contact').show();},2000);
                 },
                 function(){
                     clearTimeout(showDelete);
@@ -835,14 +831,19 @@ var flensed={base_path:''};
             var nbContacts = 0;
             var nbContactsNotOffline = 0;
             $('.chat-group').each(function(){
-               var nbTeamContacts =  $(this).find('li').length;
+               var group = $(this);
+               var nbTeamContacts =  group.find('li').length;
                if(nbTeamContacts == 0) {
-                   $(this).remove();
+                   group.remove();
                }
                else{
                    nbContacts += nbTeamContacts;
                }
-               nbContactsNotOffline += $(this).find('li').not('.ui-chat-status-offline').length;
+               var nbTeamContactNotOffline = group.find('li').not('.ui-chat-status-offline').length;
+               nbContactsNotOffline += nbTeamContactNotOffline;
+               var titleGroup = group.children('span').text();
+               titleGroup = titleGroup.replace(/([0-9]*\/[0-9]*)/g,nbTeamContactNotOffline+'/'+nbTeamContacts);
+               group.children('span').text(titleGroup);
             });
             $('.nb-contacts').html('('+nbContactsNotOffline+'/'+nbContacts+')');
             $.icescrum.chat.o.hideOffline ? $('#chat-roster-list .ui-chat-status-offline').hide() : $('#chat-roster-list .ui-chat-status-offline').show();
@@ -891,7 +892,7 @@ var flensed={base_path:''};
             return escapedJid.replace(/_point_/g,'.').replace(/_at_/g,'@');
         },
 
-        displayBacklogElementUrl:function(msg,type,external){
+        displayBacklogElementUrl:function(msg,type){
             var val = [msg,msg];
             var re = new RegExp(type+'-[0-9]*',"g");
             var stories = msg.match(re);
@@ -922,7 +923,7 @@ var flensed={base_path:''};
 })(jQuery);
 
 jQuery.editable.addInputType('statut-editable', {
-    element : function(settings, original) {
+    element : function(settings) {
             var input = $('<input />');
             input.width(settings.width);
             input.height(settings.height);
