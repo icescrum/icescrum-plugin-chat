@@ -25,8 +25,13 @@
  *
  *
  */
+import grails.util.Environment
 
-grails.project.work.dir = "target"
+def environment = Environment.getCurrent()
+
+if (appName != 'iceScrum-plugin-management' && environment != Environment.PRODUCTION){
+    grails.plugin.location.'icescrum-core' = '../icescrum-core'
+}
 
 grails.project.dependency.resolution = {
     // inherit Grails' default dependencies
@@ -48,7 +53,7 @@ grails.project.dependency.resolution = {
         //mavenRepo "http://repository.codehaus.org"
         //mavenRepo "http://download.java.net/maven/2/"
         //mavenRepo "http://repository.jboss.com/maven2/"
-        mavenRepo "http://repo.icescrum.org/artifactory/plugins-release/"
+        mavenRepo "http://repo.icescrum.org/artifactory/plugins-snapShots/"
     }
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
@@ -58,6 +63,8 @@ grails.project.dependency.resolution = {
 
     plugins {
       compile ':maven-publisher:0.8.1'
-      compile "org.icescrum:icescrum-core:1.3.1"
+        if (appName == 'iceScrum-plugin-management' || environment == Environment.PRODUCTION){
+            compile "org.icescrum:icescrum-core:1.5-SNAPSHOT"
+        }
     }
 }

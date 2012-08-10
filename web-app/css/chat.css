@@ -175,30 +175,30 @@
 }
 
 .ui-chat-status-away:hover {
-    background:url('../images/user_away.gif') #f5f5f5;
+    background:url('../images/user_away.gif') #2890F0;
     background-repeat:no-repeat;
     background-position: left center;
 }
 
 .ui-chat-status-xa:hover {
-    background:url('../images/user_away.gif') #f5f5f5;
+    background:url('../images/user_away.gif') #2890F0;
     background-repeat:no-repeat;
 }
 
 .ui-chat-status-dnd:hover {
-    background:url('../images/user_dnd.gif') #f5f5f5;
+    background:url('../images/user_dnd.gif') #2890F0;
     background-repeat:no-repeat;
     background-position: left center;
 }
 
 .ui-chat-status-offline:hover {
-    background:url('../images/user_offline.gif') #f5f5f5;
+    background:url('../images/user_offline.gif') #2890F0;
     background-repeat:no-repeat;
     background-position: left center;
 }
 
 .ui-chat-status-online:hover,.ui-chat-status-chat:hover {
-    background:url('../images/user_chat.gif') #f5f5f5;
+    background:url('../images/user_chat.gif') #2890F0;
     background-repeat:no-repeat;
     background-position: left center;
 }

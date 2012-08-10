@@ -68,7 +68,7 @@ class ChatTagLib {
                                 requestError:'${message(code:'is.chat.ui.request.error').encodeAsJavaScript()}'
                             }
                         };
-                        jQuery(function(){
+                        jQuery(document).bind('init.icescrum',function(event){
                                 jQuery.icescrum.chat.init();
                             }
                         );"""

@@ -5,11 +5,7 @@ import org.jivesoftware.smack.BOSHConfiguration
 import org.jivesoftware.smack.BOSHConnection
 import com.kenai.jbosh.BOSHMessageEvent
 import com.kenai.jbosh.BodyQName
-import org.jivesoftware.smack.packet.Presence
-import org.jivesoftware.smack.RosterListener
-import org.jivesoftware.smack.Roster
 import org.apache.commons.logging.LogFactory
-import org.jivesoftware.smack.Connection
 
 class ChatConnection implements BOSHClientRequestListener{
 

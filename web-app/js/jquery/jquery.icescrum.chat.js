@@ -821,7 +821,7 @@ var flensed={base_path:''};
             );
 
             $('.chat-delete-contact').die('click.delete').live('click.delete',function(event){
-                $.icescrum.chat.cancelSubscription($(this).parent().find('.chat-user-link').attr('jid'));
+                $.icescrum.chat.cancelSubscription($(this).parent().attr('jid'));
                 event.stopPropagation();
                 event.preventDefault();
             });
@@ -853,6 +853,7 @@ var flensed={base_path:''};
             var presList = ['online','dnd','away'];
             if($("#chatstatus .status-custom").length < 6){
                 var selected;
+                var pres;
                 for(pres in presList){
                     var newpres = $('<option></option>')
                         .attr("value", presList[pres])

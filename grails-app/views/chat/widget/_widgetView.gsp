@@ -26,8 +26,6 @@
  *
  *--%>
 
-<r:use module="chat"/>
-
 <g:if test="${needConfiguration}">
   <div class="chat-need-configuration">
       <is:remoteDialog
@@ -47,7 +45,7 @@
 </g:if>
 <g:else>
     <is:select
-        container="#widget-content-${id}"
+        container="#widget-content-${controllerName}"
         width="125"
         styleSelect="dropdown"
         from="${statusLabels}"
@@ -59,12 +57,12 @@
 
     <is:loadChatVar teamList="${teamList}"/>
 
-      <is:link id="chat-list-show" onClick="jQuery.icescrum.chat.displayRoster();" disabled="true">
+      <a id="chat-list-show" onClick="jQuery.icescrum.chat.displayRoster();" disabled="true">
         <g:message code="is.chat.ui.show"/> <span class=nb-contacts></span>
-      </is:link>
-      <is:link id="chat-list-hide" onClick="jQuery.icescrum.chat.displayRoster();" disabled="true">
+      </a>
+      <a id="chat-list-hide" onClick="jQuery.icescrum.chat.displayRoster();" disabled="true">
         <g:message code="is.chat.ui.hide"/> <span class=nb-contacts></span>
-      </is:link>
+      </a>
     <div id="chat-manage">
          <div class="add-contact">
             <is:input id="chat-add-contact" name="addcontact"/><button onclick="$.icescrum.chat.requestSubscriptionContact();" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">${message(code:'is.chat.ui.add')}</button>

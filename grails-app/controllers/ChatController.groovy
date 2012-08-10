@@ -27,30 +27,14 @@
  */
 
 import grails.converters.JSON
-import org.icescrum.components.UtilsWebComponents
 import org.icescrum.core.domain.User
-import org.icescrum.core.support.ApplicationSupport
 import org.icescrum.plugins.chat.ChatConnection
-import org.icescrum.plugins.chat.ChatUtils
 import org.icescrum.core.domain.Story
 
 class ChatController {
-  static ui = true
-  static final id = 'chat'
-  static final pluginName = 'icescrum-chat'
 
+ static final pluginName = 'icescrum-chat'
 
-  static menuBar = [show:false]
-  static widget =  [
-          show:{UtilsWebComponents.rendered(renderedOnAccess:"isAuthenticated()") && ApplicationSupport.booleanValue(ChatUtils.chatConfig.icescrum.chat.enabled)},
-          title:'is.chat.ui.title',
-          init:'index',
-          toolbar:false,
-          closeable:false,
-          sortable:[enable:false,position:1]
-  ]
-
-  def teamService
   def springSecurityService
   def securityService
   def chatService
@@ -106,8 +90,7 @@ class ChatController {
             statusKeys:statusKeys,
             statusLabels:statusLabels,
             statusIcons:statusIcons,
-            needConfiguration:false,
-            id:id])
+            needConfiguration:false])
   }
 
 
@@ -159,11 +142,11 @@ class ChatController {
       render(template:'dialogs/profile', plugin:pluginName, model:[chatPreferences:chatPref])
   }
 
-  def update = {
+    def updatePreferences = { params, context ->
       if(params.chatPreferences instanceof Map){
           params.chatPreferences.secure = params.chatPreferencesSecure
           params.chatPreferences.hideOffline = params.chatPreferencesHideOffline
-          def chatPref = chatService.getChatPreferences(springSecurityService.currentUser)
+          def chatPref = chatService.getChatPreferences(context.user)
           try {
             chatPref.properties = params.chatPreferences
             chatService.saveChatPreferences(chatPref)
