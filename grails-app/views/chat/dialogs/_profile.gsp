@@ -27,25 +27,27 @@
  *--%>
 
 <is:accordionSection title="is.chat.ui.dialog.chat.title">
-    <is:fieldInput for="chatPreferences.username" label="is.chat.ui.dialog.chat.username">
-      <is:input id="chatPreferences.username" name="chatPreferences.username" value="${chatPreferences.username}"/>
-    </is:fieldInput>
-    <is:fieldInput for="chatPreferences.password" label="is.chat.ui.dialog.chat.password">
-      <is:password id="chatPreferences.password" name="chatPreferences.password" value="${chatPreferences.password}"/>
-    </is:fieldInput>
+    <is:fieldRadio for="chatPreferencesDisabled" label="is.chat.ui.dialog.chat.disabled">
+      <is:radio id="chatPreferencesDisabled" name="chatPreferencesDisabled" value="${chatPreferences.disabled}"/>
+    </is:fieldRadio>
     <is:fieldRadio for="chatPreferencesHideOffline" label="is.chat.ui.dialog.chat.hideOffline">
       <is:radio id="chatPreferencesHideOffline" name="chatPreferencesHideOffline" value="${chatPreferences.hideOffline}"/>
     </is:fieldRadio>
-    <is:fieldInput for="chatPreferences.server" label="is.chat.ui.dialog.chat.server">
-      <is:input id="chatPreferences.server" name="chatPreferences.server" value="${chatPreferences.server}"/>
+    <is:fieldSelect for="method" label="is.story.type" noborder="${chatPreferences.oauth?true:false}" class="select-auth">
+        <is:select
+                width="240"
+                maxHeight="200"
+                styleSelect="dropdown"
+                from="${['Google talk','Facebook chat','Microsoft Live','Custom']}"
+                keys="${['gtalk','facebook','live','manual']}"
+                name="method"
+                change="if (jQuery(this).val() == 'manual'){ jQuery('.manual-auth').show(); jQuery('p.select-auth').removeClass('field-noseparator'); }else{jQuery('.manual-auth').hide(); jQuery('p.select-auth').addClass('field-noseparator');}"
+                value="${chatPreferences.oauth?:'manual'}"/>
+    </is:fieldSelect>
+    <is:fieldInput class="manual-auth" style="display:${chatPreferences.oauth?'none':'block'};" for="chatPreferences.username" label="is.chat.ui.dialog.chat.username">
+      <is:input id="chatPreferences.username" name="chatPreferences.username" value="${chatPreferences.username}"/>
     </is:fieldInput>
-    <is:fieldInput for="chatPreferences.port" label="is.chat.ui.dialog.chat.port">
-      <is:input id="chatPreferences.port" name="chatPreferences.port" value="${chatPreferences.port}"/>
+    <is:fieldInput class="manual-auth" style="display:${chatPreferences.oauth?'none':'block'};" for="chatPreferences.password" label="is.chat.ui.dialog.chat.password">
+      <is:password id="chatPreferences.password" name="chatPreferences.password" value="${chatPreferences.password}"/>
     </is:fieldInput>
-    <is:fieldInput for="chatPreferences.boshPath" label="is.chat.ui.dialog.chat.boshPath">
-      <is:input id="chatPreferences.boshPath" name="chatPreferences.boshPath" value="${chatPreferences.boshPath}"/>
-    </is:fieldInput>
-    <is:fieldRadio for="chatPreferencesSecure" label="is.chat.ui.dialog.chat.secure" noborder="true">
-      <is:radio id="chatPreferencesSecure" name="chatPreferencesSecure" value="${chatPreferences.secure}"/>
-    </is:fieldRadio>
 </is:accordionSection>

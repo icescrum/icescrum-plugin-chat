@@ -28,7 +28,7 @@
 
 <div>
   <div class="chat-tooltip-left">
-    <is:avatar userid="${m.id}" class="ico"/>
+    <is:avatar user="${m}" class="ico"/>
   </div>
   <div class="chat-tooltip-right">
     <span class="ui-chat-user-status-${escapedJid} ui-chat-status ui-chat-status-offline" title="">
@@ -71,6 +71,6 @@
   var user = $('#chat-user-status-${escapedJid}');
   $('.chat-tooltip-right .ui-chat-user-status-${escapedJid}')
         .removeClass()
-        .addClass('ui-chat-user-status-${escapedJid} ui-chat-status ui-chat-status-'+user.attr('status'));
-  $('.chat-tooltip-right .ui-chat-user-status-text-${escapedJid}').text(user.attr('title'));
+        .addClass('ui-chat-user-status-${escapedJid} ui-chat-status ui-chat-status-'+user.data('status')+(user.data('video')?'-video':''));
+  $('.chat-tooltip-right .ui-chat-user-status-text-${escapedJid}').text(user.data('title'));
 </jq:jquery>

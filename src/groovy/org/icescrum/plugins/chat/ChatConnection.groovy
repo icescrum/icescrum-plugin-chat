@@ -6,6 +6,7 @@ import org.jivesoftware.smack.BOSHConnection
 import com.kenai.jbosh.BOSHMessageEvent
 import com.kenai.jbosh.BodyQName
 import org.apache.commons.logging.LogFactory
+import org.icescrum.core.support.ApplicationSupport
 
 class ChatConnection implements BOSHClientRequestListener{
 
@@ -18,23 +19,24 @@ class ChatConnection implements BOSHClientRequestListener{
   ChatConnection(){
   }
 
-  boolean connect(def chatPreferences){
+  boolean connect(def chatPreferences, def boshConfig, def resource, boolean video){
     def isConnected = false
     BOSHConfiguration config = new BOSHConfiguration(
-            chatPreferences.secure,
-            chatPreferences.server,
-            chatPreferences.port,
-            chatPreferences.boshPath,
+            ApplicationSupport.booleanValue(boshConfig.secured),
+            boshConfig.server,
+            boshConfig.port,
+            boshConfig.path,
             (String)chatPreferences.username.split('@')[1]
     )
     config.setRosterLoadedAtLogin(false)
     config.setSendPresence(false)
+    BOSHConnection.DEBUG_ENABLED = true
     BOSHConnection conn = new BOSHConnection(config)
     try {
       conn.connect()
 
       conn.client.addBOSHClientRequestListener(this)
-      conn.login(chatPreferences.username,chatPreferences.password,ChatUtils.chatConfig.icescrum.chat.resource)
+      conn.login(chatPreferences.username,chatPreferences.password,video?'vid'+resource:'web'+resource)
 
       isConnected = conn.isConnected()
 

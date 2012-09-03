@@ -30,10 +30,24 @@
 var originalTitle = null;
 var windowFocus = true;
 var displayAlert = false;
+var blurDate = null;
+var autoAway = false;
+var checkPresence = null;
 
 $(document).ready(function(){
-	$([window, document]).blur(function(){
+	$(window).blur(function(){
 		windowFocus = false;
+        blurDate = new Date();
+        checkPresence = setInterval(function(){
+                var select = $("#chatstatus");
+                if ($.icescrum.chat.o.connected && blurDate && select.val() != 'away' && (new Date().setMinutes(blurDate.getMinutes() + 15) < new Date()))
+                {
+                    autoAway = select.selectmenu('value');
+                    console.log('user is away change his presence...');
+                    select.selectmenu("value",select.find("option[value='away']").index());
+                    select.change();
+                }
+        },5000);
 	}).focus(function(){
 		windowFocus = true;
         displayAlert = false;
@@ -41,6 +55,15 @@ $(document).ready(function(){
             document.title = originalTitle;
             originalTitle = null;
         }
+        blurDate = null;
+        if (autoAway !== false){
+            console.log('user is back change his presence...');
+            var select = $("#chatstatus");
+            select.selectmenu('value', autoAway);
+            select.change();
+            autoAway = false;
+        }
+        clearInterval(checkPresence);
 	});
 });
 
@@ -58,11 +81,12 @@ $(document).ready(function(){
             offset:0,
             width: 230,
             isComposing:false,
+            video:false,
             hasChanged:false,
             messageSent: function(id, escapedJid, msg){},
             chatClosed: function(id){},
             stateSent: function(escapedJid, state){},
-
+            createVideoChat:function(escapedJid, ui){},
             chatManager: {
                 init: function(elem) {
                     this.elem = elem;
@@ -118,7 +142,7 @@ $(document).ready(function(){
                         self.elem.uiChatTitleBar.addClass("ui-chat-header-unread");
                     }
                     if (!windowFocus && originalTitle == null){
-                        this.elem._alertDocument(true);
+                        this.elem._alertDocument(true, name, msg);
                     }
                 },
 
@@ -155,27 +179,37 @@ $(document).ready(function(){
                 showPaused: function()  {
                     var self = this;
                     self.elem.uiChatPaused.show();
-
                 },
 
                 hidePaused: function()  {
                     var self = this;
                     self.elem.uiChatPaused.hide();
+                },
+
+                showVideoButton: function(){
+                    var self = this;
+                    self.elem.uiChatTitlebarVideo.show();
+                },
+
+                hideVideoButton: function(){
+                    var self = this;
+                    self.elem.uiChatTitlebarVideo.hide();
                 }
             }
 	    },
 
-        _alertDocument: function(firstTime){
+        _alertDocument: function(firstTime, name, msg){
             var self = this;
             if (firstTime){
                 originalTitle = document.title;
                 $.doTimeout(1000,function(){
-                    return self._alertDocument(false);
+                    return self._alertDocument(false, name, msg);
                 });
+                $.icescrum.displayNotification(self.options.alert+' '+name, msg);
             }
             if(!windowFocus){
                 if (!displayAlert){
-                    document.title = self.options.alert;
+                    document.title = self.options.alert+' '+name;
                     displayAlert = true;
                 }else{
                     document.title = originalTitle;
@@ -218,7 +252,7 @@ $(document).ready(function(){
 
             self.uiChatStatus = $('<div></div>');
             var uiChatStatus = self.uiChatStatus
-                    .addClass("ui-chat-user-status-"+options.escapedJid+" ui-chat-status ui-chat-status-"+options.status)
+                    .addClass("ui-chat-user-status-"+options.escapedJid+" ui-chat-status ui-chat-status-"+options.status+(options.video?'-video':''))
                     .appendTo(uiChatTitleBar);
 
             self.uiChatTitle = $('<div></div>');
@@ -244,7 +278,7 @@ $(document).ready(function(){
                     .text('close')
                     .appendTo(uiChatTitleBarClose);
 
-            var uiChatTitlebarMinimize = $('<a href="javascript:;"></a>')
+            var uiChatTitlebarMinimize = $('<a></a>')
                     .addClass('ui-corner-all ui-chat-icon')
                     .attr('role', 'button')
                     .hover(function() {uiChatTitlebarMinimize.addClass('ui-state-hover');},function() {uiChatTitlebarMinimize.removeClass('ui-state-hover');})
@@ -253,6 +287,22 @@ $(document).ready(function(){
                         return false;
                     })
                     .appendTo(uiChatTitleBar);
+
+            self.uiChatTitlebarVideo = $('<a></a>')
+                                .addClass('ui-corner-all ui-chat-icon')
+                                .attr('role', 'button')
+                                .hover(function() {self.uiChatTitlebarVideo.addClass('ui-state-hover');},function() {self.uiChatTitlebarVideo.removeClass('ui-state-hover');})
+                                .appendTo(uiChatTitleBar);
+
+            var uiChatTitlebarVideoText = $('<span></span>')
+                                            .addClass('ui-icon ui-icon-play')
+                                            .text('video')
+                                            .click(function(e) {
+                                                e.preventDefault();
+                                                self.options.createVideoChat(self.options.escapedJid, $(this));
+                                                return false;
+                                            })
+                                            .appendTo(self.uiChatTitlebarVideo);
 
             self.uiChatComposing = $('<div></div>');
                                     var uiChatComposing = self.uiChatComposing
@@ -382,5 +432,4 @@ $(document).ready(function(){
             this.uiChat.css("right", offset);
         }
     });
-
 }(jQuery));

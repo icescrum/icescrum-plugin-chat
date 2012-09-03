@@ -38,15 +38,18 @@ class ChatController {
   def springSecurityService
   def securityService
   def chatService
+  def grailsApplication
 
   def index = {
 
     def user = springSecurityService.currentUser
     def chatPreferences = chatService.getChatPreferences(user)
-    if (chatPreferences.needConfiguration()){
-        render(template:'widget/widgetView',plugin:'icescrum-chat', model:[needConfiguration:true])
+
+    if (chatPreferences.disabled){
+        render(status:200)
         return
     }
+
     def statusKeys = []
     def statusLabels =[]
     def statusIcons = []
@@ -90,28 +93,31 @@ class ChatController {
             statusKeys:statusKeys,
             statusLabels:statusLabels,
             statusIcons:statusIcons,
-            needConfiguration:false])
+            needConfiguration:chatPreferences.needConfiguration()])
   }
 
 
-  def attachConnection = {
+  def connection = {
     def user = springSecurityService.currentUser
     def chatConnection = new ChatConnection()
-    if(chatConnection.connect(chatService.getChatPreferences(user))){
+    def pref = chatService.getChatPreferences(user);
+    if(chatConnection.connect(pref, grailsApplication.config.icescrum.chat.bosh, grailsApplication.config.icescrum.chat.resource,  params.boolean('video')?:false)){
+      pref.show = pref.show != 'disc' ?: 'online'
+      pref.save()
       render(status:200,text:[sid:chatConnection.sid,rid:chatConnection.rid,jid:chatConnection.jid] as JSON, contentType: 'application/json')
     }else{
       render(status:400)
     }
   }
 
-  def showToolTip = {
+  def tooltip = {
     if(params.id)
       render(status:200, text:is.tooltipChat(params,null))
     else
       render(status:400)
   }
 
-  def saveStatus = {
+  def status = {
     def user = User.get(springSecurityService.principal.id)
     try {
       if(user){
@@ -131,6 +137,22 @@ class ChatController {
     }
   }
 
+    def jid = {
+        def user = User.get(springSecurityService.principal.id)
+        try{
+         if (user){
+            def chatPreferences = chatService.getChatPreferences(user)
+            chatPreferences.username = params.jid
+            chatService.saveChatPreferences(chatPreferences)
+            render(status:200)
+         }else{
+           render(status:400)
+         }
+        }catch(Exception e){
+          render(status:400)
+        }
+    }
+
   def displayStatus = {
     def posters = params.story?.comments*.poster?:null
     posters?.unique()
@@ -138,27 +160,38 @@ class ChatController {
   }
 
   def form = {
-      def chatPref = chatService.getChatPreferences(params.user)
-      render(template:'dialogs/profile', plugin:pluginName, model:[chatPreferences:chatPref])
+      if (grailsApplication.config.icescrum.chat.enabled){
+          def chatPref = chatService.getChatPreferences(params.user)
+          render(template:'dialogs/profile', plugin:pluginName, model:[chatPreferences:chatPref])
+      }else{
+          render(status:200,text:'')
+      }
   }
 
     def updatePreferences = { params, context ->
       if(params.chatPreferences instanceof Map){
-          params.chatPreferences.secure = params.chatPreferencesSecure
-          params.chatPreferences.hideOffline = params.chatPreferencesHideOffline
           def chatPref = chatService.getChatPreferences(context.user)
+          chatPref.disabled = params.chatPreferencesDisabled == '1'
+          chatPref.hideOffline = params.chatPreferencesHideOffline == '1'
           try {
-            chatPref.properties = params.chatPreferences
+            if (params.method == 'manual'){
+                chatPref.password = params.chatPreferences.password
+                chatPref.username = params.chatPreferences.username
+                chatPref.oauth = null
+            }else{
+                chatPref.password = null
+                chatPref.username = null
+                chatPref.oauth = params.method
+            }
             chatService.saveChatPreferences(chatPref)
           } catch (RuntimeException re) {
               render(status: 400, contentType: 'application/json', text:[notice: [text: renderErrors(bean:chatPref)]] as JSON)
               return
           }
       }
-      render(status:200, render:"\$.icescrum.chat.reloadChat();")
   }
 
-  def urlMessage = {
+  def message = {
       def stories = Story.getAll(params.list('id'))
       def urls = []
       stories.each{
@@ -173,5 +206,20 @@ class ChatController {
 
       }
       render(status:200,text:urls as JSON, contentType: 'application/json')
+  }
+
+    def peerMessage = {
+        params.remove('controller')
+        params.remove('action')
+        String to = params.to
+        def username = ChatPreferences.findByUsername(to)?.user?.username
+        if (username){
+            broadcastToSingleUser(user:username, function:'peerMessageReceived', message:[class:'Chat',message:params])
+        }
+        render(status:200,text:'')
+    }
+
+  def oauth = {
+      render(status:200,text:'')
   }
 }

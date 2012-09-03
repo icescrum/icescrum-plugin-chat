@@ -33,24 +33,23 @@ class ChatPreferences {
   String[] statusList = new String[2]
   String show = "online"
   String presence
-
   String username
   String password
-  String server
-  boolean secure = false
+  String oauth
+  boolean disabled = true
   boolean hideOffline = true
-  String boshPath = '/http-bind/'
-  Integer port = 8080
 
   User user
 
   static transients = ['needConfiguration']
 
   static constraints = {
+    username(email:true, nullable: true)
     statusList(nullable: false)
     show(nullable: false)
     presence(nullable: true)
-    username(email:true)
+    password(nullable: true)
+    oauth(nullable:true)
   }
 
   static mapping={
@@ -59,6 +58,6 @@ class ChatPreferences {
   }
 
   def needConfiguration = {
-      return !(this.username && this.password && this.server && this.boshPath && this.port > 0)
+      return !((this.username && this.password) || this.oauth)
   }
 }

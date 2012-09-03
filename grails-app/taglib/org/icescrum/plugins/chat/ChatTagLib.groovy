@@ -36,28 +36,40 @@ class ChatTagLib {
 
     def springSecurityService
     def chatService
+    def grailsApplication
 
     def loadChatVar = { attrs,body ->
-
+      def config = grailsApplication.config.icescrum.chat
       def user = User.get(springSecurityService.principal.id)
       def chatPreferences = chatService.getChatPreferences(user)
       def jsCode = """var icescrumChat = {
-                            server: '${chatPreferences.server}',
-                            port: '${chatPreferences.port}',
-                            boshPath: '${chatPreferences.boshPath}',
+                            server: '${config.bosh.server}',
+                            port: '${config.bosh.port}',
+                            boshPath: '${config.bosh.path}',
                             hideOffline: ${chatPreferences.hideOffline},
-                            teamList : '${attrs.teamList.encodeAsJavaScript()}',
+                            teamList: '${attrs.teamList.encodeAsJavaScript()}',
+                            disabled: ${chatPreferences.needConfiguration()},
                             emoticonsDir : '${resource(plugin: 'icescrum-chat', dir: '/images/emoticons')}',
+                            resource : '${config.resource}',
                             currentStatus : {
                                 show:'${chatPreferences.show}',
                                 presence:'${chatPreferences.presence?chatPreferences.presence.encodeAsJavaScript():''}'
-                            },
+                            },"""
+       if (chatPreferences.oauth){
+            jsCode +=       """
+                            ${chatPreferences.oauth}:{
+                                apiKey: '${config[chatPreferences.oauth].apiKey}',
+                                redirecturi: '${createLink(controller:'chat', action: 'oauth', absolute: true)}',
+                            },"""
+       }
+       jsCode +=            """
                             i18n:{
                                 teamNonIcescrum:'${message(code:'is.chat.ui.teamNonIcescrum').encodeAsJavaScript()}',
                                 alertNewMessages:'${message(code:'is.chat.ui.alertNewMessages').encodeAsJavaScript()}',
                                 me:'${message(code:'is.chat.me').encodeAsJavaScript()}',
                                 connectionError:'${message(code:'is.chat.error.server').encodeAsJavaScript()}',
                                 connecting:'${message(code:'is.chat.connecting').encodeAsJavaScript()}',
+                                authenticating:'${message(code:'is.chat.authenticating').encodeAsJavaScript()}',
                                 loginError:'${message(code:'is.chat.error.login').encodeAsJavaScript()}',
                                 disconnected:'${message(code:'is.chat.disconnected').encodeAsJavaScript()}',
                                 connected:'${message(code:'is.chat.connected').encodeAsJavaScript()}',
@@ -65,13 +77,16 @@ class ChatTagLib {
                                 no:'${message(code:'is.chat.ui.no').encodeAsJavaScript()}',
                                 requestSent:'${message(code:'is.chat.ui.request.sent').encodeAsJavaScript()}',
                                 accept:'${message(code:'is.chat.ui.accept').encodeAsJavaScript()}',
-                                requestError:'${message(code:'is.chat.ui.request.error').encodeAsJavaScript()}'
+                                requestError:'${message(code:'is.chat.ui.request.error').encodeAsJavaScript()}',
+                                video:{
+                                        notSupported:'${message(code:'is.chat.ui.video.not.supported').encodeAsJavaScript()}',
+                                        inCall:'${message(code:'is.chat.ui.video.in.call').encodeAsJavaScript()}',
+                                        peerError:'${message(code:'is.chat.ui.video.error.peer').encodeAsJavaScript()}',
+                                        streamError:'${message(code:'is.chat.ui.video.error.stream').encodeAsJavaScript()}',
+                                        confirmHangup:'${message(code:'is.chat.ui.video.confirm.hangup').encodeAsJavaScript()}'
+                                }
                             }
-                        };
-                        jQuery(document).bind('init.icescrum',function(event){
-                                jQuery.icescrum.chat.init();
-                            }
-                        );"""
+                        };"""
       out << g.javascript(null, jsCode)
     }
 

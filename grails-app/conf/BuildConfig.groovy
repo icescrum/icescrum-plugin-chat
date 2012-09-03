@@ -62,9 +62,11 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-      compile ':maven-publisher:0.8.1'
-        if (appName == 'iceScrum-plugin-management' || environment == Environment.PRODUCTION){
-            compile "org.icescrum:icescrum-core:1.5-SNAPSHOT"
-        }
+      if (appName == 'iceScrum-plugin-management' || environment == Environment.PRODUCTION){
+          compile "org.icescrum:icescrum-core:1.6-SNAPSHOT"
+      }
+      compile(':maven-publisher:0.8.1'){
+          export:false
+      }
     }
 }
