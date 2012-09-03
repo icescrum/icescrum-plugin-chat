@@ -2,6 +2,8 @@ import org.icescrum.core.support.ApplicationSupport
 
 pluginName = 'iceScrumPluginManagement'
 
+modulesResources = ['chat']
+
 uiDefinitions = {
 
     'chat' {
