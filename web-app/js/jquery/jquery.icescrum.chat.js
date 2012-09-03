@@ -610,8 +610,8 @@ var icescrumChat;
             if ($('#subscription-'+escapedJid).length > 0){
                 return;
             }
-            $('#chat-manage').before('<div class="subscription" id="subscription-'+escapedJid+'">' +
-                    chat.o.i18n.accept+' '+$.icescrum.truncate(from, 35)+' ?' +
+            $('#chat-manage').before('<div class="subscription" id="subscription-'+escapedJid+'" title="'+from+'">' +
+                    chat.o.i18n.accept+' '+$.icescrum.truncate(from, 20)+' ?' +
                     '<button onclick="$.icescrum.chat.answerRequestContact(\''+escapedJid+'\',\'subscribed\');" ' +
                     'class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">'+chat.o.i18n.yes+'</button> ' +
                     '<button onclick="$.icescrum.chat.answerRequestContact(\''+escapedJid+'\',\'unsubscribed\');" ' +
