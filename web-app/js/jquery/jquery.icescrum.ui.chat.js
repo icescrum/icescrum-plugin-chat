@@ -375,7 +375,12 @@ $(document).ready(function(){
                                 iNextChat = $.icescrum.chat.o.showList.length - 1;
                             }
                             var idNextChat = $.icescrum.chat.o.showList[iNextChat];
-                            $('#' + idNextChat).chat('option', 'chatManager').elem.uiChatInput.focus();
+                            var chatWindow = $('#' + idNextChat).chat('option', 'chatManager');
+                            if(!chatWindow.elem.uiChatContent.is(":visible")){
+                                chatWindow.minimize();
+                            }else{
+                                chatWindow.elem.uiChatInput.focus();
+                            }
                             return false;
                         }
                     })
