@@ -368,6 +368,17 @@ $(document).ready(function(){
                             }
                         }
                     })
+                    .keydown(function(event){
+                        if(event.keyCode == $.ui.keyCode.TAB) {
+                            var iNextChat = $.icescrum.chat.o.showList.indexOf(options.id) - 1;
+                            if(iNextChat < 0) {
+                                iNextChat = $.icescrum.chat.o.showList.length - 1;
+                            }
+                            var idNextChat = $.icescrum.chat.o.showList[iNextChat];
+                            $('#' + idNextChat).chat('option', 'chatManager').elem.uiChatInput.focus();
+                            return false;
+                        }
+                    })
                     .focusin(function() {
                         uiChatInput.addClass('ui-chat-input-focus');
                         var box = $(this).parent().prev();
