@@ -285,6 +285,9 @@ var icescrumChat;
             $(window).trigger("disconnected.chat");
             $('#chat-roster-list').html('');
             $('.nb-contacts').html('');
+            $.cookie('conn_jid', null);
+            $.cookie('conn_sid', null);
+            $.cookie('conn_rid', null);
         },
 
         // Traitement de la reception d'un message :
