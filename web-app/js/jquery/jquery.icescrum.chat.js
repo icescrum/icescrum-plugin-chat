@@ -126,7 +126,7 @@ var icescrumChat;
                     $.icescrum.closeWidget(chatWidget,true);
                     $('.ui-chat').remove();
                     setTimeout(function(){
-                        $.icescrum.addToWidgetBar('chat', function(){ $.icescrum.chat.init({}); });
+                        $.icescrum.addToWidgetBar('chat');
                     }, 500);
                 };
                 if (chat.o.connected){
@@ -135,7 +135,7 @@ var icescrumChat;
                     close();
                 }
             }else{
-                $.icescrum.addToWidgetBar('chat', function(){ $.icescrum.chat.init({}); });
+                $.icescrum.addToWidgetBar('chat');
             }
         },
 
@@ -151,34 +151,42 @@ var icescrumChat;
                 console.log("[icescrum-chat] Error not connected to server");
                 $.icescrum.renderNotice(chat.o.i18n.connectionError,'error');
             }
-
-            if (chat.o.facebook){
-                console.log("[icescrum-chat] OAuth from facebook server");
-                chat.o.connection.oauth_facebook_login(chat.o.facebook.apiKey, chat.o.facebook.redirecturi, (chat.o.video.enabled ? 'vid'+chat.o.resource : 'web'+chat.o.resource), chat._connectionCallback.bind(chat));
-            }else if (chat.o.gtalk){
-                console.log("[icescrum-chat] OAuth from gtalk server");
-                chat.o.connection.oauth_gtalk_login(chat.o.gtalk.apiKey, chat.o.gtalk.redirecturi, (chat.o.video.enabled ? 'vid'+chat.o.resource : 'web'+chat.o.resource), chat._connectionCallback.bind(chat));
-            }else if (chat.o.live){
-                console.log("[icescrum-chat] OAuth from live server");
-                chat.o.connection.oauth_live_login(chat.o.live.apiKey, chat.o.live.redirecturi, (chat.o.video.enabled ? 'vid'+chat.o.resource : 'web'+chat.o.resource), chat._connectionCallback.bind(chat));
-            }
-            else{
-                console.log("[icescrum-chat] attach connection from iceScrum server & bosh server");
-                $.ajax({type:'POST',
-                    global:false,
-                    data:{video:chat.o.video.enabled},
-                    url: $.icescrum.o.grailsServer + '/chat/connection',
-                    success:function(data) {
-                        console.log("[icescrum-chat] Attaching connection");
-                        chat.o.connection.attach(data.jid, data.sid,parseInt(data.rid) + 1, chat._connectionCallback.bind(chat));
-                    },
-                    error:function() {
-                        $.icescrum.renderNotice(chat.o.i18n.loginError,'error');
-                        chat._disconnected();
-                        console.log("[icescrum-chat] Error connection not attached");
-                    }
-                });
-            }
+            if ($.cookie('conn_jid') && $.cookie('conn_sid') && $.cookie('conn_rid')) {
+                console.log("Attaching connection from cookie values.");
+                console.log($.cookie('conn_jid'));
+                console.log($.cookie('conn_sid'));
+                console.log(parseInt($.cookie('conn_rid'))+1);
+                chat.o.connection.attach($.cookie('conn_jid'), $.cookie('conn_sid'), parseInt($.cookie('conn_rid'))+1, chat._connectionCallback.bind(chat));
+             } else {
+                console.log("Cookie values empty connecting...");
+                if (chat.o.facebook){
+                    console.log("[icescrum-chat] OAuth from facebook server");
+                    chat.o.connection.oauth_facebook_login(chat.o.facebook.apiKey, chat.o.facebook.redirecturi, (chat.o.video.enabled ? 'vid'+chat.o.resource : 'web'+chat.o.resource), chat._connectionCallback.bind(chat));
+                }else if (chat.o.gtalk){
+                    console.log("[icescrum-chat] OAuth from gtalk server");
+                    chat.o.connection.oauth_gtalk_login(chat.o.gtalk.apiKey, chat.o.gtalk.redirecturi, (chat.o.video.enabled ? 'vid'+chat.o.resource : 'web'+chat.o.resource), chat._connectionCallback.bind(chat));
+                }else if (chat.o.live){
+                    console.log("[icescrum-chat] OAuth from live server");
+                    chat.o.connection.oauth_live_login(chat.o.live.apiKey, chat.o.live.redirecturi, (chat.o.video.enabled ? 'vid'+chat.o.resource : 'web'+chat.o.resource), chat._connectionCallback.bind(chat));
+                }
+                else{
+                    console.log("[icescrum-chat] attach connection from iceScrum server & bosh server");
+                    $.ajax({type:'POST',
+                        global:false,
+                        data:{video:chat.o.video.enabled},
+                        url: $.icescrum.o.grailsServer + '/chat/connection',
+                        success:function(data) {
+                            console.log("[icescrum-chat] Attaching connection");
+                            chat.o.connection.attach(data.jid, data.sid,parseInt(data.rid) + 1, chat._connectionCallback.bind(chat));
+                        },
+                        error:function() {
+                            $.icescrum.renderNotice(chat.o.i18n.loginError,'error');
+                            chat._disconnected();
+                            console.log("[icescrum-chat] Error connection not attached");
+                        }
+                    });
+                }
+             }
         },
 
         // Traitement du retour de la connexion
@@ -247,14 +255,22 @@ var icescrumChat;
             console.log("[icescrum-chat] Connected ready to chat");
             chat._editableSelectList();
             $(window).trigger("connected.chat");
-            $(window).on('beforeunload', function(){
+            $(window).unload(function(){
                 if (chat.o.video.enabled){
                     if (chat.o.video.started){
                         chat.hangupVideoCall(true);
                     }
                 }
                 if (chat.o.connected){
-                    chat.presenceChanged('','disc');
+                    chat.o.connection.pause();
+                    //chat.presenceChanged('','disc');
+                    $.cookie('conn_jid', chat.o.connection.jid);
+                    $.cookie('conn_sid', chat.o.connection.sid);
+                    $.cookie('conn_rid', chat.o.connection.rid);
+                }else{
+                    $.cookie('conn_jid', null);
+                    $.cookie('conn_sid', null);
+                    $.cookie('conn_rid', null);
                 }
             });
         },
@@ -791,6 +807,9 @@ var icescrumChat;
                 chat.o.connection.flush();
                 chat.o.connection.disconnect();
                 chat._disconnected();
+                $.cookie('conn_jid', null);
+                $.cookie('conn_sid', null);
+                $.cookie('conn_rid', null);
             }else{
                 if(!chat.o.connected){
                     chat._connect();
@@ -953,10 +972,12 @@ var icescrumChat;
     };
 
     $(document).bind('init.icescrum',function(event){
-            $.icescrum.chat.init({});
+            if ($.icescrum.user.id && $.inArray('chat',  $.icescrum.getWidgetsList()) == -1){
+                $.icescrum.chat.reloadChat();
+            }
         }
     );
-    
+
     $(document).bind('composing.chatstates paused.chatstates active.chatstates', function(event,jid){
         jid = Strophe.getBareJidFromJid(jid);
         if (jid == $.icescrum.chat.o.ownjid){

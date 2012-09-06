@@ -30,6 +30,7 @@ import grails.converters.JSON
 import org.icescrum.core.domain.User
 import org.icescrum.plugins.chat.ChatConnection
 import org.icescrum.core.domain.Story
+import grails.plugins.springsecurity.Secured
 
 class ChatController {
 
@@ -40,6 +41,7 @@ class ChatController {
   def chatService
   def grailsApplication
 
+  @Secured('isAuthenticated()')
   def index = {
 
     def user = springSecurityService.currentUser

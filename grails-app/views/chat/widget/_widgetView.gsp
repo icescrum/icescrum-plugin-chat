@@ -67,3 +67,8 @@
  </div>
  <div id="chat-roster-list">
  </div>
+<sec:ifLoggedIn>
+    <jq:jquery>
+            $.icescrum.chat.init({});
+    </jq:jquery>
+</sec:ifLoggedIn>
