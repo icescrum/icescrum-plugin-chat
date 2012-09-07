@@ -932,7 +932,7 @@ var icescrumChat;
 
         displaySavedOauth:function(){
             $(['gtalk','facebook','live']).each(function(){
-                if ($.cookie('token-oauth-' + $.icescrum.user.id + '-' + this)){
+                if ($.cookie('token-oauth-' + $.icescrum.user.id + '-' + this) && $.inArray('chat',  $.icescrum.getWidgetsList()) != -1){
                     var oauth = $('<span data-provider="'+this+'">'+$.icescrum.chat.o.i18n.remove+' '+ this +' '+$.icescrum.chat.o.i18n.authorization+'</span>');
                     $('.oauth_saved').append(oauth);
                     oauth.on('click',function(){
