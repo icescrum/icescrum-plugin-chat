@@ -952,21 +952,25 @@ var icescrumChat;
             var re = new RegExp(type+'-[0-9]*',"g");
             var stories = msg.match(re);
             if (stories){
-                var ids = ['type='+type];
+                var uids = ['type='+type];
                 $(stories).each(function(){
-                    ids.push('id=' + this.replace(/story-/g,''));
+                    uids.push('uid=' + this.replace(/story-/g,''));
                 });
                 $.ajax({type:'POST',
                     global:false,
-                    data:ids.join('&'),
+                    data:uids.join('&'),
                     dataType:'json',
                     async:false,
-                    url: $.icescrum.o.grailsServer + '/chat/message',
+                    url: $.icescrum.o.baseUrlProduct + 'chat/message',
                     success:function(data) {
                         $(data).each(function(){
-                            var reg = new RegExp(this.id,"g");
-                            val[0] = val[0].replace(reg,'#'+this.id+': '+this.name+' / '+this.external+' #');
-                            val[1] = val[1].replace(reg,'<a class="scrum-link" title=" '+this.id+' / '+this.estimation+' / '+this.state+' " href="'+this.internal+'">'+this.name+'</a>');
+                            var reg = new RegExp(this.uid,"g");
+                            val[0] = val[0].replace(reg,this.name+' ('+this.external+')');
+                            val[1] = val[1].replace(reg,
+                                '<a class="scrum-link" title="' + this.uid + ' (' + this.estimation + ',' + this.state +')" href="' + this.internal + '">' +
+                                    this.name +
+                                '</a>'
+                            );
                         });
                     }
                 });

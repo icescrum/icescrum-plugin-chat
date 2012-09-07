@@ -32,6 +32,7 @@ import org.icescrum.plugins.chat.ChatConnection
 import org.icescrum.core.domain.Story
 import grails.plugins.springsecurity.Secured
 import org.icescrum.core.support.ApplicationSupport
+import org.icescrum.core.utils.BundleUtils
 
 class ChatController {
 
@@ -194,18 +195,24 @@ class ChatController {
   }
 
   def message = {
-      def stories = Story.getAll(params.list('id'))
+      def productid = params.long('product')
+      def stories = []
+      params.list('uid').each {
+          def story = Story.getInProductUid(productid, Integer.parseInt(it)).list()
+          if(story) {
+              stories << (Story) story
+          }
+      }
       def urls = []
       stories.each{
             if (!it.backlog.preferences.hidden || securityService.inProduct(it.backlog.id, springSecurityService.authentication)){
-                urls << [id:'story-'+it.id,
-                       external:createLink(absolute: true, mapping: "shortURL", params: [product: it.backlog.pkey], id: it.id),
-                       internal:is.createScrumLink(product:it.backlog.id,controller:'backlogElement',id:it.id),
+                urls << [uid:'story-'+it.uid,
+                       external:createLink(absolute: true, mapping: "shortURL", params: [product: it.backlog.pkey], id: it.uid),
+                       internal:is.createScrumLink(product:it.backlog.id,controller:'story',id:it.id),
                        name:it.name,
                        estimation:it.effort?:'?',
-                       state:is.bundleFromController(controller:'productBacklog',bundle:'stateBundle',value:it.state)]
+                       state: g.message(code:BundleUtils.storyStates[it.state])]
             }
-
       }
       render(status:200,text:urls as JSON, contentType: 'application/json')
   }
