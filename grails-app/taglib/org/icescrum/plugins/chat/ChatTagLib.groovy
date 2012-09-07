@@ -78,6 +78,8 @@ class ChatTagLib {
                                 requestSent:'${message(code:'is.chat.ui.request.sent').encodeAsJavaScript()}',
                                 accept:'${message(code:'is.chat.ui.accept').encodeAsJavaScript()}',
                                 requestError:'${message(code:'is.chat.ui.request.error').encodeAsJavaScript()}',
+                                authorization:'${message(code:'is.chat.ui.authorization').encodeAsJavaScript()}',
+                                remove:'${message(code:'is.chat.ui.remove').encodeAsJavaScript()}',
                                 video:{
                                         notSupported:'${message(code:'is.chat.ui.video.not.supported').encodeAsJavaScript()}',
                                         inCall:'${message(code:'is.chat.ui.video.in.call').encodeAsJavaScript()}',

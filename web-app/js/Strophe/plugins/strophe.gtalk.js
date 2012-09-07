@@ -82,46 +82,56 @@ Strophe.Connection.prototype._connect_cb_gtalk = function (req) {
         }).t(Base64.encode('\0'+Strophe.getBareJidFromJid(this.jid)+'\0'+this.oauth_accessToken)).tree());
 };
 
-Strophe.Connection.prototype.oauth_gtalk_login = function(clientid, redirect, resource, callback, wait, hold) {
+Strophe.Connection.prototype.oauth_gtalk_login = function(clientid, redirect, resource, callback, accessToken, wait, hold) {
     var conn = this;
+    conn.oauth_provider = 'gtalk';
     conn.oauth_callback = callback;
     conn.connect_callback = callback;
+    conn.oauth_accessToken = accessToken || null;
     conn.oauth_gtalk_url =   'https://accounts.google.com/o/oauth2/auth?';
     conn.oauth_gtalk_validurl = 'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=';
     conn._connect_callback = conn._connect_cb_gtalk;
     conn.wait = wait || conn.wait;
     conn.hold = hold || conn.hold;
     conn.oauth_resource = resource || 'strophe';
-    var win  = window.open(conn.oauth_gtalk_url + 'scope=https://www.googleapis.com/auth/googletalk https://www.googleapis.com/auth/userinfo.email&approval_prompt=auto&client_id=' + clientid + '&redirect_uri=' + redirect + '&response_type=token', "oauth", 'width=750, height=350');
-    var pollTimer = window.setInterval(function() {
-        if (!win){
-            window.clearInterval(pollTimer);
-            alert('Can\'t open popup to connect to gtalk');
-            conn._changeConnectStatus(Strophe.Status.AUTHFAIL, null);
-        }
-        else if (win.closed){
-            window.clearInterval(pollTimer);
-            conn._changeConnectStatus(Strophe.Status.AUTHFAIL, null);
-        }else if (win.document && win.document.URL.indexOf(redirect) != -1) {
-            window.clearInterval(pollTimer);
-            var url =   win.document.URL;
-            conn.oauth_accessToken = conn.gup(url, 'access_token');
-            win.close();
-            if (conn.oauth_accessToken){
-                conn.oauth_validate_token_gtalk();
-            }else{
+    if (!conn.oauth_accessToken){
+        var win  = window.open(conn.oauth_gtalk_url + 'scope=https://www.googleapis.com/auth/googletalk https://www.googleapis.com/auth/userinfo.email&approval_prompt=auto&client_id=' + clientid + '&redirect_uri=' + redirect + '&response_type=token', "oauth", 'width=750, height=350');
+        var pollTimer = window.setInterval(function() {
+            if (!win){
+                window.clearInterval(pollTimer);
+                alert('Can\'t open popup to connect to gtalk');
                 conn._changeConnectStatus(Strophe.Status.AUTHFAIL, null);
             }
-        }
-    }, 500);
+            else if (win.closed){
+                window.clearInterval(pollTimer);
+                conn._changeConnectStatus(Strophe.Status.AUTHFAIL, null);
+            }else if (win.document && win.document.URL.indexOf(redirect) != -1) {
+                window.clearInterval(pollTimer);
+                var url =   win.document.URL;
+                conn.oauth_accessToken = conn.gup(url, 'access_token');
+                conn.oauth_expires = conn.gup(url, 'expires_in');
+                win.close();
+                if (conn.oauth_accessToken){
+                    conn.oauth_validate_token_gtalk(clientid, redirect);
+                }else{
+                    conn._changeConnectStatus(Strophe.Status.AUTHFAIL, null);
+                }
+            }
+        }, 500);
+    }else{
+        conn.oauth_validate_token_gtalk(clientid, redirect);
+    }
 };
 
-Strophe.Connection.prototype.oauth_validate_token_gtalk = function() {
+Strophe.Connection.prototype.oauth_validate_token_gtalk = function(clientid, redirect) {
     var conn = this;
     $.ajax({
         url: conn.oauth_gtalk_validurl + conn.oauth_accessToken,
         success: function(data){
             conn.connect(data.email + "/" + conn.oauth_resource, null, conn.oauth_callback);
+        },
+        error:function(){
+            conn.oauth_gtalk_login(clientid, redirect, conn.oauth_resource, conn.oauth_callback, null, conn.wait, conn.hold);
         },
         dataType:'json'
     });

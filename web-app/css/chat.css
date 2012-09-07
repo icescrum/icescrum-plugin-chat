@@ -26,6 +26,14 @@
  *
  */
 
+.oauth_saved span {
+    float: left;
+    line-height: 29px;
+    margin-left: 5px;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
 #widget-id-chat.box {
     position:relative;
     top:0;

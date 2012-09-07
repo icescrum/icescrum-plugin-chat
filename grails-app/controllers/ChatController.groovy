@@ -31,6 +31,7 @@ import org.icescrum.core.domain.User
 import org.icescrum.plugins.chat.ChatConnection
 import org.icescrum.core.domain.Story
 import grails.plugins.springsecurity.Secured
+import org.icescrum.core.support.ApplicationSupport
 
 class ChatController {
 
@@ -41,13 +42,12 @@ class ChatController {
   def chatService
   def grailsApplication
 
-  @Secured('isAuthenticated()')
   def index = {
 
     def user = springSecurityService.currentUser
     def chatPreferences = chatService.getChatPreferences(user)
 
-    if (chatPreferences.disabled){
+    if (!ApplicationSupport.booleanValue(grailsApplication.config.icescrum.chat.enabled) || chatPreferences.disabled){
         render(status:200)
         return
     }

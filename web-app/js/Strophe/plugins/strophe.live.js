@@ -82,46 +82,55 @@ Strophe.Connection.prototype._connect_cb_live = function (req) {
         }).t(this.oauth_accessToken).tree());
 };
 
-Strophe.Connection.prototype.oauth_live_login = function(clientid, redirect, resource, callback, wait, hold) {
+Strophe.Connection.prototype.oauth_live_login = function(clientid, redirect, resource, callback, accessToken, wait, hold) {
     var conn = this;
+    conn.oauth_provider = 'live';
     conn.oauth_callback = callback;
     conn.connect_callback = callback;
     conn.oauth_live_url =   'https://oauth.live.com/authorize?';
     conn.oauth_live_validurl = 'https://apis.live.net/v5.0/me?access_token=';
+    conn.oauth_accessToken = accessToken || null;
     conn._connect_callback = conn._connect_cb_live;
     conn.wait = wait || conn.wait;
     conn.hold = hold || conn.hold;
     conn.oauth_resource = resource || 'strophe';
-    var win  = window.open(conn.oauth_live_url + 'scope=wl.emails wl.messenger&client_id=' + clientid + '&redirect_uri=' + redirect + '&response_type=token', "oauth", 'width=750, height=350');
-    var pollTimer = window.setInterval(function() {
-        if (!win){
-            window.clearInterval(pollTimer);
-            alert('Can\'t open popup to connect to live messenger');
-            conn._changeConnectStatus(Strophe.Status.AUTHFAIL, null);
-        }
-        else if (win.closed){
-            window.clearInterval(pollTimer);
-            conn._changeConnectStatus(Strophe.Status.AUTHFAIL, null);
-        }else if (win.document && win.document.URL.indexOf(redirect) != -1) {
-            window.clearInterval(pollTimer);
-            var url =   win.document.URL;
-            conn.oauth_accessToken = conn.gup(url, 'access_token');
-            win.close();
-            if (conn.oauth_accessToken){
-                conn.oauth_validate_token_live();
-            }else{
+    if (!conn.oauth_accessToken){
+        var win  = window.open(conn.oauth_live_url + 'scope=wl.emails wl.messenger&client_id=' + clientid + '&redirect_uri=' + redirect + '&response_type=token', "oauth", 'width=750, height=350');
+        var pollTimer = window.setInterval(function() {
+            if (!win){
+                window.clearInterval(pollTimer);
+                alert('Can\'t open popup to connect to live messenger');
                 conn._changeConnectStatus(Strophe.Status.AUTHFAIL, null);
             }
-        }
-    }, 500);
+            else if (win.closed){
+                window.clearInterval(pollTimer);
+                conn._changeConnectStatus(Strophe.Status.AUTHFAIL, null);
+            }else if (win.document && win.document.URL.indexOf(redirect) != -1) {
+                window.clearInterval(pollTimer);
+                var url =   win.document.URL;
+                conn.oauth_accessToken = conn.gup(url, 'access_token');
+                win.close();
+                if (conn.oauth_accessToken){
+                    conn.oauth_validate_token_live(clientid, redirect);
+                }else{
+                    conn._changeConnectStatus(Strophe.Status.AUTHFAIL, null);
+                }
+            }
+        }, 500);
+    }else{
+        conn.oauth_validate_token_live(clientid, redirect);
+    }
 };
 
-Strophe.Connection.prototype.oauth_validate_token_live = function() {
+Strophe.Connection.prototype.oauth_validate_token_live = function(clientid, redirect) {
     var conn = this;
     $.ajax({
         url: conn.oauth_live_validurl + conn.oauth_accessToken,
         success: function(data){
             conn.connect(data.id + "@messenger.live.com/" + conn.oauth_resource, null, conn.oauth_callback);
+        },
+        error:function(){
+            conn.oauth_live_login(clientid, redirect, conn.oauth_resource, conn.oauth_callback, null, conn.wait, conn.hold);
         },
         dataType:'json'
     });

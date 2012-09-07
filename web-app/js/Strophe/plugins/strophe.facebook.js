@@ -219,47 +219,56 @@ Strophe.Connection.prototype._connect_cb_facebook = function (req) {
         }).tree());
 };
 
-Strophe.Connection.prototype.oauth_facebook_login = function(apiKey, redirect, resource, callback, wait, hold) {
+Strophe.Connection.prototype.oauth_facebook_login = function(apiKey, redirect, resource, callback, accessToken, wait, hold) {
     var conn = this;
+    conn.oauth_provider = 'facebook';
     conn.oauth_callback = callback;
     conn.connect_callback = callback;
     conn.oauth_apiKey = apiKey;
     conn.oauth_facebook_url =   'http://www.facebook.com/dialog/oauth/?';
     conn._connect_callback = conn._connect_cb_facebook;
+    conn.oauth_accessToken = accessToken || null;
     conn.wait = wait || conn.wait;
     conn.hold = hold || conn.hold;
     conn.oauth_resource = resource || 'strophe';
-    var win  = window.open(conn.oauth_facebook_url + 'scope=xmpp_login&client_id=' + conn.oauth_apiKey + '&redirect_uri=' + redirect + '&response_type=token', "oauth", 'width=750, height=350');
-    var pollTimer = window.setInterval(function() {
-        if (!win){
-            window.clearInterval(pollTimer);
-            alert('Can\'t open popup to connect to facebook');
-            conn._changeConnectStatus(Strophe.Status.AUTHFAIL, null);
-        }
-        if (win.closed){
-            window.clearInterval(pollTimer);
-            conn._changeConnectStatus(Strophe.Status.AUTHFAIL, null);
-        }
-        else if (win.document && win.document.URL.indexOf(redirect) != -1) {
-            window.clearInterval(pollTimer);
-            var url =   win.document.URL;
-            conn.oauth_accessToken = conn.gup(url, 'access_token');
-            win.close();
-            if (conn.oauth_accessToken){
-                conn.oauth_get_username_facebook();
-            }else{
+    if (!conn.oauth_accessToken){
+        var win  = window.open(conn.oauth_facebook_url + 'scope=xmpp_login&client_id=' + conn.oauth_apiKey + '&redirect_uri=' + redirect + '&response_type=token', "oauth", 'width=750, height=350');
+        var pollTimer = window.setInterval(function() {
+            if (!win){
+                window.clearInterval(pollTimer);
+                alert('Can\'t open popup to connect to facebook');
                 conn._changeConnectStatus(Strophe.Status.AUTHFAIL, null);
             }
-        }
-    }, 2000);
+            if (win.closed){
+                window.clearInterval(pollTimer);
+                conn._changeConnectStatus(Strophe.Status.AUTHFAIL, null);
+            }
+            else if (win.document && win.document.URL.indexOf(redirect) != -1) {
+                window.clearInterval(pollTimer);
+                var url =   win.document.URL;
+                conn.oauth_accessToken = conn.gup(url, 'access_token');
+                win.close();
+                if (conn.oauth_accessToken){
+                    conn.oauth_get_username_facebook(apiKey, redirect);
+                }else{
+                    conn._changeConnectStatus(Strophe.Status.AUTHFAIL, null);
+                }
+            }
+        }, 2000);
+    }else{
+        conn.oauth_get_username_facebook(apiKey, redirect);
+    }
 };
 
-Strophe.Connection.prototype.oauth_get_username_facebook = function() {
+Strophe.Connection.prototype.oauth_get_username_facebook = function(apiKey, redirect) {
     var conn = this;
     $.ajax({
         url: "https://graph.facebook.com/me?access_token=" + conn.oauth_accessToken,
         success: function(data){
-            conn.connect(data.username + "@chat.facebook.com/" + conn.oauth_resource, null,conn.oauth_callback);
+            conn.connect(data.username + "@chat.facebook.com/" + conn.oauth_resource, null, conn.oauth_callback);
+        },
+        error:function(){
+            conn.oauth_facebook_login(apiKey, redirect, conn.oauth_resource, conn.oauth_callback, null, conn.wait, conn.hold);
         },
         dataType:'json'
     });

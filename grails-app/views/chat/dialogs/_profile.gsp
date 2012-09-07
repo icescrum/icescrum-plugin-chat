@@ -50,4 +50,9 @@
     <is:fieldInput class="manual-auth" style="display:${chatPreferences.oauth?'none':'block'};" for="chatPreferences.password" label="is.chat.ui.dialog.chat.password">
       <is:password id="chatPreferences.password" name="chatPreferences.password" value="${chatPreferences.password}"/>
     </is:fieldInput>
+    <is:fieldInput class="oauth_saved" style="display:none;" for="oauth_saved" label="is.chat.ui.dialog.chat.oauthSaved">
+        <jq:jquery>
+            $.icescrum.chat.displaySavedOauth();
+        </jq:jquery>
+    </is:fieldInput>
 </is:accordionSection>
