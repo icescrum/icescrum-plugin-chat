@@ -27,8 +27,8 @@
  *--%>
 
 <is:accordionSection title="is.chat.ui.dialog.chat.title">
-    <is:fieldRadio for="chatPreferencesDisabled" label="is.chat.ui.dialog.chat.disabled">
-      <is:radio id="chatPreferencesDisabled" name="chatPreferencesDisabled" value="${chatPreferences.disabled}"/>
+    <is:fieldRadio for="chatPreferencesEnabled" label="is.chat.ui.dialog.chat.enabled">
+      <is:radio id="chatPreferencesEnabled" name="chatPreferencesEnabled" value="${!chatPreferences.disabled}"/>
     </is:fieldRadio>
     <is:fieldRadio for="chatPreferencesHideOffline" label="is.chat.ui.dialog.chat.hideOffline">
       <is:radio id="chatPreferencesHideOffline" name="chatPreferencesHideOffline" value="${chatPreferences.hideOffline}"/>

@@ -174,7 +174,7 @@ class ChatController {
     def updatePreferences = { params, context ->
       if(params.chatPreferences instanceof Map){
           def chatPref = chatService.getChatPreferences(context.user)
-          chatPref.disabled = params.chatPreferencesDisabled == '1'
+          chatPref.disabled = params.chatPreferencesEnabled != '1'
           chatPref.hideOffline = params.chatPreferencesHideOffline == '1'
           try {
             if (params.method == 'manual'){
