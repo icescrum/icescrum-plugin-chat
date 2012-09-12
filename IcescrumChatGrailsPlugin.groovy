@@ -34,9 +34,9 @@ Brief description of the plugin.
         if (!application.config.icescrum.chat){
             application.config.icescrum.chat.resource="icescrum"
             application.config.icescrum.chat.enabled=true
-            application.config.icescrum.chat.facebook.apiKey = '353097104770974'
+            application.config.icescrum.chat.facebook.apiKey = ''
             application.config.icescrum.chat.gtalk.apiKey = '278165454749.apps.googleusercontent.com'
-            application.config.icescrum.chat.live.apiKey = '00000000440D1110'
+            application.config.icescrum.chat.live.apiKey = ''
             application.config.icescrum.chat.bosh.server = "www.icescrum.org"
             application.config.icescrum.chat.bosh.port = 80
             application.config.icescrum.chat.bosh.path = "/bosh"

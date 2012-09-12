@@ -30,7 +30,6 @@ class ChatConnection implements BOSHClientRequestListener{
     )
     config.setRosterLoadedAtLogin(false)
     config.setSendPresence(false)
-    BOSHConnection.DEBUG_ENABLED = true
     BOSHConnection conn = new BOSHConnection(config)
     try {
       conn.connect()

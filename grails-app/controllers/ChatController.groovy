@@ -165,7 +165,21 @@ class ChatController {
   def form = {
       if (grailsApplication.config.icescrum.chat.enabled){
           def chatPref = chatService.getChatPreferences(params.user)
-          render(template:'dialogs/profile', plugin:pluginName, model:[chatPreferences:chatPref])
+          def oauthKeys = ["custom"]
+          def oauthValues = ["manual"]
+          if (grailsApplication.config.icescrum.chat.facebook?.apiKey){
+              oauthKeys << "Facebook Chat"
+              oauthValues << "facebook"
+          }
+          if (grailsApplication.config.icescrum.chat.gtalk?.apiKey){
+              oauthKeys << "Google Talk"
+              oauthValues << "gtalk"
+          }
+          if (grailsApplication.config.icescrum.chat.live?.apiKey){
+              oauthKeys << "Microsoft Live"
+              oauthValues << "live"
+          }
+          render(template:'dialogs/profile', plugin:pluginName, model:[chatPreferences:chatPref, oauthKeys:oauthKeys, oauthValues:oauthValues])
       }else{
           render(status:200,text:'')
       }

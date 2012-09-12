@@ -38,8 +38,8 @@
                 width="240"
                 maxHeight="200"
                 styleSelect="dropdown"
-                from="${['Google talk','Facebook chat','Microsoft Live','Custom']}"
-                keys="${['gtalk','facebook','live','manual']}"
+                from="${oauthKeys}"
+                keys="${oauthValues}"
                 name="method"
                 change="if (jQuery(this).val() == 'manual'){ jQuery('.manual-auth').show(); jQuery('p.select-auth').removeClass('field-noseparator'); }else{jQuery('.manual-auth').hide(); jQuery('p.select-auth').addClass('field-noseparator');}"
                 value="${chatPreferences.oauth?:'manual'}"/>
