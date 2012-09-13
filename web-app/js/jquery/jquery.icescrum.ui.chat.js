@@ -33,6 +33,7 @@ var displayAlert = false;
 var blurDate = null;
 var autoAway = false;
 var checkPresence = null;
+var notifications = [];
 
 $(document).ready(function(){
 	$(window).blur(function(){
@@ -64,6 +65,10 @@ $(document).ready(function(){
             autoAway = false;
         }
         clearInterval(checkPresence);
+        $(notifications).each(function() {
+            this.close();
+        });
+        notifications = [];
 	});
 });
 
@@ -205,7 +210,10 @@ $(document).ready(function(){
                 $.doTimeout(1000,function(){
                     return self._alertDocument(false, name, msg);
                 });
-                $.icescrum.displayNotification(self.options.alert+' '+name, msg);
+                var notification = $.icescrum.displayNotification(self.options.alert+' '+name, msg);
+                if(notification) {
+                    notifications.push(notification);
+                }
             }
             if(!windowFocus){
                 if (!displayAlert){
