@@ -31,22 +31,24 @@
     <is:avatar user="${m}" class="ico"/>
   </div>
   <div class="chat-tooltip-right">
-    <span class="ui-chat-user-status-${escapedJid} ui-chat-status ui-chat-status-offline" title="">
-      <is:scrumLink controller="user" action='profile' id="${escapedJid}">${m.firstName.encodeAsHTML()} ${m.lastName.encodeAsHTML()}</is:scrumLink>
+    <span class="ui-chat-user-status-${escapedJid} ui-chat-status ui-chat-status-offline" jid="${escapedJid}">
+      <a class="scrum-link" href="#user/profile/${m.username}">
+            ${m.firstName.encodeAsHTML()} ${m.lastName.encodeAsHTML()}
+      </a>
     </span>
     <span class="ui-chat-user-status-text ui-chat-user-status-text-${escapedJid}"></span>
     <g:if test="${tasks}">
       <span class="chat-user-task-title">
         <strong>
-          <g:message code="is.chat.ui.tooltip.currentTasks" args="[nbtasks]"/>
+          <g:message code="is.chat.ui.tooltip.currentTasks"/>
         </strong>
       </span>
       <g:each in="${tasks}" var="task" status="i">
         <g:if test="${i < 3}">
           <span class="chat-user-task">
-            <is:scrumLink product="${task.backlog.parentRelease.parentProduct.pkey}" controller="sprintBacklog" id="${task.backlog.id}">
+            <a class="scrum-link" href="#task/${task.id}">
               ${task.name.encodeAsHTML()}
-            </is:scrumLink>
+            </a>
           </span>
         </g:if>
       </g:each>

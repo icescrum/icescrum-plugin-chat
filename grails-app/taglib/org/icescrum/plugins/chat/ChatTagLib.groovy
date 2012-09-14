@@ -95,7 +95,13 @@ class ChatTagLib {
     def tooltipChat = { attrs,body ->
       assert attrs.id
       def user = User.get(attrs.id)
-      def tasks =  Task.findAllByResponsibleAndState(user,Task.STATE_BUSY,[order:'desc',sort:'lastUpdated'])
+      def tasks =  []
+      if(attrs.product) {
+          tasks = Task.getAllInProduct(Long.parseLong(attrs.product))
+          tasks = tasks.findAll { Task task ->
+              task.state == Task.STATE_BUSY && task.responsible == user
+          }
+      }
       def content = render(template:'tooltipChat',plugin:'icescrum-chat',model:[escapedJid:attrs.escapedJid,m:user,tasks:tasks,nbtasks:tasks.size() > 1 ? 's' : 0])
 
       def params = [

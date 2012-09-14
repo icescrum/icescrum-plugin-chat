@@ -306,7 +306,6 @@ var icescrumChat;
 
             $('.ui-chat-status,.tooltip-chat-user-link').die('click.chat').live('click.chat',function(event){
                 $.icescrum.chat.createOrOpenChat('chat-'+$(this).attr('jid'),$(this).attr('jid'),true);
-                event.preventDefault();
             });
 
             var showDelete;
@@ -472,9 +471,10 @@ var icescrumChat;
         addTeamContact:function(jid,user,teamid) {
             var chat = this;
             chat.addContact(teamid,jid,user.firstname +' '+user.lastname,user.firstname);
+            var baseUrl = $.icescrum.o.baseUrlProduct ? $.icescrum.o.baseUrlProduct : $.icescrum.o.baseUrl;
             $.ajax({
                 type: "POST",
-                url: $.icescrum.o.grailsServer + '/chat/tooltip',
+                url: baseUrl + 'chat/tooltip',
                 data: 'id=' + user.id + '&escapedJid=' + chat.escapeJid(jid),
                 success:function(data) {
                     $('.chat-group').append(data);

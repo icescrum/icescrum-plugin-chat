@@ -30,6 +30,7 @@ import grails.converters.JSON
 import org.icescrum.core.domain.User
 import org.icescrum.plugins.chat.ChatConnection
 import org.icescrum.core.domain.Story
+import org.icescrum.core.domain.User
 import grails.plugins.springsecurity.Secured
 import org.icescrum.core.support.ApplicationSupport
 import org.icescrum.core.utils.BundleUtils
@@ -86,7 +87,8 @@ class ChatController {
           userList.add(u.id)
         }
       }
-      teamList.add(teamname:t.name, teamid:t.id, users:jsonTeam)
+      def teamName = t.products.size() > 1 ? t.name : t.products.toList()[0].name
+      teamList.add(teamname:teamName, teamid:t.id, users:jsonTeam)
     }
     teamList = teamList as JSON
 
