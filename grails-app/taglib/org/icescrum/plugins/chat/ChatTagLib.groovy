@@ -116,7 +116,8 @@ class ChatTagLib {
           positionTarget:"\'mouse\'",
           positionAdjustMouse:"false",
           hideWhenEvent:"mouseout",
-          hideDelay:"500"
+          hideDelay:"500",
+          showReady:true
       ]
 
       out << is.tooltip(params)

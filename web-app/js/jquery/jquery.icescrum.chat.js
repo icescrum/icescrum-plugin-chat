@@ -468,18 +468,9 @@ var icescrumChat;
             });
         },
 
-        addTeamContact:function(jid,user,teamid) {
+        addTeamContact:function(jid, user, teamid) {
             var chat = this;
-            chat.addContact(teamid,jid,user.firstname +' '+user.lastname,user.firstname);
-            var baseUrl = $.icescrum.o.baseUrlProduct ? $.icescrum.o.baseUrlProduct : $.icescrum.o.baseUrl;
-            $.ajax({
-                type: "POST",
-                url: baseUrl + 'chat/tooltip',
-                data: 'id=' + user.id + '&escapedJid=' + chat.escapeJid(jid),
-                success:function(data) {
-                    $('.chat-group').append(data);
-                }
-            });
+            chat.addContact(teamid, jid, user.firstname + ' ' + user.lastname, user.firstname, user.id, true);
         },
 
         addExternalContact:function(user){
@@ -492,7 +483,7 @@ var icescrumChat;
             chat.addContact(teamid,user.jid,displayedName,displayedName)
         },
 
-        addContact:function(teamid,jid,name,firstname) {
+        addContact:function(teamid, jid, name, firstname, userId, displayTooltip) {
             var chat = this;
             var escapedJid = chat.escapeJid(jid);
             if ($('#chat-user-status-' + escapedJid).length == 0){
@@ -501,6 +492,19 @@ var icescrumChat;
                                             '<div class="chat-delete-contact"></div>' +
                                             '</li>');
                 $('#chat-user-status-' + escapedJid).data('firstname',firstname);
+            }
+            if(displayTooltip) {
+                var baseUrl = $.icescrum.o.baseUrlProduct ? $.icescrum.o.baseUrlProduct : $.icescrum.o.baseUrl;
+                $('#chat-user-status-' + escapedJid).one("mouseover", function() {
+                    $.ajax({
+                        type: "POST",
+                        url: baseUrl + 'chat/tooltip',
+                        data: 'id=' + userId + '&escapedJid=' + chat.escapeJid(jid),
+                        success:function(data) {
+                            $('.chat-group').append(data);
+                        }
+                    });
+                });
             }
         },
 
