@@ -87,7 +87,7 @@ class ChatController {
           userList.add(u.id)
         }
       }
-      def teamName = t.products.size() > 1 ? t.name : t.products.toList()[0].name
+      def teamName = t.products.size() > 1 ? t.name : t.products?.toList()[0]?.name ?: t.name
       teamList.add(teamname:teamName, teamid:t.id, users:jsonTeam)
     }
     teamList = teamList as JSON
