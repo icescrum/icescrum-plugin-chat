@@ -97,13 +97,14 @@ var icescrumChat;
             var chatWidget = $("#widget-id-chat");
             chatWidget.prependTo($('#widget-list'));
 
-            console.log('[icescrum-chat] init');
+            console.log('[chat] Init');
             if (typeof icescrumChat === undefined) {
                 chat.o = $.extend({}, chat.defaults, options);
             }else{
                 chat.o = $.extend({}, chat.defaults, icescrumChat);
             }
             if(chat.o.disabled){
+                console.log('[chat] Chat disabled');
                 chatWidget.data('id','chat');
                 $.icescrum.closeWidget(chatWidget,true);
                 return;
@@ -114,10 +115,10 @@ var icescrumChat;
             }).trigger('resize');
             $.icescrum.emoticons.initialize(chat.o.emoticonsDir);
             if (chat.o.currentStatus.show != 'disc'){
-                console.log('[icescrum-chat] connecting');
+                console.log('[chat] Connecting');
                 chat._connect();
             }else{
-                console.log('[icescrum-chat] disconnecting');
+                console.log('[chat] Disconnecting');
                 chat._disconnected();
             }
         },
@@ -147,39 +148,39 @@ var icescrumChat;
         _connect:function(){
             var chat = this;
             $("#chatstatus-button").removeClass('ui-chat-status-away ui-chat-status-chat ui-chat-status-online ui-chat-status-xa ui-chat-status-dnd').addClass('ui-chat-select ui-chat-status-offline');
-            console.log("[icescrum-chat] Connecting to server...");
+            console.log("[chat] Connecting to server...");
             //Strophe.log = function (lvl, msg) { console.log(msg); };
             chat.o.connection = new Strophe.Connection("http://"+chat.o.server+":"+chat.o.port+chat.o.boshPath);
             //chat.o.connection.rawInput = function (data) { console.log(data); };
             //chat.o.connection.rawOutput = function (data) { console.log(data); };
             if (chat.o.connection == null){
-                console.log("[icescrum-chat] Error not connected to server");
+                console.log("[chat] Error not connected to server");
                 $.icescrum.renderNotice(chat.o.i18n.connectionError,'error');
             }
             if (chat.o.facebook){
-                console.log("[icescrum-chat] OAuth from facebook server");
+                console.log("[chat] OAuth from facebook server");
                 chat.o.connection.oauth_facebook_login(chat.o.facebook.apiKey, chat.o.facebook.redirecturi, (chat.o.video.enabled ? 'vid'+chat.o.resource : 'web'+chat.o.resource), chat._connectionCallback.bind(chat), $.cookie('token-oauth-' + $.icescrum.user.id + '-facebook'));
             }else if (chat.o.gtalk){
-                console.log("[icescrum-chat] OAuth from gtalk server");
+                console.log("[chat] OAuth from gtalk server");
                 chat.o.connection.oauth_gtalk_login(chat.o.gtalk.apiKey, chat.o.gtalk.redirecturi, (chat.o.video.enabled ? 'vid'+chat.o.resource : 'web'+chat.o.resource), chat._connectionCallback.bind(chat), $.cookie('token-oauth-' + $.icescrum.user.id + '-gtalk'));
             }else if (chat.o.live){
-                console.log("[icescrum-chat] OAuth from live server");
+                console.log("[chat] OAuth from live server");
                 chat.o.connection.oauth_live_login(chat.o.live.apiKey, chat.o.live.redirecturi, (chat.o.video.enabled ? 'vid'+chat.o.resource : 'web'+chat.o.resource), chat._connectionCallback.bind(chat), $.cookie('token-oauth-' + $.icescrum.user.id + '-live'));
             }
             else{
-                console.log("[icescrum-chat] attach connection from iceScrum server & bosh server");
+                console.log("[chat] Attach connection from iceScrum server & bosh server");
                 $.ajax({type:'POST',
                     global:false,
                     data:{video:chat.o.video.enabled},
                     url: $.icescrum.o.grailsServer + '/chat/connection',
                     success:function(data) {
-                        console.log("[icescrum-chat] Attaching connection");
+                        console.log("[chat] Attaching connection");
                         chat.o.connection.attach(data.jid, data.sid,parseInt(data.rid) + 1, chat._connectionCallback.bind(chat));
                     },
                     error:function() {
                         $.icescrum.renderNotice(chat.o.i18n.loginError,'error');
                         chat._disconnected();
-                        console.log("[icescrum-chat] Error connection not attached");
+                        console.log("[chat] Error connection not attached");
                     }
                 });
             }
@@ -190,16 +191,16 @@ var icescrumChat;
             var chat = this;
             if (status == Strophe.Status.CONNECTING) {
                 $("#chatstatus-button .ui-selectmenu-status").text(chat.o.i18n.connecting);
-                console.log('connecting');
+                console.log('[chat] Callback : connecting');
             } else if (status == Strophe.Status.CONNFAIL || status == Strophe.Status.DISCONNECTED  || status == Strophe.Status.AUTHFAIL) {
-                console.log('disconnected');
+                console.log('[chat] Callback : disconnected');
                 chat._disconnected();
             } else if (status == Strophe.Status.AUTHENTICATING) {
                 $("#chatstatus-button .ui-selectmenu-status").text(chat.o.i18n.authenticating);
-                console.log('authenticating');
+                console.log('[chat] Callback : authenticating');
             } else if (status == Strophe.Status.CONNECTED || status == Strophe.Status.ATTACHED) {
                 $("#chatstatus-button .ui-selectmenu-status").text(chat.o.i18n.connected);
-                console.log('connected');
+                console.log('[chat] Callback : connected');
                 chat.o.ownjid = chat.o.connection.jid;
                 chat._connected();
             }
@@ -224,32 +225,32 @@ var icescrumChat;
             chat.o.connection.addTimedHandler(4000,chat._onPeriodicPauseStateCheck.bind(chat));
             chat.o.connected = true;
 
-            console.log("[icescrum-chat] retrieve roster");
+            console.log("[chat] Retrieve roster");
             chat.o.connection.roster.registerCallback(chat._onRosterChanged.bind(chat));
             chat.o.connection.roster.get(chat._onRosterReceived.bind(chat));
 
-            console.log("[icescrum-chat] send presence");
             var found = false;
             if (chat.o.currentStatus.show != null &&  chat.o.currentStatus.presence != null){
                 $('#chatstatus .ui-chat-status-'+chat.o.currentStatus.show).each(function(){
                     if($(this).text() == chat.o.currentStatus.presence){
                         $("#chatstatus").selectmenu('value',$(this).index());
-                        console.log("[icescrum-chat] changing presence");
+                        console.log("[chat] Changing presence");
                         found = true;
                     }
                 });
             }
             if (found){
-                console.log("[icescrum-chat] changing presence bis");
+                console.log("[chat] Changing presence bis");
                 chat.updateResource(chat.o.currentStatus.presence,chat.o.currentStatus.show,false);
             }else{
-                console.log("[icescrum-chat] default presence");
+                console.log("[chat] Default presence");
                 $("#chatstatus").selectmenu("value",$("#chatstatus option:first").index());
                 chat.o.connection.send($pres().tree());
             }
+            console.log("[chat] Send presence");
             $("#chatstatus-button").removeClass('ui-chat-status-offline');
 
-            console.log("[icescrum-chat] Connected ready to chat");
+            console.log("[chat] Ready to chat");
             chat._editableSelectList();
             $(window).trigger("connected.chat");
             $(window).unload(function(){
@@ -299,7 +300,7 @@ var icescrumChat;
 
         _onRosterReceived:function(roster) {
             var chat = this;
-            console.log("[icescrum-chat] Receiving roster ");
+            console.log("[chat] Receiving roster ");
             var teamList = $.parseJSON(chat.o.teamList);
             chat.addTeamContacts(teamList,roster);
             chat.addExternalContacts(teamList,roster);
@@ -331,13 +332,12 @@ var icescrumChat;
         _onRosterChanged:function(roster, contact){
             if (contact){
                 var chat = this;
-                console.log("[icescrum-chat] updating contact ");
                 $.icescrum.chat.updateContact(contact);
                 var resource = contact.highestResource();
                 if (resource){
-                    console.log("[icescrum-chat] Presence received from "+ contact.jid + " show: " + (resource ? resource.show : '') + " status:" + (resource ? resource.status : '') + "  video feature: "+(resource ? resource.video : 'false'));
+                    console.log("[chat] Presence from "+ contact.jid + " (" + Object.keys(contact.resources) + ")" + " show: " + (resource ? resource.show : '') + " status:" + (resource ? resource.status : '') + "  video: "+(resource ? resource.video : 'false'));
                 }else{
-                    console.log("[icescrum-chat] "+ contact.jid + " is disconnected");
+                    console.log("[chat] "+ contact.jid + " is disconnected");
                 }
                 chat.displayCounterContacts();
             }
@@ -542,7 +542,7 @@ var icescrumChat;
                     var serviceDiscoveryResult = $iq({type:'result', to: to})
                                                 .c('query', {xmlns:'http://jabber.org/protocol/disco#info'})
                                                 .c('feature', {'var':'http://jabber.org/protocol/chatstates'});
-                    console.log("[icescrum-chat] Receiving service discovery get, result: \n" + serviceDiscoveryResult.toString());
+                    console.log("[chat] Receiving service discovery get, result: \n" + serviceDiscoveryResult.toString());
                     chat.o.connection.send(serviceDiscoveryResult.tree());
                     return true;
                 }
@@ -575,12 +575,12 @@ var icescrumChat;
             //Send response
             var responseMessage = $pres({type: answer, to: $.icescrum.chat.unescapeJid(escapedJid)});
             chat.o.connection.send(responseMessage.tree());
-            console.log("[icescrum-chat] Subscription confirm answer : "+answer+" to "+escapedJid);
+            console.log("[chat] Subscription confirm answer : "+answer+" to "+escapedJid);
 
             //request subscription back
             if (answer == 'subscribed'){
                 chat.o.connection.roster.subscribe(chat.unescapeJid(escapedJid));
-                console.log("[icescrum-chat] Subscription sent back to "+escapedJid);
+                console.log("[chat] Subscription sent back to "+escapedJid);
             }
             $('#subscription-' + escapedJid).remove();
         },
@@ -743,7 +743,7 @@ var icescrumChat;
                                                 .up().c('active', {xmlns:'http://jabber.org/protocol/chatstates'});
             $.icescrum.chat.o.connection.send(message.tree());
             $("#chat-" + escapedJid).chat("option", "chatManager").addMsg($.icescrum.chat.o.i18n.me, msg[1]);
-            console.log("[icescrum-chat] Message sent to "+rawJid);
+            console.log("[chat] Message sent to "+rawJid);
         },
 
         // Ferme le chat id s'il est ouvert
@@ -770,7 +770,7 @@ var icescrumChat;
         // Ajoute le message à la fenêtre de chat
         _onChatMessage:function(escapedJid,text){
             var rawJid = $.icescrum.chat.unescapeJid(escapedJid);
-            console.log("[icescrum-chat] Message received from "+rawJid);
+            console.log("[chat] Message received from "+rawJid);
             var extractedText = (text[0].text) ? text[0].text : (text[0].textContent) ? text[0].textContent : "";
             var name = $('#chat-user-status-'+escapedJid).data('firstname');
             name = $.icescrum.truncate(name,15);
@@ -886,7 +886,7 @@ var icescrumChat;
                     chat.o.connection.chatstates.sendPaused(jid);
                     break;
             }
-            console.log("[icescrum-chat] " + state +  " state sent to " + jid);
+            console.log("[chat] " + state +  " state sent to " + jid);
         },
 
         customPresence:function(val,settings){
@@ -1002,7 +1002,7 @@ var icescrumChat;
         if (jid == $.icescrum.chat.o.ownjid){
             return;
         }
-        console.log("[icescrum-chat] " + jid + " is "+event.type);
+        console.log("[chat] " + jid + " is "+event.type);
         var chatWindow = $("#chat-" + $.icescrum.chat.escapeJid(jid));
         if (chatWindow.size() > 0){
             var manager = chatWindow.chat("option", "chatManager");
