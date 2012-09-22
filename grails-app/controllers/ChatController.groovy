@@ -34,6 +34,7 @@ import org.icescrum.core.domain.User
 import grails.plugins.springsecurity.Secured
 import org.icescrum.core.support.ApplicationSupport
 import org.icescrum.core.utils.BundleUtils
+import org.icescrum.core.domain.Task
 
 class ChatController {
 
@@ -116,10 +117,17 @@ class ChatController {
   }
 
   def tooltip = {
-    if(params.id)
-      render(status:200, text:is.tooltipChat(params,null))
-    else
-      render(status:400)
+    withUser{ User user ->
+        def tasks =  []
+        if(params.product) {
+          tasks = Task.getAllInProduct(params.product.toLong())
+          tasks = tasks.findAll { Task task ->
+              task.state == Task.STATE_BUSY && task.responsible == user
+          }
+        }
+        render(status:200,contentType: 'text/html', template:'tooltipChat',plugin:'icescrum-chat',model:[escapedJid:params.escapedJid,m:user,tasks:tasks,nbtasks:tasks.size() > 1 ? 's' : 0])
+        return
+    }
   }
 
   def status = {
@@ -157,12 +165,6 @@ class ChatController {
           render(status:400)
         }
     }
-
-  def displayStatus = {
-    def posters = params.story?.comments*.poster?:null
-    posters?.unique()
-    render(template:'displayStatus',plugin:pluginName, model:[members:posters])
-  }
 
   def form = {
       if (grailsApplication.config.icescrum.chat.enabled){

@@ -99,7 +99,7 @@ Strophe.Connection.prototype.oauth_gtalk_login = function(clientid, redirect, re
         var pollTimer = window.setInterval(function() {
             if (!win){
                 window.clearInterval(pollTimer);
-                alert('Can\'t open popup to connect to gtalk');
+                alert('Can\'t open popup to connect to gtalk (check popup blocker)');
                 conn._changeConnectStatus(Strophe.Status.AUTHFAIL, null);
             }
             else if (win.closed){

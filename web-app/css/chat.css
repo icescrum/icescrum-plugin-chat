@@ -194,44 +194,44 @@
     background-image:url('../images/icon_chat_video.png');
 }
 
-.ui-chat-status-away:hover,.ui-chat-status-xa:hover  {
+#chat-roster-list .ui-chat-status-away:hover,#chat-roster-list .ui-chat-status-xa:hover  {
     background:url('../images/icon_away.png') #2890F0;
     background-repeat:no-repeat;
     background-position:2px 5px;
 }
 
-.ui-chat-status-away-video:hover, .ui-chat-status-xa-video:hover{
+#chat-roster-list .ui-chat-status-away-video:hover,#chat-roster-list .ui-chat-status-xa-video:hover{
     background:url('../images/icon_away_video.png') #2890F0;
     background-repeat:no-repeat;
     background-position:2px 5px;
 }
 
-.ui-chat-status-dnd:hover {
+#chat-roster-list .ui-chat-status-dnd:hover {
     background:url('../images/icon_dnd.png') #2890F0;
     background-repeat:no-repeat;
     background-position:2px 5px;
 }
 
-.ui-chat-status-dnd-video:hover{
+#chat-roster-list .ui-chat-status-dnd-video:hover{
     background:url('../images/icon_dnd_video.png') #2890F0;
     background-repeat:no-repeat;
     background-position:2px 5px;
 }
 
-.ui-chat-status-offline:hover {
+#chat-roster-list .ui-chat-status-offline:hover {
     background:url('../images/icon_offline.png') #2890F0;
     background-repeat:no-repeat;
     background-position:2px 5px;
 }
 
-.ui-chat-status-online:hover,.ui-chat-status-chat:hover {
+#chat-roster-list .ui-chat-status-online:hover,#chat-roster-list .ui-chat-status-chat:hover {
     background:url('../images/icon_chat.png') #2890F0;
     background-repeat:no-repeat;
     background-position:2px 5px;
 }
 
 
-.ui-chat-status-online-video:hover, .ui-chat-status-chat-video:hover{
+#chat-roster-list .ui-chat-status-online-video:hover,#chat-roster-list .ui-chat-status-chat-video:hover{
     background:url('../images/icon_chat_video.png') #2890F0;
     background-repeat:no-repeat;
     background-position:2px 5px;
@@ -324,7 +324,6 @@
 
 .chat-tooltip-right span {
     display:block;
-    width:100%;
 }
 
 .chat-tooltip-right .ui-chat-status {
@@ -448,7 +447,7 @@
     text-decoration:none;
 }
 
-.ui-chat-status:hover a{
+#chat-roster-list .ui-chat-status:hover a{
     color:white;
 }
 
@@ -471,4 +470,13 @@
     position: absolute;
     left: 3px;
     width:218px;
+}
+
+.tipTip-chat #tiptip_content {
+    background: #ffffff;
+    float: left;
+}
+
+.tipTip-emoticones #tiptip_content {
+    background: #ffffff;
 }

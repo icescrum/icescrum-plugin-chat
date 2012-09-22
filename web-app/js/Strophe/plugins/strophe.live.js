@@ -99,7 +99,7 @@ Strophe.Connection.prototype.oauth_live_login = function(clientid, redirect, res
         var pollTimer = window.setInterval(function() {
             if (!win){
                 window.clearInterval(pollTimer);
-                alert('Can\'t open popup to connect to live messenger');
+                alert('Can\'t open popup to connect to live messenger (check popup blocker)');
                 conn._changeConnectStatus(Strophe.Status.AUTHFAIL, null);
             }
             else if (win.closed){

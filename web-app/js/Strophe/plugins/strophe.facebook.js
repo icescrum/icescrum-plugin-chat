@@ -236,7 +236,7 @@ Strophe.Connection.prototype.oauth_facebook_login = function(apiKey, redirect, r
         var pollTimer = window.setInterval(function() {
             if (!win){
                 window.clearInterval(pollTimer);
-                alert('Can\'t open popup to connect to facebook');
+                alert('Can\'t open popup to connect to facebook (check popup blocker)');
                 conn._changeConnectStatus(Strophe.Status.AUTHFAIL, null);
             }
             if (win.closed){

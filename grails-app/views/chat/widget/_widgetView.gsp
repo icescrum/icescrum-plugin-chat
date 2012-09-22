@@ -46,17 +46,9 @@
   </a>
 <g:if test="${needConfiguration}">
   <div class="chat-need-configuration">
-      <is:remoteDialog
-              action="openProfile"
-              controller="user"
-              valid="[action:'update',controller:'user',onSuccess:'jQuery.event.trigger(\'updateProfile_user\',[data])']"
-              title="is.dialog.profile"
-              width="600"
-              noprefix="true"
-              resizable="false"
-              draggable="false">
-            <g:message code='is.chat.ui.needConfiguration'/>
-      </is:remoteDialog>
+      <a href="${createLink(controller:'user', action:'openProfile')}" data-ajax="true">
+          <g:message code="is.chat.ui.needConfiguration"/>
+      </a>
       <br/>
   </div>
 </g:if>

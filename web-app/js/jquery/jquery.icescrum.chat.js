@@ -264,6 +264,7 @@ var icescrumChat;
                     chat.presenceChanged('','disc');
                 }
             });
+            $(document.body).css('cursor','default');
         },
 
         _disconnected:function(){
@@ -496,14 +497,24 @@ var icescrumChat;
             if(displayTooltip) {
                 var baseUrl = $.icescrum.o.baseUrlProduct ? $.icescrum.o.baseUrlProduct : $.icescrum.o.baseUrl;
                 $('#chat-user-status-' + escapedJid).one("mouseover", function() {
-                    $.ajax({
-                        type: "POST",
-                        url: baseUrl + 'chat/tooltip',
-                        data: 'id=' + userId + '&escapedJid=' + chat.escapeJid(jid),
-                        success:function(data) {
-                            $('.chat-group').append(data);
-                        }
-                    });
+                    $(this).tipTip({
+                      maxWidth: 600,
+                      keepAlive:true,
+                      cssClass:"tipTip-chat",
+                      edgeOffset:-50,
+                      defaultPosition: 'right',
+                      content: function (e) {
+                          $.ajax({
+                              type: "POST",
+                              url: baseUrl + 'chat/tooltip',
+                              data: 'id=' + userId + '&escapedJid=' + chat.escapeJid(jid),
+                              success:function(data) {
+                                  e.content.html(data);
+                              }
+                          });
+                          return 'Please wait...'; // We temporary show a Please wait text until the ajax success callback is called.
+                      }
+                    }).tipTip('show');
                 });
             }
         },
@@ -927,11 +938,11 @@ var icescrumChat;
         },
 
         escapeJid:function(rawJid) {
-            return rawJid.replace(/\./g,'_point_').replace(/@/g,'_at_');
+            return rawJid.replace(/\./g,'_point_').replace(/@/g,'_at_').replace(/\(/g,'_pthl_').replace(/\)/g,'_pthr_');
         },
 
         unescapeJid:function(escapedJid) {
-            return escapedJid.replace(/_point_/g,'.').replace(/_at_/g,'@');
+            return escapedJid.replace(/_point_/g,'.').replace(/_at_/g,'@').replace(/_pthl_/g,'(').replace(/_pthr_/g,')');
         },
 
         displaySavedOauth:function(){
@@ -1023,43 +1034,43 @@ var icescrumChat;
         }
     });
 
-})($);
+    $.editable.addInputType('statut-editable', {
+        element : function(settings) {
+                var input = $('<input />');
+                input.width(settings.width);
+                input.height(settings.height);
+                input.bind('mousedown',function(event){event.stopPropagation()}).bind('click',function(event){event.stopPropagation()}).keydown(function(event){event.stopPropagation()});
+                $(this).append(input);
+                input.focus();
+                return(input);
+            }
+    });
 
-$.editable.addInputType('statut-editable', {
-    element : function(settings) {
-            var input = $('<input />');
-            input.width(settings.width);
-            input.height(settings.height);
-            input.bind('mousedown',function(event){event.stopPropagation()}).bind('click',function(event){event.stopPropagation()}).keydown(function(event){event.stopPropagation()});
-            $(this).append(input);
-            input.focus();
-            return(input);
-        }
-});
-
-$.fn.sortElements = (function(){
-    var sort = [].sort;
-    return function(comparator, getSortable) {
-        getSortable = getSortable || function(){return this;};
-        var placements = this.map(function(){
-            var sortElement = getSortable.call(this),
-                parentNode = sortElement.parentNode,
-                nextSibling = parentNode.insertBefore(
-                    document.createTextNode(''),
-                    sortElement.nextSibling
-                );
-            return function() {
-                if (parentNode === this) {
-                    throw new Error(
-                        "You can't sort elements if any one is a descendant of another."
+    $.fn.sortElements = (function(){
+        var sort = [].sort;
+        return function(comparator, getSortable) {
+            getSortable = getSortable || function(){return this;};
+            var placements = this.map(function(){
+                var sortElement = getSortable.call(this),
+                    parentNode = sortElement.parentNode,
+                    nextSibling = parentNode.insertBefore(
+                        document.createTextNode(''),
+                        sortElement.nextSibling
                     );
-                }
-                parentNode.insertBefore(this, nextSibling);
-                parentNode.removeChild(nextSibling);
-            };
-        });
-        return sort.call(this, comparator).each(function(i){
-            placements[i].call(getSortable.call(this));
-        });
-    };
-})();
+                return function() {
+                    if (parentNode === this) {
+                        throw new Error(
+                            "You can't sort elements if any one is a descendant of another."
+                        );
+                    }
+                    parentNode.insertBefore(this, nextSibling);
+                    parentNode.removeChild(nextSibling);
+                };
+            });
+            return sort.call(this, comparator).each(function(i){
+                placements[i].call(getSortable.call(this));
+            });
+        };
+    })();
+
+})($);

@@ -106,20 +106,7 @@ $(document).ready(function(){
                                         .attr('onClick',"$.icescrum.chat.insertEmoticon('"+this.elem.options.escapedJid+"',$.icescrum.emoticons.emotes['"+emote+"'][0])");
                         emoticons.append(emoticon);
                     }
-                    $('.ui-chat-emoticons').qtip(
-                    {
-                        content: emoticons,
-                        hide: { when: { event:'click mouseout' }, fixed: true, delay: 100 },
-                        position: {
-                           target: 'mouse',
-                           adjust: { mouse: false }
-                        },
-                        style: {
-                            width: {
-                                min: 100
-                            }
-                        }
-                    });
+                    $('.ui-chat-emoticons').tipTip({cssClass:"tipTip-emoticones",content: emoticons, keepAlive:true,edgeOffset:-20,defaultPosition:"left"});
                 },
 
                 addMsg: function(name, msg) {

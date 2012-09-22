@@ -91,45 +91,4 @@ class ChatTagLib {
                         };"""
       out << g.javascript(null, jsCode)
     }
-
-    def tooltipChat = { attrs,body ->
-      assert attrs.id
-      def user = User.get(attrs.id)
-      def tasks =  []
-      if(attrs.product) {
-          tasks = Task.getAllInProduct(Long.parseLong(attrs.product))
-          tasks = tasks.findAll { Task task ->
-              task.state == Task.STATE_BUSY && task.responsible == user
-          }
-      }
-      def content = render(template:'tooltipChat',plugin:'icescrum-chat',model:[escapedJid:attrs.escapedJid,m:user,tasks:tasks,nbtasks:tasks.size() > 1 ? 's' : 0])
-
-      def params = [
-          for:"#chat-user-status-${attrs.escapedJid}",
-          positionAdjustX:"10",
-          contentText:content,
-          hideFixed:"true",
-          showDelay:"1000",
-          styleWidthMin:"250",
-          styleWidthMax:"250",
-          styleClassesTooltip:"chat-tooltip",
-          positionTarget:"\'mouse\'",
-          positionAdjustMouse:"false",
-          hideWhenEvent:"mouseout",
-          hideDelay:"500",
-          showReady:true
-      ]
-
-      out << is.tooltip(params)
-    }
-
-    def displayStatus = { attrs, body ->
-       attrs.members?.each{
-        //out << it.username
-       }
-       def jqCode = """
-            jQuery("#comments .comment-details .scrum-link").prepend("<div class='chat-user-link ui-chat-status-single ui-chat-user-status-vbarrier_at_kagilum_point_com ui-chat-status-offline'></div>");
-       """
-       out << jq.jquery(null,jqCode)
-    }
 }

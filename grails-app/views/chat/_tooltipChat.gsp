@@ -26,11 +26,10 @@
  *
  *--%>
 
-<div>
-  <div class="chat-tooltip-left">
+<div class="chat-tooltip-left">
     <is:avatar user="${m}" class="ico"/>
-  </div>
-  <div class="chat-tooltip-right">
+</div>
+<div class="chat-tooltip-right">
     <span class="ui-chat-user-status-${escapedJid} ui-chat-status ui-chat-status-offline" jid="${escapedJid}">
       <a class="scrum-link" href="#user/profile/${m.username}">
             ${m.firstName.encodeAsHTML()} ${m.lastName.encodeAsHTML()}
@@ -38,11 +37,11 @@
     </span>
     <span class="ui-chat-user-status-text ui-chat-user-status-text-${escapedJid}"></span>
     <g:if test="${tasks}">
-      <span class="chat-user-task-title">
-        <strong>
-          <g:message code="is.chat.ui.tooltip.currentTasks"/>
-        </strong>
-      </span>
+          <span class="chat-user-task-title">
+            <strong>
+              <g:message code="is.chat.ui.tooltip.currentTasks"/>
+            </strong>
+          </span>
       <g:each in="${tasks}" var="task" status="i">
         <g:if test="${i < 3}">
           <span class="chat-user-task">
@@ -58,8 +57,8 @@
         <strong><g:message code="is.chat.ui.tooltip.notasks"/></strong>
       </span>
     </g:else>
-  </div>
-  <div class="chat-tooltip-bottom">
+</div>
+    <div class="chat-tooltip-bottom">
     <is:button
           type="link"
           class="tooltip-chat-user-link"
@@ -67,12 +66,4 @@
           disabled="true"
           value="${message(code:'is.chat.ui.tooltip.talk')}"
           history="false"/>
-  </div>
-</div>
-<jq:jquery>
-  var user = $('#chat-user-status-${escapedJid}');
-  $('.chat-tooltip-right .ui-chat-user-status-${escapedJid}')
-        .removeClass()
-        .addClass('ui-chat-user-status-${escapedJid} ui-chat-status ui-chat-status-'+user.data('status')+(user.data('video')?'-video':''));
-  $('.chat-tooltip-right .ui-chat-user-status-text-${escapedJid}').text(user.data('title'));
-</jq:jquery>
+    </div>
