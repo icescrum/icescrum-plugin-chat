@@ -67,3 +67,11 @@
           value="${message(code:'is.chat.ui.tooltip.talk')}"
           history="false"/>
     </div>
+
+<jq:jquery>
+    var user = $('#chat-user-status-${escapedJid}');
+  $('.chat-tooltip-right .ui-chat-user-status-${escapedJid}')
+        .removeClass()
+        .addClass('ui-chat-user-status-${escapedJid} ui-chat-status ui-chat-status-'+user.data('status')+(user.data('video')?'-video':''));
+  $('.chat-tooltip-right .ui-chat-user-status-text-${escapedJid}').text(user.data('title'));
+</jq:jquery>

@@ -429,7 +429,7 @@ var icescrumChat;
                 $(this.users).each(function(){
                     var user = this;
                     $(roster).each(function () {
-                        if(this.jid == user.jid) {
+                        if(this.jid.toLowerCase() == user.jid.toLowerCase()) {
                             $.icescrum.chat.addTeamContact(this.jid,user, teamid);
                         }else if(Strophe.getDomainFromJid(this.jid) ==chat.o.server){
 
