@@ -21,7 +21,7 @@ Brief description of the plugin.
 '''
 
     // URL to the plugin's documentation
-    def documentation = "http://grails.org/plugin/icescrum-chat"
+    def documentation = "https://www.kagilum.com/documentation/icescrum-pro/#icescrum-pro-features"
 
     def doWithWebDescriptor = { xml ->
         // TODO Implement additions to web.xml (optional), this event occurs before
