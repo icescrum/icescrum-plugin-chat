@@ -2,7 +2,7 @@ entryPoints = {
     entry {
         action "form"
         controller "chat"
-         ref "user-openProfile"
+        ref "user-openProfile"
     }
     entry {
         action "updatePreferences"
