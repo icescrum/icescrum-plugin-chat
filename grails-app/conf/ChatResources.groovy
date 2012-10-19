@@ -28,7 +28,7 @@
 
 modules = {
   'chat' {
-      dependsOn 'jquery-ui-plugins'
+      dependsOn 'icescrum'
       resource url: [dir: "css", file: 'chat.css', plugin:'icescrum-chat'], attrs: [media: 'screen,projection'], bundle:'chat'
       resource url: [dir: 'js/jquery', file: 'jquery.icescrum.chat.js', plugin:'icescrum-chat'], bundle:'chat'
       resource url: [dir: 'js/jquery', file: 'jquery.icescrum.chat.video.js', plugin:'icescrum-chat'], bundle:'chat'
