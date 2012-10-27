@@ -183,7 +183,7 @@ class ChatController {
               oauthKeys << "Microsoft Live"
               oauthValues << "live"
           }
-          render(template:'dialogs/profile', plugin:pluginName, model:[chatPreferences:chatPref, oauthKeys:oauthKeys, oauthValues:oauthValues])
+          render(template:'dialogs/profile', model:[chatPreferences:chatPref, oauthKeys:oauthKeys, oauthValues:oauthValues])
       }else{
           render(status:200,text:'')
       }

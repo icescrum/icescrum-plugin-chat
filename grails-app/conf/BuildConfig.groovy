@@ -53,7 +53,8 @@ grails.project.dependency.resolution = {
         //mavenRepo "http://repository.codehaus.org"
         //mavenRepo "http://download.java.net/maven/2/"
         //mavenRepo "http://repository.jboss.com/maven2/"
-        mavenRepo "http://repo.icescrum.org/artifactory/plugins-snapShots/"
+        mavenRepo "http://repo.icescrum.org/artifactory/plugins-release/"
+        mavenRepo "http://repo.icescrum.org/artifactory/plugins-snapshot/"
     }
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
@@ -62,8 +63,8 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-      if (appName == 'iceScrum-plugin-management' || environment == Environment.PRODUCTION){
-          compile "org.icescrum:icescrum-core:1.6-SNAPSHOT"
+      if (appName == 'iceScrum-plugin-chat' || environment == Environment.PRODUCTION){
+          compile "org.icescrum:icescrum-core:2.0.2"
       }
       compile(':maven-publisher:0.8.1'){
           export:false
