@@ -216,7 +216,7 @@ class ChatController {
       def productid = params.long('product')
       def stories = []
       params.list('uid').each {
-          def story = Story.getInProductUid(productid, Integer.parseInt(it)).list()
+          def story = Story.getInProductByUid(productid, Integer.parseInt(it)).list()
           if(story) {
               stories << (Story) story
           }
