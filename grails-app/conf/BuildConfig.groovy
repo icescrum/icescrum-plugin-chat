@@ -29,7 +29,7 @@ import grails.util.Environment
 
 def environment = Environment.getCurrent()
 
-if (appName != 'iceScrum-plugin-management' && environment != Environment.PRODUCTION){
+if (appName != 'icescrum-plugin-chat' && environment != Environment.PRODUCTION){
     grails.plugin.location.'icescrum-core' = '../icescrum-core'
 }
 
@@ -62,7 +62,7 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-      if (appName == 'iceScrum-plugin-management' || environment == Environment.PRODUCTION){
+      if (appName == 'icescrum-plugin-chat' || environment == Environment.PRODUCTION){
           compile "org.icescrum:icescrum-core:1.6-SNAPSHOT"
       }
       compile(':maven-publisher:0.8.1'){

@@ -1,4 +1,4 @@
-pluginName = 'icescrumChat'
+pluginName = 'icescrumPluginChat'
 
 modulesResources = ['chat']
 

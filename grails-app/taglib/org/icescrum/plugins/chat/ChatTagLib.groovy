@@ -49,7 +49,7 @@ class ChatTagLib {
                             hideOffline: ${chatPreferences.hideOffline},
                             teamList: '${attrs.teamList.encodeAsJavaScript()}',
                             disabled: ${chatPreferences.needConfiguration()},
-                            emoticonsDir : '${resource(plugin: 'icescrum-chat', dir: '/images/emoticons')}',
+                            emoticonsDir : '${resource(plugin: 'icescrum-plugin-chat', dir: '/images/emoticons')}',
                             resource : '${config.resource}',
                             currentStatus : {
                                 show:'${chatPreferences.show}',

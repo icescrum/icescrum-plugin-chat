@@ -38,7 +38,7 @@ import org.icescrum.core.domain.Task
 
 class ChatController {
 
- static final pluginName = 'icescrum-chat'
+ static final pluginName = 'icescrum-plugin-chat'
 
   def springSecurityService
   def securityService
@@ -93,7 +93,7 @@ class ChatController {
     }
     teamList = teamList as JSON
 
-    render(template:'widget/widgetView',plugin:'icescrum-chat', model:[
+    render(template:'widget/widgetView',plugin:pluginName, model:[
             teamList:teamList,
             user:user,
             statusKeys:statusKeys,
@@ -125,7 +125,7 @@ class ChatController {
               task.state == Task.STATE_BUSY && task.responsible == user
           }
         }
-        render(status:200,contentType: 'text/html', template:'tooltipChat',plugin:'icescrum-chat',model:[escapedJid:params.escapedJid,m:user,tasks:tasks,nbtasks:tasks.size() > 1 ? 's' : 0])
+        render(status:200,contentType: 'text/html', template:'tooltipChat',plugin:pluginName,model:[escapedJid:params.escapedJid,m:user,tasks:tasks,nbtasks:tasks.size() > 1 ? 's' : 0])
         return
     }
   }

@@ -167,8 +167,8 @@
             $.ajax({url:$.icescrum.o.grailsServer + '/chat/peerMessage',
                     data:message,
                     async:!sync,
-                    success:function(){ console.log("[icescrum-chat] Peer message sent"); },
-                    error:function(){ console.log("[icescrum-chat] Error while sending Peer message") }
+                    success:function(){ console.log("[icescrum-plugin-chat] Peer message sent"); },
+                    error:function(){ console.log("[icescrum-plugin-chat] Error while sending Peer message") }
                   });
         }
     });
