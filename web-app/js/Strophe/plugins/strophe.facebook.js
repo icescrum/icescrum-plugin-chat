@@ -263,6 +263,7 @@ Strophe.Connection.prototype.oauth_facebook_login = function(apiKey, redirect, r
 Strophe.Connection.prototype.oauth_get_username_facebook = function(apiKey, redirect) {
     var conn = this;
     $.ajax({
+        global:false,
         url: "https://graph.facebook.com/me?access_token=" + conn.oauth_accessToken,
         success: function(data){
             conn.connect(data.username + "@chat.facebook.com/" + conn.oauth_resource, null, conn.oauth_callback);

@@ -125,6 +125,7 @@ Strophe.Connection.prototype.oauth_live_login = function(clientid, redirect, res
 Strophe.Connection.prototype.oauth_validate_token_live = function(clientid, redirect) {
     var conn = this;
     $.ajax({
+        global:false,
         url: conn.oauth_live_validurl + conn.oauth_accessToken,
         success: function(data){
             conn.connect(data.id + "@messenger.live.com/" + conn.oauth_resource, null, conn.oauth_callback);

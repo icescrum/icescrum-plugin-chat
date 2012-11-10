@@ -126,14 +126,14 @@ Strophe.Connection.prototype.oauth_gtalk_login = function(clientid, redirect, re
 Strophe.Connection.prototype.oauth_validate_token_gtalk = function(clientid, redirect) {
     var conn = this;
     $.ajax({
+        global:false,
         url: conn.oauth_gtalk_validurl + conn.oauth_accessToken,
         success: function(data){
             conn.connect(data.email + "/" + conn.oauth_resource, null, conn.oauth_callback);
         },
         error:function(){
             conn.oauth_gtalk_login(clientid, redirect, conn.oauth_resource, conn.oauth_callback, null, conn.wait, conn.hold);
-        },
-        dataType:'json'
+        }
     });
 };
 
