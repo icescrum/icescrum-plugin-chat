@@ -133,7 +133,8 @@ Strophe.Connection.prototype.oauth_validate_token_gtalk = function(clientid, red
         },
         error:function(){
             conn.oauth_gtalk_login(clientid, redirect, conn.oauth_resource, conn.oauth_callback, null, conn.wait, conn.hold);
-        }
+        },
+        dataType:'json'
     });
 };
 
