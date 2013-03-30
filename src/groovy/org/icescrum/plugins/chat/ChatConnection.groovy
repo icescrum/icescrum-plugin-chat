@@ -50,7 +50,8 @@ class ChatConnection implements BOSHClientRequestListener{
       conn.disconnect()
     }
 
-    return isConnected
+      conn.client.removeBOSHClientRequestListener(this);
+      return isConnected
   }
 
   void requestSent(BOSHMessageEvent boshMessageEvent) {
