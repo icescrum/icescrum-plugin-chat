@@ -26,15 +26,13 @@
  *
  *--%>
 <is:select
-    container="#widget-content-${controllerName}"
     width="125"
-    styleSelect="dropdown"
     from="${statusLabels}"
     keys="${statusKeys}"
     icons="${statusIcons}"
     value="${needConfiguration ? 'disc' : 'online'}"
     name="chatstatus"
-    onchange="${needConfiguration ? '$(\'#chatstatus\').selectmenu(\'value\',$(\'#chatstatus option:last\').index()); return false;' : ''}jQuery.icescrum.chat.presenceChanged(jQuery('.ui-selectmenu-status').text(),jQuery(this).find('option:selected').val());"/>
+    onchange="${needConfiguration ? '$(\'#chatstatus\').val($(\'#chatstatus option:last\').attr(\'value\')); return false;' : ''}jQuery.icescrum.chat.presenceChanged(jQuery(this).find('option:selected').text(),jQuery(this).find('option:selected').val());"/>
 
 <is:loadChatVar teamList="${teamList}"/>
 

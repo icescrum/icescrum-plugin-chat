@@ -247,10 +247,6 @@
     background-position: 2px 4px;
 }
 
-#chatstatus-button .ui-selectmenu-status,#chatstatus-menu li a {
-    padding: 4px 0 0 17px;
-}
-
 .ui-chat-status {
     background-position: 2px 5px;
     background-repeat: no-repeat;
@@ -387,11 +383,6 @@
     background-color:#f8da4e;
 }
 
-.ui-selectmenu-status input {
-    font-size:10px;
-    line-height:8px;
-}
-
 .subscription .ui-button {
     margin-left: 3px;
     padding: 3px;
@@ -479,4 +470,10 @@
 
 .tipTip-emoticones #tiptip_content {
     background: #ffffff;
+}
+
+#widget-content-chat .select2-container {
+    float: right;
+    margin-top: 3px;
+    margin-right: 5px;
 }

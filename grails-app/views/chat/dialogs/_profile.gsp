@@ -36,12 +36,10 @@
     <is:fieldSelect for="method" label="is.story.type" noborder="${chatPreferences.oauth?true:false}" class="select-auth">
         <is:select
                 width="240"
-                maxHeight="200"
-                styleSelect="dropdown"
                 from="${oauthKeys}"
                 keys="${oauthValues}"
                 name="method"
-                change="if (jQuery(this).val() == 'manual'){ jQuery('.manual-auth').show(); jQuery('p.select-auth').removeClass('field-noseparator'); }else{jQuery('.manual-auth').hide(); jQuery('p.select-auth').addClass('field-noseparator');}"
+                onChange="if (jQuery(this).val() == 'manual'){ jQuery('.manual-auth').show(); jQuery('p.select-auth').removeClass('field-noseparator'); }else{jQuery('.manual-auth').hide(); jQuery('p.select-auth').addClass('field-noseparator');}"
                 value="${chatPreferences.oauth?:'manual'}"/>
     </is:fieldSelect>
     <is:fieldInput class="manual-auth" style="display:${chatPreferences.oauth?'none':'block'};" for="chatPreferences.username" label="is.chat.ui.dialog.chat.username">

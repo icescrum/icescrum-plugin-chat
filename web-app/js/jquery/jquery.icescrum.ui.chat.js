@@ -43,10 +43,9 @@ $(document).ready(function(){
                 var select = $("#chatstatus");
                 if ($.icescrum.chat.o.connected && blurDate && select.val() != 'away' && (new Date().setMinutes(blurDate.getMinutes() + 15) < new Date()))
                 {
-                    autoAway = select.selectmenu('value');
+                    autoAway = select.val();
                     console.log('user is away change his presence...');
-                    select.selectmenu("value",select.find("option[value='away']").index());
-                    select.change();
+                    select.val('away').trigger("change");
                 }
         },5000);
 	}).focus(function(){
@@ -59,9 +58,7 @@ $(document).ready(function(){
         blurDate = null;
         if (autoAway !== false){
             console.log('user is back change his presence...');
-            var select = $("#chatstatus");
-            select.selectmenu('value', autoAway);
-            select.change();
+            $("#chatstatus").val(autoAway).trigger("change");
             autoAway = false;
         }
         clearInterval(checkPresence);

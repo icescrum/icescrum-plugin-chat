@@ -238,7 +238,7 @@ class ChatController {
     def peerMessage = {
         params.remove('controller')
         params.remove('action')
-        String to = params.to
+        String to = params.remove('to')
         def username = ChatPreferences.findByUsername(to)?.user?.username
         if (username){
             broadcastToSingleUser(user:username, function:'peerMessageReceived', message:[class:'Chat',message:params])
