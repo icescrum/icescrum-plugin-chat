@@ -227,20 +227,11 @@ var icescrumChat;
             chat.o.connection.roster.registerCallback(chat._onRosterChanged.bind(chat));
             chat.o.connection.roster.get(chat._onRosterReceived.bind(chat));
 
-            var found = false;
             if (chat.o.currentStatus.show != null &&  chat.o.currentStatus.presence != null){
-                $('#chatstatus .ui-chat-status-'+chat.o.currentStatus.show).each(function(){
-                    if($(this).val() == chat.o.currentStatus.presence){
-                        $("#chatstatus").val($(this).attr('value')).trigger("change");
-                        console.log("[chat] Changing presence");
-                        found = true;
-                    }
-                });
-            }
-            if (found){
-                console.log("[chat] Changing presence bis");
+                $("#chatstatus").select2('val', chat.o.currentStatus.show);
                 chat.updateResource(chat.o.currentStatus.presence,chat.o.currentStatus.show,false);
-            }else{
+                console.log("[chat] Changing presence to " + chat.o.currentStatus.show + ": " + chat.o.currentStatus.presence);
+            } else{
                 console.log("[chat] Default presence");
                 $("#chatstatus").val($("#chatstatus option:first").attr("value")).trigger("change");
                 chat.o.connection.send($pres().tree());
@@ -268,6 +259,10 @@ var icescrumChat;
             $('.ui-chat-status')
                     .removeClass('ui-chat-status-away ui-chat-status-xa ui-chat-status-dnd ui-chat-status-chat')
                     .addClass('ui-chat-status-offline');
+            var chatstatus = $("#chatstatus");
+            if (chatstatus.val() != 'disc') {
+                chatstatus.val('disc');
+            }
             this.o.connected = false;
             this.toggleRoster();
             $('.subscription').remove();
@@ -787,8 +782,11 @@ var icescrumChat;
                 chat.o.connection.flush();
                 chat.o.connection.disconnect();
                 chat._disconnected();
+                chat.updateStatusInDb(presence, show);
             }else{
                 if(!chat.o.connected){
+                    chat.o.currentStatus.show = show;
+                    chat.o.currentStatus.presence = presence;
                     chat._connect();
                 }
                 else{
@@ -845,9 +843,14 @@ var icescrumChat;
             chat.o.currentStatus.show = show;
             chat.o.currentStatus.presence = presence;
             chat.o.connection.send(pres.tree());
-            $.ajax({type:'POST',
+            chat.updateStatusInDb(presence, show, callback);
+        },
+
+        updateStatusInDb:function (presence, show, callback) {
+            $.ajax({
+                type:'POST',
                 global:false,
-                data:'custom='+saveCustom+'&show='+show+'&presence='+presence,
+                data:'show='+show+'&presence='+presence,
                 url: $.icescrum.o.grailsServer + '/chat/status',
                 error:function() {
                     $.icescrum.renderNotice(chat.o.i18n.customStatusError,'error');

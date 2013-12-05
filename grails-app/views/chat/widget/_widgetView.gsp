@@ -29,7 +29,7 @@
     width="125"
     from="${statusLabels}"
     keys="${statusKeys}"
-    icons="${statusIcons}"
+    data-icon-class="ui-chat-select ui-chat-status-"
     value="${needConfiguration ? 'disc' : 'online'}"
     name="chatstatus"
     onchange="${needConfiguration ? '$(\'#chatstatus\').val($(\'#chatstatus option:last\').attr(\'value\')); return false;' : ''}jQuery.icescrum.chat.presenceChanged(jQuery(this).find('option:selected').text(),jQuery(this).find('option:selected').val());"/>

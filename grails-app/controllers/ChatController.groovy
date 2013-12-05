@@ -63,17 +63,10 @@ class ChatController {
     for(status in statusType){
       statusKeys.add(status)
       statusLabels.add(g.message(code:'is.chat.status.'+status))
-      statusIcons.add('ui-chat-select ui-chat-status-'+status)
-      chatService.getChatPreferences(user)?.statusList?.findAll{it != null}?.toArray()?.each{
-        statusKeys.add(status)
-        statusLabels.add(it)
-        statusIcons.add('status-custom ui-chat-select ui-chat-status-'+status)
-      }
     }
 
     statusKeys.add('disc')
     statusLabels.add(g.message(code:'is.chat.status.disconnected'))
-    statusIcons.add('ui-chat-select ui-chat-status-offline')
 
     def teamList = []
     def userList = []
@@ -108,7 +101,7 @@ class ChatController {
     def chatConnection = new ChatConnection()
     def pref = chatService.getChatPreferences(user);
     if(chatConnection.connect(pref, grailsApplication.config.icescrum.chat.bosh, grailsApplication.config.icescrum.chat.resource,  params.boolean('video')?:false)){
-      pref.show = pref.show != 'disc' ?: 'online'
+      pref.show = pref.show != 'disc' ? pref.show : 'online'
       pref.save()
       render(status:200,text:[sid:chatConnection.sid,rid:chatConnection.rid,jid:chatConnection.jid] as JSON, contentType: 'application/json')
     }else{
@@ -134,9 +127,6 @@ class ChatController {
     def user = User.get(springSecurityService.principal.id)
     try {
       if(user){
-        if (params.boolean('custom')){
-          chatService.addStatus(user,params.presence)
-        }
         def chatPreferences = chatService.getChatPreferences(user)
         chatPreferences.show = params.show
         chatPreferences.presence = params.presence
