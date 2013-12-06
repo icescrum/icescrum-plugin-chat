@@ -283,8 +283,8 @@ $(document).ready(function(){
             self.uiChatTitlebarVideo = $('<a></a>')
                                 .addClass('ui-corner-all ui-chat-icon')
                                 .attr('role', 'button')
-                                .hover(function() {self.uiChatTitlebarVideo.addClass('ui-state-hover');},function() {self.uiChatTitlebarVideo.removeClass('ui-state-hover');})
-                                .appendTo(uiChatTitleBar);
+                                .hover(function() {self.uiChatTitlebarVideo.addClass('ui-state-hover');},function() {self.uiChatTitlebarVideo.removeClass('ui-state-hover');});
+                                // .appendTo(uiChatTitleBar);
 
             var uiChatTitlebarVideoText = $('<span></span>')
                                             .addClass('ui-icon ui-icon-play')

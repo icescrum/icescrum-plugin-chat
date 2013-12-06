@@ -57,7 +57,7 @@ var icescrumChat;
                 presence:null
             },
             video: {
-                enabled:true
+                enabled:false
             },
             i18n:{
                 me:'me',
