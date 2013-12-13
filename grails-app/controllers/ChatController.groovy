@@ -48,6 +48,11 @@ class ChatController {
   def index = {
 
     def user = springSecurityService.currentUser
+    if (!user) {
+        render(status:200)
+        return
+    }
+
     def chatPreferences = chatService.getChatPreferences(user)
 
     if (!ApplicationSupport.booleanValue(grailsApplication.config.icescrum.chat.enabled) || chatPreferences.disabled){
