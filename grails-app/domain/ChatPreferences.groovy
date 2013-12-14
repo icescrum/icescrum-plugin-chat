@@ -28,7 +28,7 @@
 
 import org.icescrum.core.domain.User
 
-class ChatPreferences {
+class ChatPreferences implements Serializable {
 
   String[] statusList = new String[2]
   String show = "online"
