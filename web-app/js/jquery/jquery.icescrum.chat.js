@@ -974,7 +974,7 @@ var icescrumChat;
         }
     });
 
-    $.editable.addInputType('statut-editable', {
+    /*$.editable.addInputType('statut-editable', {
         element : function(settings) {
                 var input = $('<input />');
                 input.width(settings.width);
@@ -984,7 +984,7 @@ var icescrumChat;
                 input.focus();
                 return(input);
             }
-    });
+    });*/
 
     $.fn.sortElements = (function(){
         var sort = [].sort;
