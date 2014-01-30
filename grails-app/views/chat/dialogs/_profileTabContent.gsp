@@ -26,7 +26,7 @@
  *
  *--%>
 
-<is:accordionSection title="is.chat.ui.dialog.chat.title">
+<div id="chat-tab">
     <is:fieldRadio for="chatPreferencesEnabled" label="is.chat.ui.dialog.chat.enabled">
       <is:radio id="chatPreferencesEnabled" name="chatPreferencesEnabled" value="${!chatPreferences.disabled}"/>
     </is:fieldRadio>
@@ -53,4 +53,4 @@
             $.icescrum.chat.displaySavedOauth();
         </jq:jquery>
     </is:fieldInput>
-</is:accordionSection>
+</div>
