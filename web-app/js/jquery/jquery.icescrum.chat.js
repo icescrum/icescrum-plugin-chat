@@ -129,7 +129,7 @@ var icescrumChat;
                     $.icescrum.closeWidget(chatWidget,true);
                     $('.ui-chat').remove();
                     setTimeout(function(){
-                        $.icescrum.addToWidgetBar('chat');
+                        $.icescrum.openWidget('chat');
                     }, 500);
                 };
                 if (chat.o.connected){
@@ -138,7 +138,7 @@ var icescrumChat;
                     close();
                 }
             }else{
-                $.icescrum.addToWidgetBar('chat');
+                $.icescrum.openWidget('chat');
             }
         },
 
