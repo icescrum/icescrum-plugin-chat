@@ -29,7 +29,7 @@ import grails.util.Environment
 
 def environment = Environment.getCurrent()
 
-if (appName != 'icescrum-plugin-chat' && environment != Environment.PRODUCTION){
+if (environment != Environment.PRODUCTION){
     grails.plugin.location.'icescrum-core' = '../icescrum-core'
 }
 
