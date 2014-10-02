@@ -31,7 +31,7 @@ import org.icescrum.core.domain.User
 import org.icescrum.plugins.chat.ChatConnection
 import org.icescrum.core.domain.Story
 import org.icescrum.core.domain.User
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
 import org.icescrum.core.support.ApplicationSupport
 import org.icescrum.core.utils.BundleUtils
 import org.icescrum.core.domain.Task
