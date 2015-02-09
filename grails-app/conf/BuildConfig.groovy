@@ -63,7 +63,7 @@ grails.project.dependency.resolution = {
 
     plugins {
         if (appName == 'icescrum-plugin-chat' || environment == Environment.PRODUCTION){
-            compile "org.icescrum:icescrum-core:1.6-SNAPSHOT"
+            compile "org.icescrum:icescrum-core:1.7-SNAPSHOT"
         }
     }
 }
