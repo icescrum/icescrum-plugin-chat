@@ -15,7 +15,7 @@ class IcescrumPluginChatGrailsPlugin {
     def author = "Kagilum Team"
     def authorEmail = "contact@kagilum.com"
     def title = "Chat"
-    def documentation = "https://www.kagilum.com/documentation/icescrum-pro/chat/"
+    def documentation = "https://www.icescrum.com/documentation/chat/"
     def description = '''This plugin allows you to stay connected to your co-workers.
     It promotes communication in your team to ensure the success of your projects.
     It provides integration for the following chat services:
