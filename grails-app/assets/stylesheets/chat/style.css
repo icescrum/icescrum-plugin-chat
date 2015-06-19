@@ -151,7 +151,7 @@
 }
 
 .ui-chat-composing {
-    background-image:url("../images/comment_edit.png");
+    background-image:url("../../images/comment_edit.png");
     background-repeat:no-repeat;
     width:16px;
     height:16px;
@@ -159,7 +159,7 @@
 }
 
 .ui-chat-paused {
-    background-image:url("../images/hourglass.png");
+    background-image:url("../../images/hourglass.png");
     background-repeat:no-repeat;
     width:16px;
     height:16px;
@@ -167,72 +167,72 @@
 }
 
 .ui-chat-status-away,.ui-chat-status-xa {
-    background-image:url('../images/icon_away.png');
+    background-image:url('../../images/icon_away.png');
 }
 
 .ui-chat-status-dnd {
-    background-image:url('../images/icon_dnd.png');
+    background-image:url('../../images/icon_dnd.png');
 }
 
 .ui-chat-status-offline, .ui-chat-status-disc {
-    background-image:url('../images/icon_offline.png');
+    background-image:url('../../images/icon_offline.png');
 }
 
 .ui-chat-status-online,.ui-chat-status-chat {
-    background-image:url('../images/icon_chat.png');
+    background-image:url('../../images/icon_chat.png');
 }
 
 .ui-chat-status-away-video,.ui-chat-status-xa-video {
-    background-image:url('../images/icon_away_video.png');
+    background-image:url('../../images/icon_away_video.png');
 }
 
 .ui-chat-status-dnd-video {
-    background-image:url('../images/icon_dnd_video.png');
+    background-image:url('../../images/icon_dnd_video.png');
 }
 
 .ui-chat-status-online-video,.ui-chat-status-chat-video {
-    background-image:url('../images/icon_chat_video.png');
+    background-image:url('../../images/icon_chat_video.png');
 }
 
 #chat-roster-list .ui-chat-status-away:hover,#chat-roster-list .ui-chat-status-xa:hover  {
-    background:url('../images/icon_away.png') #2890F0;
+    background:url('../../images/icon_away.png') #2890F0;
     background-repeat:no-repeat;
     background-position:2px 5px;
 }
 
 #chat-roster-list .ui-chat-status-away-video:hover,#chat-roster-list .ui-chat-status-xa-video:hover{
-    background:url('../images/icon_away_video.png') #2890F0;
+    background:url('../../images/icon_away_video.png') #2890F0;
     background-repeat:no-repeat;
     background-position:2px 5px;
 }
 
 #chat-roster-list .ui-chat-status-dnd:hover {
-    background:url('../images/icon_dnd.png') #2890F0;
+    background:url('../../images/icon_dnd.png') #2890F0;
     background-repeat:no-repeat;
     background-position:2px 5px;
 }
 
 #chat-roster-list .ui-chat-status-dnd-video:hover{
-    background:url('../images/icon_dnd_video.png') #2890F0;
+    background:url('../../images/icon_dnd_video.png') #2890F0;
     background-repeat:no-repeat;
     background-position:2px 5px;
 }
 
 #chat-roster-list .ui-chat-status-offline:hover {
-    background:url('../images/icon_offline.png') #2890F0;
+    background:url('../../images/icon_offline.png') #2890F0;
     background-repeat:no-repeat;
     background-position:2px 5px;
 }
 
 #chat-roster-list .ui-chat-status-online:hover,#chat-roster-list .ui-chat-status-chat:hover {
-    background:url('../images/icon_chat.png') #2890F0;
+    background:url('../../images/icon_chat.png') #2890F0;
     background-repeat:no-repeat;
     background-position:2px 5px;
 }
 
 
 #chat-roster-list .ui-chat-status-online-video:hover,#chat-roster-list .ui-chat-status-chat-video:hover{
-    background:url('../images/icon_chat_video.png') #2890F0;
+    background:url('../../images/icon_chat_video.png') #2890F0;
     background-repeat:no-repeat;
     background-position:2px 5px;
 }
@@ -304,7 +304,7 @@
 }
 
 .ui-chat-status-loader {
-    background-image:url('../images/loader.gif');
+    background-image:url('../../images/loader.gif');
 }
 
 .chat-tooltip-left {
@@ -368,7 +368,7 @@
 }
 
 .ui-chat-emoticons {
-    background-image:url("../images/emoticons/face-smile.png");
+    background-image:url("../../images/emoticons/face-smile.png");
     background-repeat:no-repeat;
     width:16px;
     height:16px;
@@ -389,7 +389,7 @@
 }
 
 .ui-chat-header-unread {
-    background-image:url("../images/ui-bg_highlight-soft_100_f8da4e_1x100.png");
+    background-image:url("../../images/ui-bg_highlight-soft_100_f8da4e_1x100.png");
     background-color:#f8da4e;
 }
 
@@ -414,7 +414,7 @@
 }
 
 .chat-delete-contact {
-     background-image:url("../images/delete.png");
+     background-image:url("../../images/delete.png");
      height:16px;
      width:16px;
      display:none;

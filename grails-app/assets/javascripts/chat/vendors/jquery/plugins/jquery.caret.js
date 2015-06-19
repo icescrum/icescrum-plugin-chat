@@ -64,21 +64,21 @@
     }
     
     return this;
-  }
+  };
   
   $.fn.setCaretPosition = function(start, end) {
     var element = $(this).get(0);
     element.focus();
     setCaretTo(element, start, end);
     return this;
-  }
+  };
   
   
   $.fn.getCaretPosition = function() {
     var element = $(this).get(0);
     $(element).focus();
     return getCaretPosition(element);
-  }
+  };
 
   $.fn.getSelectedText = function() {
     var element = $(this).get(0);
@@ -91,7 +91,7 @@
     } else if (window.getSelection) {
       return window.getSelection();
     }
-  }
+  };
   
   // privates
   function setCaretTo(element, start, end) {
