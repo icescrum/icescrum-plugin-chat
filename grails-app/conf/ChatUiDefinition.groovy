@@ -1,9 +1,5 @@
 pluginName = 'icescrumPluginChat'
 
-modulesResources = { application ->
-    return application.config.icescrum.chat.enabled ? ['chat'] : null
-}
-
 uiDefinitions = {
 
     'chat' {
