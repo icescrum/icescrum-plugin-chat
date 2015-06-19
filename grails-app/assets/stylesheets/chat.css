@@ -1,0 +1,4 @@
+/*= encoding UTF-8
+/*= require_tree chat
+
+// Note: this is NOT bundled in iceScrum, this should be included only if chat is enabled
