@@ -11,7 +11,7 @@ uiDefinitions = {
             sortable false
         }
 
-        menuBar {
+        menu {
             show {
                 false
             }
